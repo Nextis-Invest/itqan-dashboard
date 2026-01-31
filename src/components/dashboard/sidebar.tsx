@@ -129,7 +129,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg" className="hover:bg-transparent">
               <Link href={user?.role === "ADMIN" ? "/admin" : "/dashboard"} className="flex items-center gap-2">
-                <Image src="/icons/itqan-logo.svg" alt="Itqan" width={120} height={40} className="h-8 w-auto" />
+                <Image src="/icons/itqan-logo.svg" alt="Itqan" width={120} height={40} className="h-10 w-auto" />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
