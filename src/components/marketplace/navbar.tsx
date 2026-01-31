@@ -52,7 +52,7 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
             : "bg-neutral-950"
         }`}
       >
-        <div className={`transition-all duration-300 px-6 md:px-10 ${scrolled ? "" : "pt-3"}`}>
+        <div className={`transition-all duration-300 ${scrolled ? "px-6 md:px-10" : "max-w-5xl mx-auto px-4 pt-3"}`}>
           <div
             className={`flex items-center gap-4 h-14 transition-all duration-300 ${
               scrolled
@@ -117,7 +117,7 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
 
         {/* Categories bar — always visible, full width */}
         <div className={`hidden md:block ${scrolled ? "border-t border-neutral-800/50" : "mt-2"}`}>
-          <div className="relative px-6 md:px-10">
+          <div className={`relative ${scrolled ? "px-6 md:px-10" : "max-w-5xl mx-auto px-4"}`}>
             {/* Gradient fade left */}
             <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none" />
             {/* Gradient fade right */}
