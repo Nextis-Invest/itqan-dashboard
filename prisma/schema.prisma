@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+  FREELANCER
+}
+
+enum MissionStatus {
+  DRAFT
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model User {
+  id                      String    @id @default(cuid())
+  name                    String?
+  email                   String    @unique
+  image                   String?
+  phone                   String?
+  emailVerified           DateTime?
+  verificationToken       String?
+  verificationTokenExpiry DateTime?
+  role                    Role      @default(CLIENT)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+
+  clientMissions    Mission[]  @relation("ClientMissions")
+  freelanceMissions Mission[]  @relation("FreelanceMissions")
+  proposals         Proposal[]
+  reviews           Review[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Mission {
+  id           String        @id @default(cuid())
+  title        String
+  description  String?       @db.Text
+  budget       Float?
+  currency     String        @default("EUR")
+  deadline     DateTime?
+  status       MissionStatus @default(DRAFT)
+  category     String?
+  subcategory  String?
+  skills       String[]
+
+  clientId     String
+  client       User          @relation("ClientMissions", fields: [clientId], references: [id])
+
+  freelancerId String?
+  freelancer   User?         @relation("FreelanceMissions", fields: [freelancerId], references: [id])
+
+  proposals    Proposal[]
+  reviews      Review[]
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Proposal {
+  id            String         @id @default(cuid())
+  missionId     String
+  mission       Mission        @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  freelancerId  String
+  freelancer    User           @relation(fields: [freelancerId], references: [id])
+
+  message       String?        @db.Text
+  price         Float
+  estimatedDays Int?
+  status        ProposalStatus @default(PENDING)
+
+  createdAt     DateTime       @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  missionId String
+  mission   Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+
+  rating    Int
+  comment   String?  @db.Text
+
+  createdAt DateTime @default(now())
+}
