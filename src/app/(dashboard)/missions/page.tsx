@@ -80,8 +80,12 @@ export default async function MissionsPage() {
                 {missions.map((mission) => {
                   const status = statusLabels[mission.status] || statusLabels.DRAFT
                   return (
-                    <TableRow key={mission.id} className="border-neutral-800 hover:bg-neutral-800/50">
-                      <TableCell className="font-medium text-white">{mission.title}</TableCell>
+                    <TableRow key={mission.id} className="border-neutral-800 hover:bg-neutral-800/50 cursor-pointer">
+                      <TableCell className="font-medium text-white">
+                        <Link href={`/missions/${mission.id}`} className="hover:text-lime-400 transition-colors">
+                          {mission.title}
+                        </Link>
+                      </TableCell>
                       <TableCell className="text-neutral-400">
                         {mission.client.name || mission.client.email}
                       </TableCell>

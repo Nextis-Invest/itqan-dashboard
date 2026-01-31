@@ -13,6 +13,7 @@ import {
   Briefcase,
   Users,
   MessageSquare,
+  FileText,
 } from "lucide-react"
 
 import {
@@ -42,28 +43,48 @@ interface DashboardSidebarProps extends React.ComponentProps<typeof Sidebar> {
   }
 }
 
-const navigationItems: NavItem[] = [
-  {
-    title: "Tableau de bord",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Missions",
-    url: "/missions",
-    icon: Briefcase,
-  },
-  {
-    title: "Freelances",
-    url: "/freelances",
-    icon: Users,
-  },
-  {
-    title: "Messages",
-    url: "/messages",
-    icon: MessageSquare,
-  },
-]
+function getNavigationItems(role?: string): NavItem[] {
+  const items: NavItem[] = [
+    {
+      title: "Tableau de bord",
+      url: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Missions",
+      url: "/missions",
+      icon: Briefcase,
+    },
+    {
+      title: "Freelances",
+      url: "/freelances",
+      icon: Users,
+    },
+  ]
+
+  if (role === "FREELANCER") {
+    items.push({
+      title: "Mes propositions",
+      url: "/proposals",
+      icon: FileText,
+    })
+  }
+
+  items.push(
+    {
+      title: "Messages",
+      url: "/messages",
+      icon: MessageSquare,
+    },
+    {
+      title: "Profil",
+      url: "/profile",
+      icon: User,
+    }
+  )
+
+  return items
+}
 
 const settingsItems: NavItem[] = [
   {
@@ -75,6 +96,7 @@ const settingsItems: NavItem[] = [
 
 export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
   const pathname = usePathname()
+  const navigationItems = getNavigationItems(user?.role)
 
   const isActive = (url: string) => {
     if (url === "/dashboard") return pathname === "/dashboard"

@@ -46,7 +46,75 @@ model User {
   clientMissions    Mission[]  @relation("ClientMissions")
   freelanceMissions Mission[]  @relation("FreelanceMissions")
   proposals         Proposal[]
-  reviews           Review[]
+  reviewsWritten    Review[]   @relation("ReviewAuthor")
+  reviewsReceived   Review[]   @relation("ReviewTarget")
+
+  freelancerProfile FreelancerProfile?
+  clientProfile     ClientProfile?
+}
+
+model FreelancerProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String?
+  bio         String?  @db.Text
+  avatar      String?
+  hourlyRate  Float?
+  dailyRate   Float?
+  currency    String   @default("MAD")
+
+  city        String?
+  country     String   @default("MA")
+  remote      Boolean  @default(true)
+
+  skills      String[]
+  category    String?
+  subcategory String?
+  experience  Int?
+
+  verified    Boolean  @default(false)
+
+  completedMissions Int    @default(0)
+  avgRating         Float?
+
+  available       Boolean   @default(true)
+  availableFrom   DateTime?
+  weeklyHours     Int?
+
+  portfolioUrl String?
+  linkedinUrl  String?
+  githubUrl    String?
+  websiteUrl   String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ClientProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  companyName String?
+  companySize String?
+  industry    String?
+  website     String?
+  logo        String?
+
+  city        String?
+  country     String   @default("MA")
+
+  verified    Boolean  @default(false)
+  ice         String?
+
+  totalMissions Int    @default(0)
+  totalSpent    Float  @default(0)
+  avgRating     Float?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Account {
@@ -119,15 +187,20 @@ model Proposal {
 }
 
 model Review {
-  id        String   @id @default(cuid())
-  missionId String
-  mission   Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  missionId    String
+  mission      Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
 
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  authorId     String
+  author       User     @relation("ReviewAuthor", fields: [authorId], references: [id])
 
-  rating    Int
-  comment   String?  @db.Text
+  targetUserId String
+  targetUser   User     @relation("ReviewTarget", fields: [targetUserId], references: [id])
 
-  createdAt DateTime @default(now())
+  rating       Int
+  comment      String?  @db.Text
+
+  createdAt    DateTime @default(now())
+
+  @@unique([missionId, authorId])
 }

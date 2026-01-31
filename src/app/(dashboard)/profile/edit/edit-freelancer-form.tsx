@@ -1,0 +1,197 @@
+"use client"
+
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { Loader2, Save, X, ArrowLeft } from "lucide-react"
+import { updateFreelancerProfile } from "@/lib/actions/profile"
+import Link from "next/link"
+import type { FreelancerProfile } from "@prisma/client"
+
+const categories = [
+  { value: "development", label: "Développement" },
+  { value: "design", label: "Design" },
+  { value: "marketing", label: "Marketing" },
+  { value: "consulting", label: "Consulting" },
+  { value: "writing", label: "Rédaction" },
+  { value: "video", label: "Vidéo & Animation" },
+  { value: "data", label: "Data & IA" },
+  { value: "other", label: "Autre" },
+]
+
+export function EditFreelancerForm({ profile }: { profile: FreelancerProfile }) {
+  const [skills, setSkills] = useState<string[]>(profile.skills)
+  const [skillInput, setSkillInput] = useState("")
+  const [isRemote, setIsRemote] = useState(profile.remote)
+  const [isAvailable, setIsAvailable] = useState(profile.available)
+  const [isPending, setIsPending] = useState(false)
+
+  const addSkill = () => {
+    const s = skillInput.trim()
+    if (s && !skills.includes(s)) {
+      setSkills([...skills, s])
+      setSkillInput("")
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault()
+      addSkill()
+    }
+  }
+
+  return (
+    <Card className="bg-neutral-900 border-neutral-800">
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <Link href="/profile">
+            <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white hover:bg-neutral-800">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <CardTitle className="text-white">Modifier le profil</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <form
+          action={async (formData) => {
+            setIsPending(true)
+            formData.set("skills", skills.join(","))
+            formData.set("remote", isRemote ? "true" : "false")
+            formData.set("available", isAvailable ? "true" : "false")
+            try {
+              await updateFreelancerProfile(formData)
+            } catch {
+              setIsPending(false)
+            }
+          }}
+          className="space-y-6"
+        >
+          <div className="space-y-2">
+            <Label className="text-neutral-300">Titre professionnel</Label>
+            <Input
+              name="title"
+              defaultValue={profile.title || ""}
+              className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-neutral-300">Bio</Label>
+            <Textarea name="bio" rows={4} defaultValue={profile.bio || ""} />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-neutral-300">Compétences</Label>
+            <div className="flex gap-2">
+              <Input
+                value={skillInput}
+                onChange={(e) => setSkillInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Tapez et appuyez Entrée"
+                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+              />
+              <Button type="button" onClick={addSkill} variant="outline" className="border-neutral-700 text-neutral-300 hover:bg-neutral-800">
+                Ajouter
+              </Button>
+            </div>
+            {skills.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {skills.map((skill) => (
+                  <Badge key={skill} className="bg-lime-400/10 text-lime-400 border-0 gap-1 cursor-pointer" onClick={() => setSkills(skills.filter((s) => s !== skill))}>
+                    {skill}
+                    <X className="h-3 w-3" />
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Catégorie</Label>
+              <Select name="category" defaultValue={profile.category || undefined}>
+                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectValue placeholder="Choisir..." />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-800 border-neutral-700">
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Ville</Label>
+              <Input name="city" defaultValue={profile.city || ""} className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Tarif journalier</Label>
+              <Input name="dailyRate" type="number" step="0.01" defaultValue={profile.dailyRate || ""} className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Devise</Label>
+              <Select name="currency" defaultValue={profile.currency}>
+                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectItem value="MAD">MAD</SelectItem>
+                  <SelectItem value="EUR">EUR</SelectItem>
+                  <SelectItem value="USD">USD</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => setIsRemote(!isRemote)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isRemote ? "bg-lime-400" : "bg-neutral-700"}`}>
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isRemote ? "translate-x-6" : "translate-x-1"}`} />
+              </button>
+              <Label className="text-neutral-300">Remote</Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => setIsAvailable(!isAvailable)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isAvailable ? "bg-lime-400" : "bg-neutral-700"}`}>
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isAvailable ? "translate-x-6" : "translate-x-1"}`} />
+              </button>
+              <Label className="text-neutral-300">Disponible</Label>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-neutral-300 text-sm font-medium">Liens</Label>
+            <Input name="portfolioUrl" placeholder="URL Portfolio" defaultValue={profile.portfolioUrl || ""} className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+            <Input name="linkedinUrl" placeholder="URL LinkedIn" defaultValue={profile.linkedinUrl || ""} className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+            <Input name="githubUrl" placeholder="URL GitHub" defaultValue={profile.githubUrl || ""} className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+            <Input name="websiteUrl" placeholder="URL Site web" defaultValue={profile.websiteUrl || ""} className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+          </div>
+
+          <div className="flex gap-3">
+            <Button type="submit" disabled={isPending} className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold">
+              {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enregistrement...</> : <><Save className="mr-2 h-4 w-4" />Enregistrer</>}
+            </Button>
+            <Link href="/profile">
+              <Button variant="ghost" className="text-neutral-400 hover:text-white hover:bg-neutral-800">Annuler</Button>
+            </Link>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
