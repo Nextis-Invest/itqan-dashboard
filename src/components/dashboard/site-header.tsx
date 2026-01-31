@@ -32,6 +32,8 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/missions": "Gestion des missions",
   "/admin/disputes": "Gestion des litiges",
   "/admin/support": "Support",
+  "/support": "Support",
+  "/support/new": "Nouveau ticket",
 }
 
 export function SiteHeader() {
@@ -59,6 +61,7 @@ export function SiteHeader() {
     if (pathname.startsWith("/contracts/")) return "Détails contrat"
     if (pathname.startsWith("/gigs/")) return "Détails service"
     if (pathname.startsWith("/profile/")) return "Profil"
+    if (pathname.startsWith("/support/") && !pathname.startsWith("/support/new")) return "Ticket support"
     if (pathname.startsWith("/admin/support/")) return "Ticket support"
     if (pathname.startsWith("/admin/")) return "Administration"
 

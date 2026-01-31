@@ -2,8 +2,9 @@ import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { auth } from "@/lib/auth/config"
-import { getAdminTickets, getTicketStats } from "@/lib/actions/support"
+import { getMyTickets } from "@/lib/actions/support"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
   Table,
@@ -13,10 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Headphones, Clock, CheckCircle } from "lucide-react"
-import { AdminSupportFilters } from "./filters"
+import { Headphones, Plus } from "lucide-react"
 
-export const metadata: Metadata = { title: "Support - Admin" }
+export const metadata: Metadata = { title: "Support" }
 export const dynamic = "force-dynamic"
 
 const statusMap: Record<string, { label: string; color: string }> = {
@@ -42,97 +42,40 @@ const categoryMap: Record<string, { label: string; color: string }> = {
   OTHER: { label: "Autre", color: "bg-neutral-500/10 text-neutral-400" },
 }
 
-function formatAvgTime(minutes: number): string {
-  if (minutes === 0) return "—"
-  if (minutes < 60) return `${minutes}min`
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  if (hours < 24) return `${hours}h${mins > 0 ? `${mins}min` : ""}`
-  const days = Math.floor(hours / 24)
-  return `${days}j`
-}
-
-export default async function AdminSupportPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ status?: string; priority?: string; category?: string }>
-}) {
-  const sp = await searchParams
+export default async function SupportPage() {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
 
-  const [stats, tickets] = await Promise.all([
-    getTicketStats(),
-    getAdminTickets({
-      status: sp.status,
-      priority: sp.priority,
-      category: sp.category,
-    }),
-  ])
+  const tickets = await getMyTickets()
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Support</h2>
-        <p className="text-neutral-400 mt-1">Gestion des tickets de support</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Mes tickets</h2>
+          <p className="text-neutral-400 mt-1">Gérez vos demandes de support</p>
+        </div>
+        <Link href="/support/new">
+          <Button className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold">
+            <Plus className="h-4 w-4 mr-2" />
+            Nouveau ticket
+          </Button>
+        </Link>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-lime-400/10">
-                <Headphones className="h-5 w-5 text-lime-400" />
-              </div>
-              <div>
-                <p className="text-neutral-400 text-xs">Tickets ouverts</p>
-                <p className="text-2xl font-bold text-white">{stats.openCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-400/10">
-                <Clock className="h-5 w-5 text-blue-400" />
-              </div>
-              <div>
-                <p className="text-neutral-400 text-xs">Temps réponse moyen</p>
-                <p className="text-2xl font-bold text-white">{formatAvgTime(stats.avgResponseMinutes)}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-400/10">
-                <CheckCircle className="h-5 w-5 text-green-400" />
-              </div>
-              <div>
-                <p className="text-neutral-400 text-xs">Résolu ce mois</p>
-                <p className="text-2xl font-bold text-white">{stats.resolvedThisMonth}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <AdminSupportFilters
-        currentStatus={sp.status}
-        currentPriority={sp.priority}
-        currentCategory={sp.category}
-      />
-
-      {/* Table */}
       {tickets.length === 0 ? (
         <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="py-12 text-center">
-            <Headphones className="h-12 w-12 mx-auto mb-4 text-neutral-600" />
-            <p className="text-neutral-400">Aucun ticket trouvé</p>
+          <CardContent className="py-16">
+            <div className="text-center">
+              <Headphones className="h-12 w-12 mx-auto mb-4 text-neutral-600" />
+              <p className="text-neutral-400 mb-4">Vous n&apos;avez aucun ticket de support</p>
+              <Link href="/support/new">
+                <Button className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Créer un ticket
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       ) : (
@@ -141,12 +84,10 @@ export default async function AdminSupportPage({
             <TableHeader>
               <TableRow className="border-neutral-800 hover:bg-transparent">
                 <TableHead className="text-neutral-400">Sujet</TableHead>
-                <TableHead className="text-neutral-400">Utilisateur</TableHead>
                 <TableHead className="text-neutral-400">Catégorie</TableHead>
                 <TableHead className="text-neutral-400">Priorité</TableHead>
                 <TableHead className="text-neutral-400">Statut</TableHead>
-                <TableHead className="text-neutral-400">Assigné</TableHead>
-                <TableHead className="text-neutral-400">Créé</TableHead>
+                <TableHead className="text-neutral-400">Dernière mise à jour</TableHead>
                 <TableHead className="text-neutral-400 text-right">Réponses</TableHead>
               </TableRow>
             </TableHeader>
@@ -161,12 +102,9 @@ export default async function AdminSupportPage({
                     className="border-neutral-800 hover:bg-neutral-800/50 cursor-pointer"
                   >
                     <TableCell>
-                      <Link href={`/admin/support/${ticket.id}`} className="text-white font-medium hover:text-lime-400 transition-colors">
+                      <Link href={`/support/${ticket.id}`} className="text-white font-medium hover:text-lime-400 transition-colors">
                         {ticket.subject}
                       </Link>
-                    </TableCell>
-                    <TableCell className="text-neutral-400 text-sm">
-                      {ticket.user.name || ticket.user.email}
                     </TableCell>
                     <TableCell>
                       <Badge className={`${cat.color} border-0`}>{cat.label}</Badge>
@@ -178,12 +116,10 @@ export default async function AdminSupportPage({
                       <Badge className={`${st.color} border-0`}>{st.label}</Badge>
                     </TableCell>
                     <TableCell className="text-neutral-400 text-sm">
-                      {ticket.assignedTo?.name || "—"}
-                    </TableCell>
-                    <TableCell className="text-neutral-400 text-sm">
-                      {new Date(ticket.createdAt).toLocaleDateString("fr-FR", {
+                      {new Date(ticket.updatedAt).toLocaleDateString("fr-FR", {
                         day: "numeric",
                         month: "short",
+                        year: "numeric",
                       })}
                     </TableCell>
                     <TableCell className="text-neutral-400 text-sm text-right">

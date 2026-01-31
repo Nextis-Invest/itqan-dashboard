@@ -87,6 +87,7 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
       ],
       system: [
         { title: "TJM & Dispo", url: "/freelancer/tjm", icon: DollarSign },
+        { title: "Support", url: "/support", icon: Headphones },
         { title: "Paramètres", url: "/settings", icon: Settings },
       ],
     }
@@ -108,6 +109,7 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
       { title: "Mon Profil", url: "/profile", icon: User },
     ],
     system: [
+      { title: "Support", url: "/support", icon: Headphones },
       { title: "Paramètres", url: "/settings", icon: Settings },
     ],
   }

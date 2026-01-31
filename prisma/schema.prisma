@@ -93,8 +93,12 @@ model User {
   gigs              Gig[]
   supportTickets    SupportTicket[]
   ticketReplies     TicketReply[]
+  assignedTickets   SupportTicket[] @relation("AssignedTickets")
+  ticketNotes       TicketNote[]    @relation("TicketNotes")
   creditTransactions CreditTransaction[]
   disputesOpened    Dispute[]  @relation("DisputeOpener")
+  assignedDisputes  Dispute[]  @relation("AssignedDisputes")
+  disputeMessages   DisputeMessage[] @relation("DisputeMessages")
 
   conversationParticipants ConversationParticipant[]
   chatMessages             ChatMessage[]
@@ -361,16 +365,22 @@ model ChatMessage {
 }
 
 model SupportTicket {
-  id        String         @id @default(cuid())
-  userId    String
-  user      User           @relation(fields: [userId], references: [id])
-  subject   String
-  message   String         @db.Text
-  status    TicketStatus   @default(OPEN)
-  priority  TicketPriority @default(MEDIUM)
-  replies   TicketReply[]
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id           String         @id @default(cuid())
+  userId       String
+  user         User           @relation(fields: [userId], references: [id])
+  subject      String
+  message      String         @db.Text
+  status       TicketStatus   @default(OPEN)
+  priority     TicketPriority @default(MEDIUM)
+  category     String         @default("GENERAL")
+  assignedToId String?
+  assignedTo   User?          @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  closedAt     DateTime?
+  firstReplyAt DateTime?
+  replies      TicketReply[]
+  notes        TicketNote[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
 
 model TicketReply {
@@ -380,6 +390,16 @@ model TicketReply {
   userId    String
   user      User          @relation(fields: [userId], references: [id])
   message   String        @db.Text
+  createdAt DateTime      @default(now())
+}
+
+model TicketNote {
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  adminId   String
+  admin     User          @relation("TicketNotes", fields: [adminId], references: [id])
+  content   String        @db.Text
   createdAt DateTime      @default(now())
 }
 
@@ -396,18 +416,35 @@ model CreditTransaction {
 }
 
 model Dispute {
-  id          String        @id @default(cuid())
-  missionId   String
-  mission     Mission       @relation(fields: [missionId], references: [id])
-  openedById  String
-  openedBy    User          @relation("DisputeOpener", fields: [openedById], references: [id])
-  reason      String        @db.Text
-  status      DisputeStatus @default(OPEN)
-  resolution  String?       @db.Text
-  adminNotes  String?       @db.Text
-  resolvedAt  DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id           String        @id @default(cuid())
+  missionId    String
+  mission      Mission       @relation(fields: [missionId], references: [id])
+  openedById   String
+  openedBy     User          @relation("DisputeOpener", fields: [openedById], references: [id])
+  reason       String        @db.Text
+  status       DisputeStatus @default(OPEN)
+  resolution   String?       @db.Text
+  adminNotes   String?       @db.Text
+  favoredParty String?
+  resolvedAt   DateTime?
+  category     String        @default("OTHER")
+  priority     String        @default("MEDIUM")
+  assignedToId String?
+  assignedTo   User?         @relation("AssignedDisputes", fields: [assignedToId], references: [id])
+  messages     DisputeMessage[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model DisputeMessage {
+  id         String   @id @default(cuid())
+  disputeId  String
+  dispute    Dispute  @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+  senderId   String
+  sender     User     @relation("DisputeMessages", fields: [senderId], references: [id])
+  content    String   @db.Text
+  isInternal Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }
 
 // ========== Phase 2/3 Models ==========
