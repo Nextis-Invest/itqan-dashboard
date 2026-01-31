@@ -18,6 +18,20 @@ const PAGE_TITLES: Record<string, string> = {
   "/contracts": "Contrats",
   "/notifications": "Notifications",
   "/favorites": "Favoris",
+  "/proposals": "Propositions",
+  "/profile": "Mon profil",
+  "/gigs": "Mes services",
+  "/gigs/new": "Nouveau service",
+  "/search": "Recherche",
+  "/credits": "Crédits",
+  "/orders": "Historique",
+  "/disputes": "Litiges",
+  "/disputes/new": "Nouveau litige",
+  "/admin": "Administration",
+  "/admin/users": "Gestion des utilisateurs",
+  "/admin/missions": "Gestion des missions",
+  "/admin/disputes": "Gestion des litiges",
+  "/admin/support": "Support",
 }
 
 export function SiteHeader() {
@@ -42,11 +56,13 @@ export function SiteHeader() {
       return "Détails mission"
     }
 
-    if (pathname.startsWith("/contracts/")) {
-      return "Détails contrat"
-    }
+    if (pathname.startsWith("/contracts/")) return "Détails contrat"
+    if (pathname.startsWith("/gigs/")) return "Détails service"
+    if (pathname.startsWith("/profile/")) return "Profil"
+    if (pathname.startsWith("/admin/support/")) return "Ticket support"
+    if (pathname.startsWith("/admin/")) return "Administration"
 
-    return "Dashboard"
+    return ""
   }
 
   return (
