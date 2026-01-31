@@ -24,7 +24,7 @@ export function MarketplaceFooter() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <Link href="/categories" className="inline-block mb-4">
+            <Link href="/marketplace/categories" className="inline-block mb-4">
               <Image
                 src="/icons/itqan-logo.svg"
                 alt="Itqan"
@@ -84,7 +84,7 @@ export function MarketplaceFooter() {
                   viewport={{ once: true }}
                 >
                   <Link
-                    href={`/categories/${cat.slug}`}
+                    href={`/marketplace/categories/${cat.slug}`}
                     className="hover:text-lime-400 transition-colors duration-300 flex items-center gap-2"
                   >
                     <span className="w-1 h-1 bg-lime-400 rounded-full"></span>

@@ -97,12 +97,12 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
     <div className="max-w-7xl mx-auto space-y-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/categories" className="hover:text-lime-400 transition-colors">
+        <Link href="/marketplace/categories" className="hover:text-lime-400 transition-colors">
           Catégories
         </Link>
         <span>/</span>
         <Link
-          href={`/categories/${gig.category}`}
+          href={`/marketplace/categories/${gig.category}`}
           className="hover:text-lime-400 transition-colors"
         >
           {gig.category}
@@ -111,7 +111,7 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
           <>
             <span>/</span>
             <Link
-              href={`/categories/${gig.category}/${gig.subcategory}`}
+              href={`/marketplace/categories/${gig.category}/${gig.subcategory}`}
               className="hover:text-lime-400 transition-colors"
             >
               {gig.subcategory}
@@ -366,7 +366,7 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white">Services similaires</h2>
             <Link
-              href={`/categories/${gig.category}`}
+              href={`/marketplace/categories/${gig.category}`}
               className="text-sm text-lime-400 hover:underline flex items-center gap-1"
             >
               Voir tout <ArrowRight className="h-4 w-4" />
