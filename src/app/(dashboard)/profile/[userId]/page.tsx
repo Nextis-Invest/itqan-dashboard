@@ -10,6 +10,7 @@ import {
   ExternalLink,
   CheckCircle,
 } from "lucide-react"
+import { ExperienceList } from "@/components/experience-list"
 
 export const dynamic = "force-dynamic"
 
@@ -23,7 +24,11 @@ export default async function PublicProfilePage({
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
-      freelancerProfile: true,
+      freelancerProfile: {
+        include: {
+          experiences: { orderBy: { startDate: "desc" } },
+        },
+      },
       clientProfile: true,
       reviewsReceived: {
         include: {
@@ -59,32 +64,21 @@ export default async function PublicProfilePage({
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h3 className="text-xl font-bold text-white">
-                  {user.name || user.email}
-                </h3>
+                <h3 className="text-xl font-bold text-white">{user.name || user.email}</h3>
                 {(fp?.verified || cp?.verified) && (
                   <CheckCircle className="h-5 w-5 text-lime-400" />
                 )}
-                <Badge className="bg-neutral-800 text-neutral-400 border-0 text-xs">
-                  {user.role}
-                </Badge>
+                <Badge className="bg-neutral-800 text-neutral-400 border-0 text-xs">{user.role}</Badge>
               </div>
-              {fp?.title && (
-                <p className="text-lime-400 font-medium mt-1">{fp.title}</p>
-              )}
-              {cp?.companyName && (
-                <p className="text-lime-400 font-medium mt-1">{cp.companyName}</p>
-              )}
+              {fp?.title && <p className="text-lime-400 font-medium mt-1">{fp.title}</p>}
+              {cp?.companyName && <p className="text-lime-400 font-medium mt-1">{cp.companyName}</p>}
               <div className="flex items-center gap-4 mt-2 text-neutral-400 text-sm">
                 {(fp?.city || cp?.city) && (
                   <span className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {fp?.city || cp?.city}
+                    <MapPin className="h-3.5 w-3.5" />{fp?.city || cp?.city}
                   </span>
                 )}
-                {fp?.remote && (
-                  <Badge className="bg-green-400/10 text-green-400 border-0 text-xs">Remote</Badge>
-                )}
+                {fp?.remote && <Badge className="bg-green-400/10 text-green-400 border-0 text-xs">Remote</Badge>}
                 {(fp?.avgRating || cp?.avgRating) && (
                   <span className="flex items-center gap-1">
                     <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
@@ -99,9 +93,7 @@ export default async function PublicProfilePage({
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="bg-neutral-900 border-neutral-800">
-          <CardHeader>
-            <CardTitle className="text-white text-base">Informations</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-white text-base">Informations</CardTitle></CardHeader>
           <CardContent className="space-y-3 text-sm">
             {fp && (
               <>
@@ -160,9 +152,7 @@ export default async function PublicProfilePage({
 
         {fp && fp.skills.length > 0 && (
           <Card className="bg-neutral-900 border-neutral-800">
-            <CardHeader>
-              <CardTitle className="text-white text-base">Compétences & Liens</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="text-white text-base">Compétences & Liens</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 {fp.skills.map((skill) => (
@@ -179,11 +169,15 @@ export default async function PublicProfilePage({
         )}
       </div>
 
+      {/* Experiences */}
+      {fp && fp.experiences.length > 0 && (
+        <ExperienceList experiences={fp.experiences} />
+      )}
+
+      {/* Reviews */}
       {user.reviewsReceived.length > 0 && (
         <Card className="bg-neutral-900 border-neutral-800">
-          <CardHeader>
-            <CardTitle className="text-white text-base">Avis</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-white text-base">Avis</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             {user.reviewsReceived.map((review) => (
               <div key={review.id} className="border-b border-neutral-800 pb-4 last:border-0 last:pb-0">

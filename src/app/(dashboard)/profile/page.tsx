@@ -8,13 +8,13 @@ import {
   MapPin,
   Globe,
   Star,
-  Briefcase,
   ExternalLink,
   CheckCircle,
 } from "lucide-react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { EditProfileButton } from "./edit-profile-button"
+import { ExperienceManager } from "@/components/experience-form"
+import { LinkedInImportButton } from "@/components/linkedin-import-button"
 
 export const dynamic = "force-dynamic"
 
@@ -25,7 +25,11 @@ export default async function ProfilePage() {
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     include: {
-      freelancerProfile: true,
+      freelancerProfile: {
+        include: {
+          experiences: { orderBy: { startDate: "desc" } },
+        },
+      },
       clientProfile: true,
       reviewsReceived: {
         include: {
@@ -54,6 +58,8 @@ export default async function ProfilePage() {
     .join("")
     .toUpperCase()
     .slice(0, 2)
+
+  const hasLinkedInToken = !!(session.user as any).linkedinAccessToken
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -132,9 +138,7 @@ export default async function ProfilePage() {
                 {fp.dailyRate && (
                   <div className="flex justify-between">
                     <span className="text-neutral-400">Tarif journalier</span>
-                    <span className="text-white font-medium">
-                      {fp.dailyRate} {fp.currency}
-                    </span>
+                    <span className="text-white font-medium">{fp.dailyRate} {fp.currency}</span>
                   </div>
                 )}
                 {fp.category && (
@@ -149,13 +153,7 @@ export default async function ProfilePage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-400">Disponible</span>
-                  <Badge
-                    className={`border-0 text-xs ${
-                      fp.available
-                        ? "bg-green-400/10 text-green-400"
-                        : "bg-red-400/10 text-red-400"
-                    }`}
-                  >
+                  <Badge className={`border-0 text-xs ${fp.available ? "bg-green-400/10 text-green-400" : "bg-red-400/10 text-red-400"}`}>
                     {fp.available ? "Oui" : "Non"}
                   </Badge>
                 </div>
@@ -184,14 +182,9 @@ export default async function ProfilePage() {
                   <span className="text-white">{cp.totalSpent} MAD</span>
                 </div>
                 {cp.website && (
-                  <a
-                    href={cp.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-lime-400 hover:underline"
-                  >
-                    <Globe className="h-3.5 w-3.5" />
-                    {cp.website}
+                  <a href={cp.website} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-lime-400 hover:underline">
+                    <Globe className="h-3.5 w-3.5" />{cp.website}
                   </a>
                 )}
               </>
@@ -203,55 +196,33 @@ export default async function ProfilePage() {
         {fp && (
           <Card className="bg-neutral-900 border-neutral-800">
             <CardHeader>
-              <CardTitle className="text-white text-base">
-                Compétences & Liens
-              </CardTitle>
+              <CardTitle className="text-white text-base">Compétences & Liens</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {fp.skills.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {fp.skills.map((skill) => (
-                    <Badge
-                      key={skill}
-                      className="bg-lime-400/10 text-lime-400 border-0"
-                    >
-                      {skill}
-                    </Badge>
+                    <Badge key={skill} className="bg-lime-400/10 text-lime-400 border-0">{skill}</Badge>
                   ))}
                 </div>
               )}
               <div className="space-y-2 text-sm">
                 {fp.portfolioUrl && (
-                  <a
-                    href={fp.portfolioUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-neutral-300 hover:text-lime-400 transition-colors"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    Portfolio
+                  <a href={fp.portfolioUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-neutral-300 hover:text-lime-400 transition-colors">
+                    <ExternalLink className="h-3.5 w-3.5" />Portfolio
                   </a>
                 )}
                 {fp.linkedinUrl && (
-                  <a
-                    href={fp.linkedinUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-neutral-300 hover:text-lime-400 transition-colors"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    LinkedIn
+                  <a href={fp.linkedinUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-neutral-300 hover:text-lime-400 transition-colors">
+                    <ExternalLink className="h-3.5 w-3.5" />LinkedIn
                   </a>
                 )}
                 {fp.githubUrl && (
-                  <a
-                    href={fp.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-neutral-300 hover:text-lime-400 transition-colors"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    GitHub
+                  <a href={fp.githubUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-neutral-300 hover:text-lime-400 transition-colors">
+                    <ExternalLink className="h-3.5 w-3.5" />GitHub
                   </a>
                 )}
               </div>
@@ -259,6 +230,14 @@ export default async function ProfilePage() {
           </Card>
         )}
       </div>
+
+      {/* Experience section — freelancers only */}
+      {fp && (
+        <div className="space-y-3">
+          <LinkedInImportButton hasLinkedInToken={hasLinkedInToken} />
+          <ExperienceManager experiences={fp.experiences} />
+        </div>
+      )}
 
       {/* Reviews */}
       {user.reviewsReceived.length > 0 && (
@@ -268,33 +247,19 @@ export default async function ProfilePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {user.reviewsReceived.map((review) => (
-              <div
-                key={review.id}
-                className="border-b border-neutral-800 pb-4 last:border-0 last:pb-0"
-              >
+              <div key={review.id} className="border-b border-neutral-800 pb-4 last:border-0 last:pb-0">
                 <div className="flex items-center justify-between">
                   <span className="text-white text-sm font-medium">
                     {review.author.name || review.author.email}
                   </span>
                   <div className="flex items-center gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-3.5 w-3.5 ${
-                          i < review.rating
-                            ? "text-yellow-400 fill-yellow-400"
-                            : "text-neutral-600"
-                        }`}
-                      />
+                      <Star key={i} className={`h-3.5 w-3.5 ${i < review.rating ? "text-yellow-400 fill-yellow-400" : "text-neutral-600"}`} />
                     ))}
                   </div>
                 </div>
-                <p className="text-neutral-500 text-xs mt-1">
-                  Mission: {review.mission.title}
-                </p>
-                {review.comment && (
-                  <p className="text-neutral-300 text-sm mt-2">{review.comment}</p>
-                )}
+                <p className="text-neutral-500 text-xs mt-1">Mission: {review.mission.title}</p>
+                {review.comment && <p className="text-neutral-300 text-sm mt-2">{review.comment}</p>}
               </div>
             ))}
           </CardContent>

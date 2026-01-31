@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
 import {
   Select,
   SelectContent,
@@ -13,13 +15,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ArrowLeft, Loader2, Save } from "lucide-react"
+import { ArrowLeft, Loader2, Save, X } from "lucide-react"
 import Link from "next/link"
+import { categories } from "@/lib/categories"
 
 export default function NewMissionPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("")
+  const [skills, setSkills] = useState<string[]>([])
+  const [skillInput, setSkillInput] = useState("")
+  const [isRemote, setIsRemote] = useState(true)
+  const [budgetType, setBudgetType] = useState("FIXED")
+
+  const addSkill = () => {
+    const s = skillInput.trim()
+    if (s && !skills.includes(s)) {
+      setSkills([...skills, s])
+      setSkillInput("")
+    }
+  }
+
+  const subcategories = categories.find((c) => c.value === selectedCategory)?.subcategories || []
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -31,9 +49,18 @@ export default function NewMissionPage() {
       title: formData.get("title") as string,
       description: formData.get("description") as string,
       budget: formData.get("budget") ? parseFloat(formData.get("budget") as string) : null,
-      currency: formData.get("currency") as string || "EUR",
+      budgetMin: formData.get("budgetMin") ? parseFloat(formData.get("budgetMin") as string) : null,
+      budgetMax: formData.get("budgetMax") ? parseFloat(formData.get("budgetMax") as string) : null,
+      budgetType,
+      currency: formData.get("currency") as string || "MAD",
       category: formData.get("category") as string,
+      subcategory: formData.get("subcategory") as string,
       deadline: formData.get("deadline") as string || null,
+      duration: formData.get("duration") as string || null,
+      experienceLevel: formData.get("experienceLevel") as string || null,
+      remote: isRemote,
+      location: formData.get("location") as string || null,
+      skills,
     }
 
     try {
@@ -68,126 +95,177 @@ export default function NewMissionPage() {
         </Link>
         <div>
           <h2 className="text-2xl font-bold text-white tracking-tight">Nouvelle mission</h2>
-          <p className="text-neutral-400 mt-1">Créez une nouvelle mission pour vos freelances</p>
+          <p className="text-neutral-400 mt-1">Publiez un projet pour trouver le freelance idéal</p>
         </div>
       </div>
 
       <Card className="bg-neutral-900 border-neutral-800">
         <CardHeader>
           <CardTitle className="text-white">Détails de la mission</CardTitle>
-          <CardDescription className="text-neutral-400">
-            Remplissez les informations ci-dessous
-          </CardDescription>
+          <CardDescription className="text-neutral-400">Remplissez les informations ci-dessous</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-lg border border-red-500/20">
-                {error}
-              </div>
+              <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-lg border border-red-500/20">{error}</div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-neutral-300">Titre *</Label>
-              <Input
-                id="title"
-                name="title"
-                required
-                placeholder="Ex: Développement d'une application mobile"
-                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
-              />
+              <Label className="text-neutral-300">Titre *</Label>
+              <Input name="title" required placeholder="Ex: Développement d'une application mobile" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-neutral-300">Description</Label>
-              <textarea
-                id="description"
-                name="description"
-                rows={5}
-                placeholder="Décrivez votre mission en détail..."
-                className="flex w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/20 resize-none"
-              />
+              <Label className="text-neutral-300">Description</Label>
+              <Textarea name="description" rows={6} placeholder="Décrivez votre mission en détail : objectifs, livrables attendus, contexte..." />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="budget" className="text-neutral-300">Budget</Label>
-                <Input
-                  id="budget"
-                  name="budget"
-                  type="number"
-                  step="0.01"
-                  placeholder="5000"
-                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="currency" className="text-neutral-300">Devise</Label>
-                <Select name="currency" defaultValue="EUR">
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
-                    <SelectItem value="EUR">EUR (€)</SelectItem>
-                    <SelectItem value="USD">USD ($)</SelectItem>
-                    <SelectItem value="GBP">GBP (£)</SelectItem>
-                    <SelectItem value="MAD">MAD (د.م.)</SelectItem>
-                    <SelectItem value="SAR">SAR (﷼)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="category" className="text-neutral-300">Catégorie</Label>
-                <Select name="category">
+                <Label className="text-neutral-300">Catégorie</Label>
+                <Select name="category" onValueChange={setSelectedCategory}>
                   <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
                     <SelectValue placeholder="Choisir..." />
                   </SelectTrigger>
                   <SelectContent className="bg-neutral-800 border-neutral-700">
-                    <SelectItem value="development">Développement</SelectItem>
-                    <SelectItem value="design">Design</SelectItem>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                    <SelectItem value="consulting">Consulting</SelectItem>
-                    <SelectItem value="writing">Rédaction</SelectItem>
-                    <SelectItem value="other">Autre</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="deadline" className="text-neutral-300">Date limite</Label>
-                <Input
-                  id="deadline"
-                  name="deadline"
-                  type="date"
-                  className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
-                />
+                <Label className="text-neutral-300">Sous-catégorie</Label>
+                <Select name="subcategory" disabled={subcategories.length === 0}>
+                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                    <SelectValue placeholder="Choisir..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                    {subcategories.map((sub) => (
+                      <SelectItem key={sub.value} value={sub.value}>{sub.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
+            {/* Budget */}
+            <div className="space-y-3">
+              <Label className="text-neutral-300">Type de budget</Label>
+              <div className="flex gap-2">
+                {[{ v: "FIXED", l: "Prix fixe" }, { v: "HOURLY", l: "Taux horaire" }].map((bt) => (
+                  <button key={bt.v} type="button" onClick={() => setBudgetType(bt.v)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${budgetType === bt.v ? "bg-lime-400/10 text-lime-400 border border-lime-400/20" : "bg-neutral-800 text-neutral-400 border border-neutral-700"}`}
+                  >{bt.l}</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label className="text-neutral-300">{budgetType === "FIXED" ? "Budget" : "Taux/heure"}</Label>
+                <Input name="budget" type="number" step="0.01" placeholder="5000" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Budget min</Label>
+                <Input name="budgetMin" type="number" step="0.01" placeholder="3000" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Budget max</Label>
+                <Input name="budgetMax" type="number" step="0.01" placeholder="8000" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Devise</Label>
+                <Select name="currency" defaultValue="MAD">
+                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                    <SelectItem value="MAD">MAD (د.م.)</SelectItem>
+                    <SelectItem value="EUR">EUR (€)</SelectItem>
+                    <SelectItem value="USD">USD ($)</SelectItem>
+                    <SelectItem value="SAR">SAR (﷼)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Date limite</Label>
+                <Input name="deadline" type="date" className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50" />
+              </div>
+            </div>
+
+            {/* Skills */}
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Compétences requises</Label>
+              <div className="flex gap-2">
+                <Input value={skillInput} onChange={(e) => setSkillInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addSkill() } }}
+                  placeholder="Tapez et appuyez Entrée"
+                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                />
+                <Button type="button" onClick={addSkill} variant="outline" className="border-neutral-700 text-neutral-300 hover:bg-neutral-800">Ajouter</Button>
+              </div>
+              {skills.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {skills.map((skill) => (
+                    <Badge key={skill} className="bg-lime-400/10 text-lime-400 border-0 gap-1 cursor-pointer" onClick={() => setSkills(skills.filter((s) => s !== skill))}>
+                      {skill}<X className="h-3 w-3" />
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Durée estimée</Label>
+                <Select name="duration">
+                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white"><SelectValue placeholder="Choisir..." /></SelectTrigger>
+                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                    <SelectItem value="< 1 semaine">{"< 1 semaine"}</SelectItem>
+                    <SelectItem value="1-2 semaines">1-2 semaines</SelectItem>
+                    <SelectItem value="1 mois">1 mois</SelectItem>
+                    <SelectItem value="1-3 mois">1-3 mois</SelectItem>
+                    <SelectItem value="3-6 mois">3-6 mois</SelectItem>
+                    <SelectItem value="6+ mois">6+ mois</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Niveau d&apos;expérience</Label>
+                <Select name="experienceLevel">
+                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white"><SelectValue placeholder="Choisir..." /></SelectTrigger>
+                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                    <SelectItem value="JUNIOR">Junior</SelectItem>
+                    <SelectItem value="INTERMEDIATE">Intermédiaire</SelectItem>
+                    <SelectItem value="SENIOR">Senior</SelectItem>
+                    <SelectItem value="EXPERT">Expert</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => setIsRemote(!isRemote)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isRemote ? "bg-lime-400" : "bg-neutral-700"}`}>
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isRemote ? "translate-x-6" : "translate-x-1"}`} />
+                </button>
+                <Label className="text-neutral-300">Remote</Label>
+              </div>
+              {!isRemote && (
+                <div className="flex-1">
+                  <Input name="location" placeholder="Ville / lieu" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+                </div>
+              )}
+            </div>
+
             <div className="flex gap-3 pt-4">
-              <Button
-                type="submit"
-                className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Création...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Créer la mission
-                  </>
-                )}
+              <Button type="submit" className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold" disabled={isLoading}>
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Création...</> : <><Save className="mr-2 h-4 w-4" />Publier la mission</>}
               </Button>
               <Link href="/missions">
-                <Button variant="ghost" className="text-neutral-400 hover:text-white hover:bg-neutral-800">
-                  Annuler
-                </Button>
+                <Button variant="ghost" className="text-neutral-400 hover:text-white hover:bg-neutral-800">Annuler</Button>
               </Link>
             </div>
           </form>

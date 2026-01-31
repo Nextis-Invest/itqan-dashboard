@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/config"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import { sendEmail, newProposalEmail, proposalAcceptedEmail, proposalRejectedEmail } from "@/lib/email"
 
 export async function createProposal(formData: FormData) {
   const session = await auth()
@@ -33,6 +34,23 @@ export async function createProposal(formData: FormData) {
       estimatedDays,
     },
   })
+
+  // Send email to mission owner
+  try {
+    const mission = await prisma.mission.findUnique({
+      where: { id: missionId },
+      include: { client: { select: { email: true } } },
+    })
+    if (mission?.client?.email) {
+      await sendEmail({
+        to: mission.client.email,
+        subject: "Nouvelle proposition reçue — Itqan",
+        html: newProposalEmail(session.user.name || "Un freelance", mission.title, missionId),
+      })
+    }
+  } catch (e) {
+    console.error("Email error:", e)
+  }
 
   revalidatePath(`/missions/${missionId}`)
   redirect(`/missions/${missionId}`)
@@ -66,6 +84,37 @@ export async function acceptProposal(proposalId: string) {
     }),
   ])
 
+  // Send acceptance email to freelancer
+  try {
+    const freelancer = await prisma.user.findUnique({
+      where: { id: proposal.freelancerId },
+      select: { email: true },
+    })
+    if (freelancer?.email) {
+      await sendEmail({
+        to: freelancer.email,
+        subject: "Votre proposition a été acceptée ! — Itqan",
+        html: proposalAcceptedEmail(proposal.mission.title, proposal.missionId),
+      })
+    }
+    // Send rejection emails to other proposers
+    const rejectedProposals = await prisma.proposal.findMany({
+      where: { missionId: proposal.missionId, id: { not: proposalId }, status: "REJECTED" },
+      include: { freelancer: { select: { email: true } } },
+    })
+    for (const rp of rejectedProposals) {
+      if (rp.freelancer?.email) {
+        await sendEmail({
+          to: rp.freelancer.email,
+          subject: "Proposition non retenue — Itqan",
+          html: proposalRejectedEmail(proposal.mission.title),
+        })
+      }
+    }
+  } catch (e) {
+    console.error("Email error:", e)
+  }
+
   revalidatePath(`/missions/${proposal.missionId}`)
 }
 
@@ -85,6 +134,23 @@ export async function rejectProposal(proposalId: string) {
     where: { id: proposalId },
     data: { status: "REJECTED" },
   })
+
+  // Send rejection email
+  try {
+    const freelancer = await prisma.user.findUnique({
+      where: { id: proposal.freelancerId },
+      select: { email: true },
+    })
+    if (freelancer?.email) {
+      await sendEmail({
+        to: freelancer.email,
+        subject: "Proposition non retenue — Itqan",
+        html: proposalRejectedEmail(proposal.mission.title),
+      })
+    }
+  } catch (e) {
+    console.error("Email error:", e)
+  }
 
   revalidatePath(`/missions/${proposal.missionId}`)
 }

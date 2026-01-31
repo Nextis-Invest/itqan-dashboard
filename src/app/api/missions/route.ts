@@ -10,7 +10,11 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { title, description, budget, currency, category, deadline } = body
+    const {
+      title, description, budget, budgetMin, budgetMax, budgetType,
+      currency, category, subcategory, deadline, duration,
+      experienceLevel, remote, location, skills,
+    } = body
 
     if (!title) {
       return NextResponse.json({ message: "Le titre est requis" }, { status: 400 })
@@ -21,10 +25,19 @@ export async function POST(req: NextRequest) {
         title,
         description: description || null,
         budget: budget ? parseFloat(budget) : null,
-        currency: currency || "EUR",
+        budgetMin: budgetMin ? parseFloat(budgetMin) : null,
+        budgetMax: budgetMax ? parseFloat(budgetMax) : null,
+        budgetType: budgetType || null,
+        currency: currency || "MAD",
         category: category || null,
+        subcategory: subcategory || null,
         deadline: deadline ? new Date(deadline) : null,
-        status: "DRAFT",
+        duration: duration || null,
+        experienceLevel: experienceLevel || null,
+        remote: remote !== undefined ? remote : true,
+        location: location || null,
+        skills: Array.isArray(skills) ? skills : [],
+        status: "OPEN",
         clientId: session.user.id!,
       },
     })

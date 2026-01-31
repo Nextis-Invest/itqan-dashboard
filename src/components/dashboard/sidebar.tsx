@@ -14,6 +14,15 @@ import {
   Users,
   MessageSquare,
   FileText,
+  Search,
+  Package,
+  CreditCard,
+  ClipboardList,
+  ShieldCheck,
+  AlertTriangle,
+  Headphones,
+  PlusCircle,
+  DollarSign,
 } from "lucide-react"
 
 import {
@@ -43,63 +52,62 @@ interface DashboardSidebarProps extends React.ComponentProps<typeof Sidebar> {
   }
 }
 
-function getNavigationItems(role?: string): NavItem[] {
-  const items: NavItem[] = [
-    {
-      title: "Tableau de bord",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Missions",
-      url: "/missions",
-      icon: Briefcase,
-    },
-    {
-      title: "Freelances",
-      url: "/freelances",
-      icon: Users,
-    },
-  ]
-
-  if (role === "FREELANCER") {
-    items.push({
-      title: "Mes propositions",
-      url: "/proposals",
-      icon: FileText,
-    })
+function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
+  if (role === "ADMIN") {
+    return {
+      main: [
+        { title: "Tableau de bord", url: "/admin", icon: LayoutDashboard },
+        { title: "Utilisateurs", url: "/admin/users", icon: Users },
+        { title: "Missions", url: "/admin/missions", icon: Briefcase },
+        { title: "Litiges", url: "/admin/disputes", icon: AlertTriangle },
+        { title: "Support", url: "/admin/support", icon: Headphones },
+      ],
+      system: [
+        { title: "Paramètres", url: "/settings", icon: Settings },
+      ],
+    }
   }
 
-  items.push(
-    {
-      title: "Messages",
-      url: "/messages",
-      icon: MessageSquare,
-    },
-    {
-      title: "Profil",
-      url: "/profile",
-      icon: User,
+  if (role === "FREELANCER") {
+    return {
+      main: [
+        { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Mes Gigs", url: "/gigs", icon: Package },
+        { title: "Rechercher", url: "/search", icon: Search },
+        { title: "Mes propositions", url: "/proposals", icon: FileText },
+        { title: "Messages", url: "/messages", icon: MessageSquare },
+        { title: "Mon Profil", url: "/profile", icon: User },
+      ],
+      system: [
+        { title: "TJM & Dispo", url: "/freelancer/tjm", icon: DollarSign },
+        { title: "Paramètres", url: "/settings", icon: Settings },
+      ],
     }
-  )
+  }
 
-  return items
+  // CLIENT (default)
+  return {
+    main: [
+      { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Mes Missions", url: "/missions", icon: Briefcase },
+      { title: "Publier", url: "/missions/new", icon: PlusCircle },
+      { title: "Messages", url: "/messages", icon: MessageSquare },
+      { title: "Crédits", url: "/credits", icon: CreditCard },
+      { title: "Commandes", url: "/orders", icon: ClipboardList },
+      { title: "Mon Profil", url: "/profile", icon: User },
+    ],
+    system: [
+      { title: "Paramètres", url: "/settings", icon: Settings },
+    ],
+  }
 }
-
-const settingsItems: NavItem[] = [
-  {
-    title: "Paramètres",
-    url: "/settings",
-    icon: Settings,
-  },
-]
 
 export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
   const pathname = usePathname()
-  const navigationItems = getNavigationItems(user?.role)
+  const { main: navigationItems, system: settingsItems } = getNavigation(user?.role)
 
   const isActive = (url: string) => {
-    if (url === "/dashboard") return pathname === "/dashboard"
+    if (url === "/dashboard" || url === "/admin") return pathname === url
     return pathname.startsWith(url)
   }
 
@@ -109,7 +117,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg" className="hover:bg-transparent">
-              <Link href="/dashboard" className="flex items-center gap-2">
+              <Link href={user?.role === "ADMIN" ? "/admin" : "/dashboard"} className="flex items-center gap-2">
                 <Image src="/icons/itqan-logo.svg" alt="Itqan" width={120} height={40} className="h-8 w-auto" />
               </Link>
             </SidebarMenuButton>
@@ -127,9 +135,8 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
           {navigationItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.url)
-
             return (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={item.url}>
                 <SidebarMenuButton
                   asChild
                   tooltip={item.title}
@@ -161,9 +168,8 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
           {settingsItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.url)
-
             return (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={item.url}>
                 <SidebarMenuButton
                   asChild
                   tooltip={item.title}
@@ -190,7 +196,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild size="lg" className="hover:bg-neutral-800 transition-colors">
-                <Link href="/settings" className="flex items-center gap-3">
+                <Link href="/profile" className="flex items-center gap-3">
                   <Avatar className="size-8 border border-neutral-700">
                     <AvatarImage src={user.avatar} alt={user.name} />
                     <AvatarFallback className="bg-lime-400/10 text-lime-400 text-xs font-medium">

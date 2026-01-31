@@ -4,11 +4,28 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import type { Adapter } from "next-auth/adapters"
 import { prisma } from "@/lib/prisma"
 import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
+import LinkedInProvider from "next-auth/providers/linkedin"
 
 export const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma) as Adapter,
   session: { strategy: "jwt" },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+    }),
+    LinkedInProvider({
+      clientId: process.env.LINKEDIN_CLIENT_ID!,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          scope: "openid profile email",
+        },
+      },
+    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -52,9 +69,18 @@ export const authOptions: NextAuthConfig = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.role = (user as any).role;
+        // For OAuth providers, the role might not be set yet — load from DB
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id || (token.sub as string) },
+          select: { role: true },
+        });
+        token.role = dbUser?.role || (user as any).role || "CLIENT";
+      }
+      // Store the LinkedIn access token for profile import
+      if (account?.provider === "linkedin" && account.access_token) {
+        token.linkedinAccessToken = account.access_token;
       }
       return token;
     },
@@ -62,8 +88,23 @@ export const authOptions: NextAuthConfig = {
       if (token) {
         session.user.id = token.sub as string;
         (session.user as any).role = token.role as string;
+        (session.user as any).linkedinAccessToken = token.linkedinAccessToken as string | undefined;
       }
       return session;
+    },
+    async signIn({ user, account }) {
+      // For OAuth sign-ins, ensure emailVerified is set
+      if (account?.provider === "google" || account?.provider === "linkedin") {
+        if (user.id) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { emailVerified: new Date() },
+          }).catch(() => {
+            // User might not exist yet (first sign-in), adapter handles creation
+          });
+        }
+      }
+      return true;
     },
   },
   pages: {

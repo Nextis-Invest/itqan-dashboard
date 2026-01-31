@@ -27,6 +27,42 @@ enum ProposalStatus {
   REJECTED
 }
 
+enum GigStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  DELETED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum CreditType {
+  PURCHASE
+  MISSION_POST
+  FEATURED
+  REFUND
+  BONUS
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  CLOSED
+}
+
 model User {
   id                      String    @id @default(cuid())
   name                    String?
@@ -37,6 +73,8 @@ model User {
   verificationToken       String?
   verificationTokenExpiry DateTime?
   role                    Role      @default(CLIENT)
+  suspended               Boolean   @default(false)
+  creditBalance           Int       @default(0)
   createdAt               DateTime  @default(now())
   updatedAt               DateTime  @updatedAt
 
@@ -51,6 +89,15 @@ model User {
 
   freelancerProfile FreelancerProfile?
   clientProfile     ClientProfile?
+
+  gigs              Gig[]
+  supportTickets    SupportTicket[]
+  ticketReplies     TicketReply[]
+  creditTransactions CreditTransaction[]
+  disputesOpened    Dispute[]  @relation("DisputeOpener")
+
+  conversationParticipants ConversationParticipant[]
+  chatMessages             ChatMessage[]
 }
 
 model FreelancerProfile {
@@ -88,8 +135,25 @@ model FreelancerProfile {
   githubUrl    String?
   websiteUrl   String?
 
+  experiences  Experience[]
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Experience {
+  id          String             @id @default(cuid())
+  profileId   String
+  profile     FreelancerProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  company     String
+  title       String
+  description String?            @db.Text
+  location    String?
+  startDate   DateTime?
+  endDate     DateTime?
+  current     Boolean            @default(false)
+  source      String?            @default("manual")
+  createdAt   DateTime           @default(now())
 }
 
 model ClientProfile {
@@ -150,12 +214,21 @@ model Mission {
   title        String
   description  String?       @db.Text
   budget       Float?
-  currency     String        @default("EUR")
+  budgetMin    Float?
+  budgetMax    Float?
+  budgetType   String?       // "FIXED" | "HOURLY"
+  currency     String        @default("MAD")
   deadline     DateTime?
+  duration     String?
   status       MissionStatus @default(DRAFT)
   category     String?
   subcategory  String?
   skills       String[]
+  experienceLevel String?
+  remote       Boolean       @default(true)
+  location     String?
+  featured     Boolean       @default(false)
+  viewCount    Int           @default(0)
 
   clientId     String
   client       User          @relation("ClientMissions", fields: [clientId], references: [id])
@@ -165,6 +238,8 @@ model Mission {
 
   proposals    Proposal[]
   reviews      Review[]
+  conversations Conversation[]
+  disputes     Dispute[]
 
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -203,4 +278,123 @@ model Review {
   createdAt    DateTime @default(now())
 
   @@unique([missionId, authorId])
+}
+
+model Gig {
+  id            String    @id @default(cuid())
+  freelancerId  String
+  freelancer    User      @relation(fields: [freelancerId], references: [id])
+
+  title         String
+  description   String    @db.Text
+  category      String
+  subcategory   String?
+
+  basicPrice    Float
+  basicTitle    String    @default("Basic")
+  basicDesc     String?
+  standardPrice Float?
+  standardTitle String    @default("Standard")
+  standardDesc  String?
+  premiumPrice  Float?
+  premiumTitle  String    @default("Premium")
+  premiumDesc   String?
+
+  currency      String    @default("MAD")
+  deliveryDays  Int       @default(7)
+  skills        String[]
+  images        String[]
+
+  status        GigStatus @default(DRAFT)
+  viewCount     Int       @default(0)
+  orderCount    Int       @default(0)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Conversation {
+  id            String   @id @default(cuid())
+  missionId     String?
+  mission       Mission? @relation(fields: [missionId], references: [id])
+
+  participants  ConversationParticipant[]
+  messages      ChatMessage[]
+
+  lastMessageAt DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  unreadCount    Int          @default(0)
+
+  @@unique([conversationId, userId])
+}
+
+model ChatMessage {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id])
+  content        String       @db.Text
+  type           String       @default("TEXT")
+  createdAt      DateTime     @default(now())
+}
+
+model SupportTicket {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id])
+  subject   String
+  message   String         @db.Text
+  status    TicketStatus   @default(OPEN)
+  priority  TicketPriority @default(MEDIUM)
+  replies   TicketReply[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model TicketReply {
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  message   String        @db.Text
+  createdAt DateTime      @default(now())
+}
+
+model CreditTransaction {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  amount       Int
+  type         CreditType
+  description  String?
+  referenceId  String?
+  balanceAfter Int
+  createdAt    DateTime   @default(now())
+}
+
+model Dispute {
+  id          String        @id @default(cuid())
+  missionId   String
+  mission     Mission       @relation(fields: [missionId], references: [id])
+  openedById  String
+  openedBy    User          @relation("DisputeOpener", fields: [openedById], references: [id])
+  reason      String        @db.Text
+  status      DisputeStatus @default(OPEN)
+  resolution  String?       @db.Text
+  adminNotes  String?       @db.Text
+  resolvedAt  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
