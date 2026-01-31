@@ -125,7 +125,11 @@ export default async function AdminUsersPage({
                 const verified = u.freelancerProfile?.verified || u.clientProfile?.verified || false
                 return (
                   <TableRow key={u.id} className="border-neutral-800">
-                    <TableCell className="text-white font-medium">{u.name || "—"}</TableCell>
+                    <TableCell className="text-white font-medium">
+                      <Link href={`/admin/users/${u.id}`} className="hover:text-lime-400 transition-colors">
+                        {u.name || "—"}
+                      </Link>
+                    </TableCell>
                     <TableCell className="text-neutral-400">{u.email}</TableCell>
                     <TableCell>
                       <Badge className={`border-0 text-xs ${

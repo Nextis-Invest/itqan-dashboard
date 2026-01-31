@@ -177,6 +177,18 @@ export default async function ProfilePage() {
             )}
             {cp && (
               <>
+                {cp.personType && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">Type</span>
+                    <span className="text-white">{cp.personType === "MORAL" ? "Personne morale" : "Personne physique"}</span>
+                  </div>
+                )}
+                {cp.formeJuridique && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">Forme juridique</span>
+                    <span className="text-white">{cp.formeJuridique}</span>
+                  </div>
+                )}
                 {cp.companySize && (
                   <div className="flex justify-between">
                     <span className="text-neutral-400">Taille</span>
@@ -187,6 +199,30 @@ export default async function ProfilePage() {
                   <div className="flex justify-between">
                     <span className="text-neutral-400">Secteur</span>
                     <span className="text-white">{cp.industry}</span>
+                  </div>
+                )}
+                {cp.ice && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">ICE</span>
+                    <span className="text-white font-mono text-xs">{cp.ice}</span>
+                  </div>
+                )}
+                {cp.rc && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">RC</span>
+                    <span className="text-white font-mono text-xs">{cp.rc}</span>
+                  </div>
+                )}
+                {cp.phone && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">Téléphone</span>
+                    <span className="text-white">{cp.phone}</span>
+                  </div>
+                )}
+                {cp.address && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">Adresse</span>
+                    <span className="text-white text-right text-xs">{[cp.address, cp.city, cp.region].filter(Boolean).join(", ")}</span>
                   </div>
                 )}
                 <div className="flex justify-between">

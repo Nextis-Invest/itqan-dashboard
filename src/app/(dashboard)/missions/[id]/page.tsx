@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Calendar, DollarSign, Tag, User, Pencil, Send, XCircle, CheckCircle, Clock, Award, MapPin, Eye } from "lucide-react"
+import { ArrowLeft, Calendar, DollarSign, Tag, User, Pencil, Send, XCircle, CheckCircle, Clock, Award, MapPin, Eye, Building2, Star as StarIcon, Globe, Phone } from "lucide-react"
 import Link from "next/link"
 import { ProposalForm } from "./proposal-form"
 import { ProposalList } from "./proposal-list"
@@ -47,7 +47,37 @@ export default async function MissionDetailPage({
   const mission = await prisma.mission.findUnique({
     where: { id },
     include: {
-      client: { select: { id: true, name: true, email: true } },
+      client: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          clientProfile: {
+            select: {
+              companyName: true,
+              city: true,
+              country: true,
+              avgRating: true,
+              totalMissions: true,
+              totalSpent: true,
+              verified: true,
+              personType: true,
+              industry: true,
+              companySize: true,
+              website: true,
+              phone: true,
+              contactEmail: true,
+              ice: true,
+              rc: true,
+              formeJuridique: true,
+              address: true,
+              region: true,
+              preferredPaymentMethod: true,
+              bankName: true,
+            },
+          },
+        },
+      },
       freelancer: { select: { id: true, name: true, email: true } },
       proposals: {
         include: {
@@ -80,7 +110,12 @@ export default async function MissionDetailPage({
     data: { viewCount: { increment: 1 } },
   })
 
-  const userRole = (session.user as any).role as string
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true },
+  })
+  const userRole = currentUser?.role || "CLIENT"
+  const isAdmin = userRole === "ADMIN"
   const isClient = mission.clientId === session.user.id
   const isFreelancer = mission.freelancerId === session.user.id
   const status = statusLabels[mission.status] || statusLabels.DRAFT
@@ -264,6 +299,134 @@ export default async function MissionDetailPage({
           )}
         </CardContent>
       </Card>
+
+      {/* Client Info Card */}
+      {!isClient && mission.client.clientProfile && (
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardHeader>
+            <CardTitle className="text-white text-base flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-lime-400" />
+              À propos du client
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-start gap-4">
+              <div className="flex-1 space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-medium text-base">
+                    {mission.client.clientProfile.companyName || mission.client.name || mission.client.email}
+                  </span>
+                  {mission.client.clientProfile.verified && (
+                    <CheckCircle className="h-4 w-4 text-lime-400" />
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-4 text-neutral-400">
+                  {mission.client.clientProfile.city && (
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {mission.client.clientProfile.city}
+                    </span>
+                  )}
+                  {mission.client.clientProfile.avgRating !== null && mission.client.clientProfile.avgRating !== undefined && (
+                    <span className="flex items-center gap-1">
+                      <StarIcon className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+                      {mission.client.clientProfile.avgRating.toFixed(1)}
+                    </span>
+                  )}
+                  <span className="flex items-center gap-1">
+                    {mission.client.clientProfile.totalMissions} mission(s) postée(s)
+                  </span>
+                  {mission.client.clientProfile.industry && (
+                    <span>{mission.client.clientProfile.industry}</span>
+                  )}
+                </div>
+
+                {/* Admin sees everything */}
+                {isAdmin && (
+                  <div className="mt-4 pt-3 border-t border-neutral-800 space-y-2">
+                    <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wider">Infos admin</p>
+                    {mission.client.clientProfile.personType && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">Type</span>
+                        <span className="text-neutral-300">{mission.client.clientProfile.personType === "MORAL" ? "Personne morale" : "Personne physique"}</span>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.formeJuridique && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">Forme juridique</span>
+                        <span className="text-neutral-300">{mission.client.clientProfile.formeJuridique}</span>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.companySize && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">Taille</span>
+                        <span className="text-neutral-300">{mission.client.clientProfile.companySize} employés</span>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.ice && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">ICE</span>
+                        <span className="text-neutral-300 font-mono text-xs">{mission.client.clientProfile.ice}</span>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.rc && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">RC</span>
+                        <span className="text-neutral-300 font-mono text-xs">{mission.client.clientProfile.rc}</span>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.totalSpent > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">Total dépensé</span>
+                        <span className="text-neutral-300">{mission.client.clientProfile.totalSpent.toLocaleString("fr-FR")} MAD</span>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.phone && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">Téléphone</span>
+                        <span className="text-neutral-300">{mission.client.clientProfile.phone}</span>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.contactEmail && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">Email contact</span>
+                        <span className="text-neutral-300">{mission.client.clientProfile.contactEmail}</span>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.website && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">Site web</span>
+                        <a href={mission.client.clientProfile.website} target="_blank" rel="noopener noreferrer" className="text-lime-400 text-xs hover:underline">
+                          {mission.client.clientProfile.website}
+                        </a>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.address && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">Adresse</span>
+                        <span className="text-neutral-300 text-right text-xs">
+                          {[mission.client.clientProfile.address, mission.client.clientProfile.city, mission.client.clientProfile.region].filter(Boolean).join(", ")}
+                        </span>
+                      </div>
+                    )}
+                    {mission.client.clientProfile.preferredPaymentMethod && (
+                      <div className="flex justify-between">
+                        <span className="text-neutral-500">Paiement préféré</span>
+                        <span className="text-neutral-300">{mission.client.clientProfile.preferredPaymentMethod}</span>
+                      </div>
+                    )}
+                    <div className="pt-2">
+                      <Link href={`/admin/users/${mission.client.id}`} className="text-lime-400 text-xs hover:underline">
+                        Voir fiche complète →
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Proposal Form - for freelancers on open missions */}
       {userRole === "FREELANCER" &&

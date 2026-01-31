@@ -173,21 +173,52 @@ model ClientProfile {
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Type de personne
+  personType  String?  // "PHYSICAL" | "MORAL"
+
+  // Infos société (personne morale)
   companyName String?
   companySize String?
   industry    String?
   website     String?
   logo        String?
+  rc          String?  // Registre de commerce
+  ice         String?  // Identifiant commun de l'entreprise
+  patente     String?  // Numéro de patente
+  cnss        String?  // CNSS
+  capitalSocial Float? // Capital social
+  formeJuridique String? // SARL, SA, SAS, Auto-entrepreneur, etc.
 
+  // Infos personne physique
+  cin         String?  // Carte d'identité nationale
+  dateOfBirth DateTime?
+
+  // Contact
+  phone       String?
+  phoneSecondary String?
+  contactEmail String? // Email de contact différent du compte
+
+  // Adresse
+  address     String?
   city        String?
+  postalCode  String?
+  region      String?
   country     String   @default("MA")
 
-  verified    Boolean  @default(false)
-  ice         String?
+  // Paiement
+  preferredPaymentMethod String? // "BANK_TRANSFER" | "CARD" | "CMI" | "PAYPAL" | "CASH"
+  bankName    String?
+  bankIban    String?
+  bankRib     String?
 
+  // Stats
+  verified    Boolean  @default(false)
   totalMissions Int    @default(0)
   totalSpent    Float  @default(0)
   avgRating     Float?
+
+  // Notes admin
+  adminNotes  String?  @db.Text
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -541,6 +572,17 @@ model Payment {
   releasedAt DateTime?
   externalId String?
   invoiceUrl String?
+
+  // Enriched payment tracking
+  transactionNumber String?   // Numéro unique de transaction
+  paymentMethod     String?   // "BANK_TRANSFER" | "CARD" | "CMI" | "PAYPAL" | "CASH"
+  cardLast4         String?   // Derniers 4 chiffres carte
+  bankReference     String?   // Référence bancaire
+  receiptUrl        String?   // URL du reçu
+  notes             String?   @db.Text
+  paidByName        String?   // Nom du payeur
+  paidByEmail       String?   // Email du payeur
+
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 }
