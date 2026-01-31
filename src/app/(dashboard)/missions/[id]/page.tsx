@@ -11,11 +11,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Calendar, DollarSign, Tag, User } from "lucide-react"
+import { ArrowLeft, Calendar, DollarSign, Tag, User, Pencil, Send, XCircle, CheckCircle, Clock, Award, MapPin, Eye } from "lucide-react"
 import Link from "next/link"
 import { ProposalForm } from "./proposal-form"
 import { ProposalList } from "./proposal-list"
 import { ReviewSection } from "./review-section"
+import { MissionActions } from "./mission-actions"
 
 export const dynamic = "force-dynamic"
 
@@ -25,6 +26,13 @@ const statusLabels: Record<string, { label: string; color: string }> = {
   IN_PROGRESS: { label: "En cours", color: "bg-blue-400/10 text-blue-400" },
   COMPLETED: { label: "Terminée", color: "bg-green-400/10 text-green-400" },
   CANCELLED: { label: "Annulée", color: "bg-red-400/10 text-red-400" },
+}
+
+const experienceLevelLabels: Record<string, string> = {
+  JUNIOR: "Junior",
+  INTERMEDIATE: "Intermédiaire",
+  SENIOR: "Senior",
+  EXPERT: "Expert",
 }
 
 export default async function MissionDetailPage({
@@ -66,19 +74,28 @@ export default async function MissionDetailPage({
 
   if (!mission) notFound()
 
+  // Increment view count
+  await prisma.mission.update({
+    where: { id },
+    data: { viewCount: { increment: 1 } },
+  })
+
   const userRole = (session.user as any).role as string
   const isClient = mission.clientId === session.user.id
   const isFreelancer = mission.freelancerId === session.user.id
   const status = statusLabels[mission.status] || statusLabels.DRAFT
 
+  const userId = session.user.id!
+
   // Check if freelancer already proposed
-  const hasProposed = mission.proposals.some(
-    (p) => p.freelancerId === session.user.id
+  const userProposal = mission.proposals.find(
+    (p) => p.freelancerId === userId
   )
+  const hasProposed = !!userProposal
 
   // Check if user already reviewed
   const hasReviewed = mission.reviews.some(
-    (r) => r.authorId === session.user.id
+    (r) => r.authorId === userId
   )
 
   // Determine review target
@@ -90,6 +107,17 @@ export default async function MissionDetailPage({
       reviewTargetId = mission.clientId
     }
   }
+
+  // Budget display
+  const budgetDisplay = (() => {
+    if (mission.budgetMin && mission.budgetMax) {
+      return `${mission.budgetMin} - ${mission.budgetMax} ${mission.currency}`
+    }
+    if (mission.budget) {
+      return `${mission.budget} ${mission.currency}`
+    }
+    return null
+  })()
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -105,6 +133,9 @@ export default async function MissionDetailPage({
               {mission.title}
             </h2>
             <Badge className={`${status.color} border-0`}>{status.label}</Badge>
+            {mission.featured && (
+              <Badge className="bg-yellow-400/10 text-yellow-400 border-0">⭐ En avant</Badge>
+            )}
           </div>
           <p className="text-neutral-400 mt-1">
             Par{" "}
@@ -116,9 +147,19 @@ export default async function MissionDetailPage({
             </Link>
             {" · "}
             {new Date(mission.createdAt).toLocaleDateString("fr-FR")}
+            {mission.viewCount > 0 && (
+              <span className="ml-2 inline-flex items-center gap-1">
+                <Eye className="h-3 w-3" /> {mission.viewCount} vue(s)
+              </span>
+            )}
           </p>
         </div>
       </div>
+
+      {/* Client Actions */}
+      {isClient && (
+        <MissionActions missionId={mission.id} status={mission.status} />
+      )}
 
       {/* Mission Details */}
       <Card className="bg-neutral-900 border-neutral-800">
@@ -130,14 +171,17 @@ export default async function MissionDetailPage({
           )}
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-neutral-800">
-            {mission.budget && (
+            {budgetDisplay && (
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-lime-400" />
                 <div>
                   <p className="text-xs text-neutral-500">Budget</p>
-                  <p className="text-white font-medium">
-                    {mission.budget} {mission.currency}
-                  </p>
+                  <p className="text-white font-medium">{budgetDisplay}</p>
+                  {mission.budgetType && (
+                    <p className="text-[10px] text-neutral-500">
+                      {mission.budgetType === "HOURLY" ? "Taux horaire" : "Prix fixe"}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -175,6 +219,35 @@ export default async function MissionDetailPage({
                 </div>
               </div>
             )}
+            {mission.duration && (
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-lime-400" />
+                <div>
+                  <p className="text-xs text-neutral-500">Durée</p>
+                  <p className="text-white font-medium">{mission.duration}</p>
+                </div>
+              </div>
+            )}
+            {mission.experienceLevel && (
+              <div className="flex items-center gap-2">
+                <Award className="h-4 w-4 text-lime-400" />
+                <div>
+                  <p className="text-xs text-neutral-500">Niveau</p>
+                  <p className="text-white font-medium">
+                    {experienceLevelLabels[mission.experienceLevel] || mission.experienceLevel}
+                  </p>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-lime-400" />
+              <div>
+                <p className="text-xs text-neutral-500">Localisation</p>
+                <p className="text-white font-medium">
+                  {mission.remote ? "Remote" : mission.location || "Sur site"}
+                </p>
+              </div>
+            </div>
           </div>
 
           {mission.skills.length > 0 && (
@@ -201,10 +274,27 @@ export default async function MissionDetailPage({
 
       {userRole === "FREELANCER" && hasProposed && (
         <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="py-6 text-center">
-            <p className="text-neutral-400">
-              ✅ Vous avez déjà soumis une proposition pour cette mission.
-            </p>
+          <CardContent className="py-6">
+            <div className="flex items-center justify-between">
+              <p className="text-neutral-400">
+                ✅ Vous avez déjà soumis une proposition pour cette mission.
+                {userProposal && (
+                  <span className="ml-2">
+                    Statut : <Badge className={`${
+                      userProposal.status === "PENDING" ? "bg-yellow-400/10 text-yellow-400" :
+                      userProposal.status === "ACCEPTED" ? "bg-green-400/10 text-green-400" :
+                      "bg-red-400/10 text-red-400"
+                    } border-0 text-xs`}>{
+                      userProposal.status === "PENDING" ? "En attente" :
+                      userProposal.status === "ACCEPTED" ? "Acceptée" : "Refusée"
+                    }</Badge>
+                  </span>
+                )}
+              </p>
+              {userProposal?.status === "PENDING" && (
+                <WithdrawProposalButton proposalId={userProposal.id} missionId={mission.id} />
+              )}
+            </div>
           </CardContent>
         </Card>
       )}
@@ -252,3 +342,6 @@ export default async function MissionDetailPage({
     </div>
   )
 }
+
+// Client component for withdraw proposal
+import { WithdrawProposalButton } from "./withdraw-proposal-button"

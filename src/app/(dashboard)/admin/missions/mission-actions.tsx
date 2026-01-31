@@ -1,29 +1,158 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { XCircle, Loader2 } from "lucide-react"
-import { deleteMissionAdmin } from "@/lib/actions/admin"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { MoreHorizontal, Eye, ArrowRightLeft, Star, StarOff, Trash2, Loader2 } from "lucide-react"
+import { updateMissionStatusAdmin, toggleMissionFeatured, deleteMissionPermanent } from "@/lib/actions/admin"
 
-export function AdminMissionActions({ missionId, status }: { missionId: string; status: string }) {
+const statusOptions = [
+  { value: "OPEN", label: "Ouverte" },
+  { value: "IN_PROGRESS", label: "En cours" },
+  { value: "COMPLETED", label: "Terminée" },
+  { value: "CANCELLED", label: "Annulée" },
+] as const
+
+export function AdminMissionActions({
+  missionId,
+  status,
+  featured,
+}: {
+  missionId: string
+  status: string
+  featured: boolean
+}) {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
 
-  if (status === "CANCELLED") return null
+  const handleStatusChange = async (newStatus: string) => {
+    setLoading(true)
+    try {
+      await updateMissionStatusAdmin(missionId, newStatus as any)
+      router.refresh()
+    } catch (err: any) {
+      alert(err.message || "Erreur")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleToggleFeatured = async () => {
+    setLoading(true)
+    try {
+      await toggleMissionFeatured(missionId)
+      router.refresh()
+    } catch (err: any) {
+      alert(err.message || "Erreur")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!confirm("Supprimer définitivement cette mission ? Cette action est irréversible.")) return
+    setLoading(true)
+    try {
+      await deleteMissionPermanent(missionId)
+      router.refresh()
+    } catch (err: any) {
+      alert(err.message || "Erreur")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const canDelete = status === "DRAFT" || status === "CANCELLED"
 
   return (
-    <Button
-      size="sm"
-      variant="ghost"
-      disabled={loading}
-      className="text-neutral-400 hover:text-red-400 h-8 w-8 p-0"
-      title="Annuler la mission"
-      onClick={async () => {
-        setLoading(true)
-        await deleteMissionAdmin(missionId)
-        setLoading(false)
-      }}
-    >
-      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={loading}
+          className="text-neutral-400 hover:text-white h-8 w-8 p-0"
+        >
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <MoreHorizontal className="h-4 w-4" />
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="bg-neutral-900 border-neutral-800 w-56">
+        <DropdownMenuItem asChild className="text-neutral-300 hover:text-white focus:text-white focus:bg-neutral-800">
+          <Link href={`/missions/${missionId}`}>
+            <Eye className="mr-2 h-4 w-4" />
+            Voir la mission
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator className="bg-neutral-800" />
+
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="text-neutral-300 hover:text-white focus:text-white focus:bg-neutral-800">
+            <ArrowRightLeft className="mr-2 h-4 w-4" />
+            Changer le statut
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="bg-neutral-900 border-neutral-800">
+            {statusOptions.map((opt) => (
+              <DropdownMenuItem
+                key={opt.value}
+                disabled={opt.value === status}
+                onClick={() => handleStatusChange(opt.value)}
+                className={`text-neutral-300 hover:text-white focus:text-white focus:bg-neutral-800 ${
+                  opt.value === status ? "opacity-50" : ""
+                }`}
+              >
+                {opt.label}
+                {opt.value === status && " ✓"}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+
+        <DropdownMenuItem
+          onClick={handleToggleFeatured}
+          className="text-neutral-300 hover:text-white focus:text-white focus:bg-neutral-800"
+        >
+          {featured ? (
+            <>
+              <StarOff className="mr-2 h-4 w-4" />
+              Retirer la mise en avant
+            </>
+          ) : (
+            <>
+              <Star className="mr-2 h-4 w-4" />
+              Mettre en avant
+            </>
+          )}
+        </DropdownMenuItem>
+
+        {canDelete && (
+          <>
+            <DropdownMenuSeparator className="bg-neutral-800" />
+            <DropdownMenuItem
+              onClick={handleDelete}
+              className="text-red-400 hover:text-red-300 focus:text-red-300 focus:bg-red-500/10"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Supprimer
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

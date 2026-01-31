@@ -75,8 +75,9 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
     return {
       main: [
         { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Missions", url: "/missions", icon: Briefcase },
+        { title: "Explorer les missions", url: "/missions/explore", icon: Search },
         { title: "Mes Gigs", url: "/gigs", icon: Package },
-        { title: "Rechercher", url: "/search", icon: Search },
         { title: "Mes propositions", url: "/proposals", icon: FileText },
         { title: "Contrats", url: "/contracts", icon: FileCheck },
         { title: "Litiges", url: "/disputes", icon: ShieldCheck },

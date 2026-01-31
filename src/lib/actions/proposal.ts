@@ -84,6 +84,30 @@ export async function acceptProposal(proposalId: string) {
     }),
   ])
 
+  // Auto-create contract if one doesn't exist
+  try {
+    const existingContract = await prisma.contract.findUnique({
+      where: { missionId: proposal.missionId },
+    })
+
+    if (!existingContract) {
+      await prisma.contract.create({
+        data: {
+          missionId: proposal.missionId,
+          proposalId: proposal.id,
+          clientId: proposal.mission.clientId,
+          freelancerId: proposal.freelancerId,
+          totalAmount: proposal.price,
+          currency: proposal.mission.currency,
+          status: "PENDING",
+          startDate: new Date(),
+        },
+      })
+    }
+  } catch (e) {
+    console.error("Contract creation error:", e)
+  }
+
   // Send acceptance email to freelancer
   try {
     const freelancer = await prisma.user.findUnique({
@@ -151,6 +175,26 @@ export async function rejectProposal(proposalId: string) {
   } catch (e) {
     console.error("Email error:", e)
   }
+
+  revalidatePath(`/missions/${proposal.missionId}`)
+}
+
+export async function withdrawProposal(proposalId: string) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Non autorisé")
+
+  const proposal = await prisma.proposal.findUnique({
+    where: { id: proposalId },
+    include: { mission: true },
+  })
+
+  if (!proposal) throw new Error("Proposition introuvable")
+  if (proposal.freelancerId !== session.user.id) throw new Error("Non autorisé")
+  if (proposal.status !== "PENDING") throw new Error("Seules les propositions en attente peuvent être retirées")
+
+  await prisma.proposal.delete({
+    where: { id: proposalId },
+  })
 
   revalidatePath(`/missions/${proposal.missionId}`)
 }

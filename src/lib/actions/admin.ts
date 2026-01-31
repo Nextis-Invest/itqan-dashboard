@@ -190,3 +190,41 @@ export async function deleteMissionAdmin(missionId: string) {
   await prisma.mission.update({ where: { id: missionId }, data: { status: "CANCELLED" } })
   revalidatePath("/admin/missions")
 }
+
+export async function updateMissionStatusAdmin(missionId: string, status: "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED") {
+  await requireAdmin()
+  const mission = await prisma.mission.findUnique({ where: { id: missionId }, select: { status: true } })
+  if (!mission) throw new Error("Mission introuvable")
+
+  await prisma.mission.update({ where: { id: missionId }, data: { status } })
+  revalidatePath("/admin/missions")
+}
+
+export async function toggleMissionFeatured(missionId: string) {
+  await requireAdmin()
+  const mission = await prisma.mission.findUnique({ where: { id: missionId }, select: { featured: true } })
+  if (!mission) throw new Error("Mission introuvable")
+
+  await prisma.mission.update({
+    where: { id: missionId },
+    data: { featured: !mission.featured },
+  })
+  revalidatePath("/admin/missions")
+}
+
+export async function deleteMissionPermanent(missionId: string) {
+  await requireAdmin()
+  const mission = await prisma.mission.findUnique({ where: { id: missionId }, select: { status: true } })
+  if (!mission) throw new Error("Mission introuvable")
+  if (!["DRAFT", "CANCELLED"].includes(mission.status)) {
+    throw new Error("Seules les missions en brouillon ou annulées peuvent être supprimées")
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.proposal.deleteMany({ where: { missionId } })
+    await tx.review.deleteMany({ where: { missionId } })
+    await tx.invitation.deleteMany({ where: { missionId } })
+    await tx.mission.delete({ where: { id: missionId } })
+  })
+  revalidatePath("/admin/missions")
+}

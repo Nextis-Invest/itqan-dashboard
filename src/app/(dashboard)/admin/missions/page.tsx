@@ -7,8 +7,9 @@ import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Briefcase } from "lucide-react"
+import { Briefcase, Eye, Clock, CheckCircle, DollarSign } from "lucide-react"
 import { AdminMissionActions } from "./mission-actions"
+import { AdminMissionsSearch } from "./search-input"
 import Link from "next/link"
 
 export const dynamic = "force-dynamic"
@@ -24,7 +25,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 export default async function AdminMissionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>
+  searchParams: Promise<{ status?: string; q?: string }>
 }) {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
@@ -32,9 +33,22 @@ export default async function AdminMissionsPage({
   if (admin?.role !== "ADMIN") redirect("/dashboard")
 
   const sp = await searchParams
+
+  // Stats
+  const [totalCount, openCount, inProgressCount, completedCount, budgetAgg] = await Promise.all([
+    prisma.mission.count(),
+    prisma.mission.count({ where: { status: "OPEN" } }),
+    prisma.mission.count({ where: { status: "IN_PROGRESS" } }),
+    prisma.mission.count({ where: { status: "COMPLETED" } }),
+    prisma.mission.aggregate({ _sum: { budget: true } }),
+  ])
+
   const where: any = {}
   if (sp.status && Object.keys(statusMap).includes(sp.status)) {
     where.status = sp.status
+  }
+  if (sp.q) {
+    where.title = { contains: sp.q, mode: "insensitive" }
   }
 
   const missions = await prisma.mission.findMany({
@@ -54,10 +68,85 @@ export default async function AdminMissionsPage({
         <p className="text-neutral-400 mt-1">Modérer et gérer les missions</p>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-neutral-800 rounded-lg">
+                <Briefcase className="h-4 w-4 text-lime-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{totalCount}</p>
+                <p className="text-xs text-neutral-500">Total missions</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-neutral-800 rounded-lg">
+                <Eye className="h-4 w-4 text-lime-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{openCount}</p>
+                <p className="text-xs text-neutral-500">Ouvertes</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-neutral-800 rounded-lg">
+                <Clock className="h-4 w-4 text-blue-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{inProgressCount}</p>
+                <p className="text-xs text-neutral-500">En cours</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-neutral-800 rounded-lg">
+                <CheckCircle className="h-4 w-4 text-green-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{completedCount}</p>
+                <p className="text-xs text-neutral-500">Terminées</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-neutral-800 rounded-lg">
+                <DollarSign className="h-4 w-4 text-yellow-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">
+                  {budgetAgg._sum.budget ? `${Math.round(budgetAgg._sum.budget).toLocaleString()}` : "0"}
+                </p>
+                <p className="text-xs text-neutral-500">Budget total</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Search */}
+      <AdminMissionsSearch currentQ={sp.q || ""} currentStatus={sp.status || ""} />
+
+      {/* Status Tabs */}
       <div className="flex gap-2 flex-wrap">
         <a href="/admin/missions" className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${!sp.status ? "bg-lime-400/10 text-lime-400" : "bg-neutral-800 text-neutral-400 hover:text-white"}`}>Toutes</a>
         {Object.entries(statusMap).map(([k, v]) => (
-          <a key={k} href={`/admin/missions?status=${k}`} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${sp.status === k ? "bg-lime-400/10 text-lime-400" : "bg-neutral-800 text-neutral-400 hover:text-white"}`}>{v.label}</a>
+          <a key={k} href={`/admin/missions?status=${k}${sp.q ? `&q=${sp.q}` : ""}`} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${sp.status === k ? "bg-lime-400/10 text-lime-400" : "bg-neutral-800 text-neutral-400 hover:text-white"}`}>{v.label}</a>
         ))}
       </div>
 
@@ -88,13 +177,16 @@ export default async function AdminMissionsPage({
                   <TableRow key={m.id} className="border-neutral-800">
                     <TableCell className="text-white font-medium">
                       <Link href={`/missions/${m.id}`} className="hover:text-lime-400">{m.title}</Link>
+                      {m.featured && <Badge className="ml-2 bg-yellow-400/10 text-yellow-400 border-0 text-[10px]">⭐</Badge>}
                     </TableCell>
                     <TableCell className="text-neutral-400">{m.client.name || m.client.email}</TableCell>
                     <TableCell className="text-white">{m.budget ? `${m.budget} ${m.currency}` : "—"}</TableCell>
                     <TableCell><Badge className={`${st.color} border-0`}>{st.label}</Badge></TableCell>
                     <TableCell className="text-neutral-400">{m._count.proposals}</TableCell>
                     <TableCell className="text-neutral-500 text-sm">{new Date(m.createdAt).toLocaleDateString("fr-FR")}</TableCell>
-                    <TableCell><AdminMissionActions missionId={m.id} status={m.status} /></TableCell>
+                    <TableCell>
+                      <AdminMissionActions missionId={m.id} status={m.status} featured={m.featured} />
+                    </TableCell>
                   </TableRow>
                 )
               })}

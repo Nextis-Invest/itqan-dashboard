@@ -12,6 +12,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Tableau de bord",
   "/missions": "Missions",
   "/missions/new": "Nouvelle mission",
+  "/missions/explore": "Explorer les missions",
   "/freelances": "Freelances",
   "/messages": "Messages",
   "/settings": "Paramètres",
@@ -55,6 +56,8 @@ export function SiteHeader() {
 
     if (pathname.startsWith("/missions/")) {
       if (pathname.includes("/new")) return "Nouvelle mission"
+      if (pathname.includes("/edit")) return "Modifier la mission"
+      if (pathname.includes("/explore")) return "Explorer les missions"
       return "Détails mission"
     }
 
