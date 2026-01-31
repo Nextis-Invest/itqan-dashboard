@@ -62,6 +62,8 @@ export function SiteHeader() {
     if (pathname.startsWith("/gigs/")) return "Détails service"
     if (pathname.startsWith("/profile/")) return "Profil"
     if (pathname.startsWith("/support/") && !pathname.startsWith("/support/new")) return "Ticket support"
+    if (pathname.startsWith("/disputes/")) return "Détail du litige"
+    if (pathname.startsWith("/admin/disputes/")) return "Gestion du litige"
     if (pathname.startsWith("/admin/support/")) return "Ticket support"
     if (pathname.startsWith("/admin/")) return "Administration"
 
