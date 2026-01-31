@@ -10,11 +10,15 @@ import {
   Star,
   ExternalLink,
   CheckCircle,
+  Award,
+  GraduationCap,
 } from "lucide-react"
 import Link from "next/link"
 import { EditProfileButton } from "./edit-profile-button"
 import { ExperienceManager } from "@/components/experience-form"
 import { LinkedInImportButton } from "@/components/linkedin-import-button"
+import { getCertifications } from "@/lib/actions/certification"
+import { getEducations } from "@/lib/actions/education"
 
 export const dynamic = "force-dynamic"
 
@@ -58,6 +62,11 @@ export default async function ProfilePage() {
     .join("")
     .toUpperCase()
     .slice(0, 2)
+
+  const [certifications, educations] = await Promise.all([
+    getCertifications(session.user.id),
+    getEducations(session.user.id),
+  ])
 
   const hasLinkedInToken = !!(session.user as any).linkedinAccessToken
 
@@ -237,6 +246,72 @@ export default async function ProfilePage() {
           <LinkedInImportButton hasLinkedInToken={hasLinkedInToken} />
           <ExperienceManager experiences={fp.experiences} />
         </div>
+      )}
+
+      {/* Certifications */}
+      {certifications.length > 0 && (
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardHeader>
+            <CardTitle className="text-white text-base flex items-center gap-2">
+              <Award className="h-4 w-4 text-lime-400" />
+              Certifications
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {certifications.map((cert) => (
+              <div key={cert.id} className="border-b border-neutral-800 pb-3 last:border-0 last:pb-0">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-white text-sm font-medium">{cert.name}</p>
+                    {cert.issuer && <p className="text-neutral-400 text-xs">{cert.issuer}</p>}
+                    <div className="flex gap-3 mt-1 text-xs text-neutral-500">
+                      {cert.issueDate && (
+                        <span>Obtenue le {new Date(cert.issueDate).toLocaleDateString("fr-FR")}</span>
+                      )}
+                      {cert.expiryDate && (
+                        <span>Expire le {new Date(cert.expiryDate).toLocaleDateString("fr-FR")}</span>
+                      )}
+                    </div>
+                  </div>
+                  {cert.url && (
+                    <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-lime-400 hover:text-lime-300">
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Education */}
+      {educations.length > 0 && (
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardHeader>
+            <CardTitle className="text-white text-base flex items-center gap-2">
+              <GraduationCap className="h-4 w-4 text-lime-400" />
+              Formation
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {educations.map((edu) => (
+              <div key={edu.id} className="border-b border-neutral-800 pb-3 last:border-0 last:pb-0">
+                <p className="text-white text-sm font-medium">{edu.school}</p>
+                {(edu.degree || edu.field) && (
+                  <p className="text-neutral-400 text-xs">
+                    {[edu.degree, edu.field].filter(Boolean).join(" — ")}
+                  </p>
+                )}
+                {(edu.startYear || edu.endYear) && (
+                  <p className="text-neutral-500 text-xs mt-1">
+                    {edu.startYear || "?"} — {edu.endYear || "En cours"}
+                  </p>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       )}
 
       {/* Reviews */}

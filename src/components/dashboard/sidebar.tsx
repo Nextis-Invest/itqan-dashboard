@@ -23,6 +23,9 @@ import {
   Headphones,
   PlusCircle,
   DollarSign,
+  FileCheck,
+  Bell,
+  Heart,
 } from "lucide-react"
 
 import {
@@ -75,7 +78,10 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
         { title: "Mes Gigs", url: "/gigs", icon: Package },
         { title: "Rechercher", url: "/search", icon: Search },
         { title: "Mes propositions", url: "/proposals", icon: FileText },
+        { title: "Contrats", url: "/contracts", icon: FileCheck },
         { title: "Messages", url: "/messages", icon: MessageSquare },
+        { title: "Notifications", url: "/notifications", icon: Bell },
+        { title: "Favoris", url: "/favorites", icon: Heart },
         { title: "Mon Profil", url: "/profile", icon: User },
       ],
       system: [
@@ -91,7 +97,10 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
       { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
       { title: "Mes Missions", url: "/missions", icon: Briefcase },
       { title: "Publier", url: "/missions/new", icon: PlusCircle },
+      { title: "Contrats", url: "/contracts", icon: FileCheck },
       { title: "Messages", url: "/messages", icon: MessageSquare },
+      { title: "Notifications", url: "/notifications", icon: Bell },
+      { title: "Favoris", url: "/favorites", icon: Heart },
       { title: "Crédits", url: "/credits", icon: CreditCard },
       { title: "Commandes", url: "/orders", icon: ClipboardList },
       { title: "Mon Profil", url: "/profile", icon: User },

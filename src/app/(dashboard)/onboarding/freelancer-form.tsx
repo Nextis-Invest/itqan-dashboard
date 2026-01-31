@@ -14,8 +14,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, Save, X } from "lucide-react"
+import { Loader2, Save, X, Download } from "lucide-react"
 import { createFreelancerProfile } from "@/lib/actions/profile"
+import { signIn } from "next-auth/react"
 
 const categories = [
   { value: "development", label: "Développement" },
@@ -217,6 +218,22 @@ export function FreelancerOnboardingForm() {
                 className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
               />
             </div>
+          </div>
+
+          {/* LinkedIn Import */}
+          <div className="pt-2 border-t border-neutral-800">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => signIn("linkedin", { callbackUrl: "/onboarding?linkedin_import=1" })}
+              className="w-full border-[#0A66C2]/30 text-[#0A66C2] hover:bg-[#0A66C2]/10"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Importer depuis LinkedIn
+            </Button>
+            <p className="text-neutral-500 text-xs text-center mt-2">
+              Connectez LinkedIn pour pré-remplir votre expérience
+            </p>
           </div>
 
           <Button

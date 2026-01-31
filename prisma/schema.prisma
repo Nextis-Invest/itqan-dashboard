@@ -98,6 +98,13 @@ model User {
 
   conversationParticipants ConversationParticipant[]
   chatMessages             ChatMessage[]
+
+  certifications    Certification[]
+  educations        Education[]
+  notifications     Notification[]
+  favorites         Favorite[]
+  invitationsReceived Invitation[] @relation("InvitationsReceived")
+  invitationsSent     Invitation[] @relation("InvitationsSent")
 }
 
 model FreelancerProfile {
@@ -240,6 +247,8 @@ model Mission {
   reviews      Review[]
   conversations Conversation[]
   disputes     Dispute[]
+  contract     Contract?
+  invitations  Invitation[]
 
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -257,6 +266,7 @@ model Proposal {
   price         Float
   estimatedDays Int?
   status        ProposalStatus @default(PENDING)
+  contract      Contract?
 
   createdAt     DateTime       @default(now())
 }
@@ -397,4 +407,156 @@ model Dispute {
   resolvedAt  DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+}
+
+// ========== Phase 2/3 Models ==========
+
+model Certification {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  issuer      String?
+  issueDate   DateTime?
+  expiryDate  DateTime?
+  url         String?
+  createdAt   DateTime  @default(now())
+}
+
+model Education {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  school    String
+  degree    String?
+  field     String?
+  startYear Int?
+  endYear   Int?
+  createdAt DateTime @default(now())
+}
+
+model Contract {
+  id                 String         @id @default(cuid())
+  missionId          String         @unique
+  mission            Mission        @relation(fields: [missionId], references: [id])
+  proposalId         String         @unique
+  proposal           Proposal       @relation(fields: [proposalId], references: [id])
+  clientId           String
+  freelancerId       String
+  totalAmount        Float
+  currency           String         @default("MAD")
+  status             ContractStatus @default(PENDING)
+  startDate          DateTime?
+  endDate            DateTime?
+  signedByClient     Boolean        @default(false)
+  signedByFreelancer Boolean        @default(false)
+  terms              String?        @db.Text
+  milestones         Milestone[]
+  payments           Payment[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+enum ContractStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+model Milestone {
+  id          String          @id @default(cuid())
+  contractId  String
+  contract    Contract        @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  title       String
+  description String?         @db.Text
+  amount      Float
+  dueDate     DateTime?
+  status      MilestoneStatus @default(PENDING)
+  completedAt DateTime?
+  approvedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  SUBMITTED
+  APPROVED
+  REVISION
+  PAID
+}
+
+model Payment {
+  id         String        @id @default(cuid())
+  contractId String
+  contract   Contract      @relation(fields: [contractId], references: [id])
+  amount     Float
+  currency   String        @default("MAD")
+  fee        Float         @default(0)
+  netAmount  Float
+  status     PaymentStatus @default(PENDING)
+  method     String?
+  escrowedAt DateTime?
+  releasedAt DateTime?
+  externalId String?
+  invoiceUrl String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+enum PaymentStatus {
+  PENDING
+  ESCROWED
+  RELEASED
+  REFUNDED
+  FAILED
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String
+  title      String
+  body       String?
+  entityType String?
+  entityId   String?
+  actionUrl  String?
+  read       Boolean  @default(false)
+  readAt     DateTime?
+  createdAt  DateTime @default(now())
+}
+
+model Invitation {
+  id           String           @id @default(cuid())
+  missionId    String
+  mission      Mission          @relation(fields: [missionId], references: [id])
+  freelancerId String
+  freelancer   User             @relation("InvitationsReceived", fields: [freelancerId], references: [id])
+  senderId     String
+  sender       User             @relation("InvitationsSent", fields: [senderId], references: [id])
+  message      String?
+  status       InvitationStatus @default(PENDING)
+  createdAt    DateTime         @default(now())
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model Favorite {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  freelancerId String?
+  missionId    String?
+  createdAt    DateTime @default(now())
+
+  @@unique([userId, freelancerId])
+  @@unique([userId, missionId])
 }

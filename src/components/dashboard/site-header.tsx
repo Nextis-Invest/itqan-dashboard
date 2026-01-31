@@ -1,8 +1,12 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { Bell } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { getUnreadCount } from "@/lib/actions/notification"
 
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Tableau de bord",
@@ -11,10 +15,22 @@ const PAGE_TITLES: Record<string, string> = {
   "/freelances": "Freelances",
   "/messages": "Messages",
   "/settings": "Paramètres",
+  "/contracts": "Contrats",
+  "/notifications": "Notifications",
+  "/favorites": "Favoris",
 }
 
 export function SiteHeader() {
   const pathname = usePathname()
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  useEffect(() => {
+    getUnreadCount().then(setUnreadCount).catch(() => {})
+    const interval = setInterval(() => {
+      getUnreadCount().then(setUnreadCount).catch(() => {})
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   const getPageTitle = () => {
     if (PAGE_TITLES[pathname]) {
@@ -24,6 +40,10 @@ export function SiteHeader() {
     if (pathname.startsWith("/missions/")) {
       if (pathname.includes("/new")) return "Nouvelle mission"
       return "Détails mission"
+    }
+
+    if (pathname.startsWith("/contracts/")) {
+      return "Détails contrat"
     }
 
     return "Dashboard"
@@ -41,6 +61,19 @@ export function SiteHeader() {
           <div className="flex items-center gap-2">
             <h1 className="text-sm font-semibold tracking-tight text-white">{getPageTitle()}</h1>
           </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/notifications"
+            className="relative p-2 text-neutral-400 hover:text-white transition-colors rounded-md hover:bg-neutral-800"
+          >
+            <Bell className="h-4 w-4" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-lime-400 px-1 text-[10px] font-bold text-neutral-900">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
+          </Link>
         </div>
       </div>
     </header>
