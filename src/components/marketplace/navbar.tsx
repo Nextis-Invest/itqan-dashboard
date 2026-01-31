@@ -46,17 +46,20 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
           scrolled
             ? "bg-neutral-950 backdrop-blur-xl border-b border-neutral-800 shadow-lg shadow-black/20"
             : "bg-neutral-950"
         }`}
       >
-        <div className={`transition-all duration-300 ${scrolled ? "px-6 md:px-10" : "max-w-5xl mx-auto px-4 pt-3"}`}>
+        <div
+          className="mx-auto px-4 md:px-10 transition-all duration-500 ease-in-out"
+          style={{ maxWidth: scrolled ? "100%" : "64rem", paddingTop: scrolled ? 0 : 12 }}
+        >
           <div
-            className={`flex items-center gap-4 h-14 transition-all duration-300 ${
+            className={`flex items-center gap-4 h-14 transition-all duration-500 ease-in-out ${
               scrolled
-                ? ""
+                ? "bg-transparent px-0"
                 : "bg-neutral-900/90 backdrop-blur-xl rounded-full px-6 border border-neutral-800/50"
             }`}
           >
@@ -117,7 +120,10 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
 
         {/* Categories bar — always visible, full width */}
         <div className={`hidden md:block ${scrolled ? "border-t border-neutral-800/50" : "mt-2"}`}>
-          <div className={`relative ${scrolled ? "px-6 md:px-10" : "max-w-5xl mx-auto px-4"}`}>
+          <div
+            className="relative mx-auto px-4 md:px-10 transition-all duration-500 ease-in-out"
+            style={{ maxWidth: scrolled ? "100%" : "64rem" }}
+          >
             {/* Gradient fade left */}
             <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none" />
             {/* Gradient fade right */}
