@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { email } = body
+    const { email, name, role, source } = body
 
     if (!email) {
       return NextResponse.json(
@@ -21,13 +21,22 @@ export async function POST(req: NextRequest) {
     })
 
     if (!user) {
-      // Auto-create user for Itqan
-      user = await prisma.user.create({
-        data: {
-          email,
-          role: "CLIENT",
-        },
-      })
+      if (source === "onboarding") {
+        // Signup: create user with name and role
+        user = await prisma.user.create({
+          data: {
+            email,
+            name: name || null,
+            role: role === "FREELANCER" ? "FREELANCER" : "CLIENT",
+          },
+        })
+      } else {
+        // Login: user not found
+        return NextResponse.json(
+          { message: "Aucun compte trouvé avec cet email. Inscrivez-vous d'abord.", noAccount: true },
+          { status: 404 }
+        )
+      }
     }
 
     // Generate 4-digit code
@@ -43,15 +52,16 @@ export async function POST(req: NextRequest) {
     })
 
     const fromEmail = process.env.RESEND_FROM_EMAIL || "noreply@itqan.com"
+    const isNewUser = source === "onboarding"
 
     const { error } = await resend.emails.send({
       from: `Itqan <${fromEmail}>`,
       to: [email],
-      subject: `${code} - Code de connexion Itqan`,
+      subject: `${code} - ${isNewUser ? "Bienvenue sur" : "Code de connexion"} Itqan`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; text-align: center; background: #0a0a0a; padding: 40px; border-radius: 12px;">
-          <h2 style="color: #a3e635; margin-bottom: 8px;">Connexion à Itqan</h2>
-          <p style="color: #d4d4d4;">Votre code de connexion est :</p>
+          <h2 style="color: #a3e635; margin-bottom: 8px;">${isNewUser ? "Bienvenue sur Itqan ! 🎉" : "Connexion à Itqan"}</h2>
+          <p style="color: #d4d4d4;">${isNewUser ? "Votre code de vérification :" : "Votre code de connexion :"}</p>
           <div style="font-size: 48px; font-weight: bold; letter-spacing: 8px; margin: 30px 0; color: #a3e635;">
             ${code}
           </div>

@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
+import Image from "next/image"
 import {
   LayoutDashboard,
   Settings,
@@ -86,15 +87,8 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg" className="hover:bg-transparent">
-              <Link href="/dashboard" className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-lime-400/10 border border-lime-400/20">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#a3e635" />
-                    <path d="M2 17L12 22L22 17" stroke="#a3e635" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M2 12L12 17L22 12" stroke="#a3e635" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <span className="font-bold text-lg text-white tracking-tight">Itqan</span>
+              <Link href="/dashboard" className="flex items-center gap-2">
+                <Image src="/icons/itqan-logo.svg" alt="Itqan" width={120} height={40} className="h-8 w-auto" />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

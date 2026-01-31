@@ -10,6 +10,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Itqan Dashboard",
   description: "Plateforme de gestion de missions - Itqan",
+  icons: {
+    icon: "/icons/itqan-favicon.svg",
+    apple: "/icons/itqan-favicon.svg",
+  },
 };
 
 export default function RootLayout({
