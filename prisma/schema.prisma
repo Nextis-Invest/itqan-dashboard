@@ -642,6 +642,22 @@ model Badge {
   @@unique([userId, type])
 }
 
+model Category {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  name        String
+  nameAr      String?
+  icon        String?
+  level       Int        @default(0)
+  order       Int        @default(0)
+
+  parentId    String?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryTree")
+
+  createdAt   DateTime   @default(now())
+}
+
 model Favorite {
   id           String   @id @default(cuid())
   userId       String

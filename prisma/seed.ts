@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { categories } from '../src/lib/categories';
 
 const prisma = new PrismaClient();
 
@@ -9,6 +10,42 @@ const daysFromNow = (d: number) => new Date(now.getTime() + d * 86400000);
 
 async function main() {
   console.log('🌱 Seeding Itqan Dashboard...');
+
+  // ═══════════════════════════════════════════
+  // CATEGORIES (seed first, before everything else)
+  // ═══════════════════════════════════════════
+
+  let catCount = 0;
+  for (let i = 0; i < categories.length; i++) {
+    const cat = categories[i];
+    const root = await prisma.category.upsert({
+      where: { slug: cat.value },
+      update: { name: cat.label, nameAr: cat.labelAr ?? null, icon: cat.icon ?? null, level: 0, order: i, parentId: null },
+      create: { slug: cat.value, name: cat.label, nameAr: cat.labelAr ?? null, icon: cat.icon ?? null, level: 0, order: i, parentId: null },
+    });
+    catCount++;
+    for (let j = 0; j < cat.subcategories.length; j++) {
+      const sub = cat.subcategories[j];
+      const subCat = await prisma.category.upsert({
+        where: { slug: sub.value },
+        update: { name: sub.label, nameAr: sub.labelAr ?? null, level: 1, order: j, parentId: root.id },
+        create: { slug: sub.value, name: sub.label, nameAr: sub.labelAr ?? null, level: 1, order: j, parentId: root.id },
+      });
+      catCount++;
+      if (sub.children) {
+        for (let k = 0; k < sub.children.length; k++) {
+          const child = sub.children[k];
+          await prisma.category.upsert({
+            where: { slug: child.value },
+            update: { name: child.label, nameAr: child.labelAr ?? null, level: 2, order: k, parentId: subCat.id },
+            create: { slug: child.value, name: child.label, nameAr: child.labelAr ?? null, level: 2, order: k, parentId: subCat.id },
+          });
+          catCount++;
+        }
+      }
+    }
+  }
+  console.log(`  ✅ Categories (${catCount})`);
 
   // ═══════════════════════════════════════════
   // USERS
