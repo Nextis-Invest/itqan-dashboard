@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Loader2, Save, ArrowLeft, Building2, UserCircle, Phone, MapPin, CreditCard, Search } from "lucide-react"
+import { Loader2, Save, ArrowLeft, Building2, UserCircle, Phone, MapPin, CreditCard, Search, User } from "lucide-react"
 import { updateClientProfile } from "@/lib/actions/profile"
 import Link from "next/link"
 import type { ClientProfile } from "@prisma/client"
@@ -39,8 +39,10 @@ const industries = [
 
 const formesJuridiques = [
   { value: "SARL", label: "SARL" },
-  { value: "SA", label: "SA" },
+  { value: "EURL", label: "EURL" },
   { value: "SAS", label: "SAS" },
+  { value: "SASU", label: "SASU" },
+  { value: "SA", label: "SA" },
   { value: "SNC", label: "SNC" },
   { value: "AUTO_ENTREPRENEUR", label: "Auto-entrepreneur" },
   { value: "ASSOCIATION", label: "Association" },
@@ -54,6 +56,17 @@ const paymentMethods = [
   { value: "CMI", label: "CMI" },
   { value: "PAYPAL", label: "PayPal" },
   { value: "CASH", label: "Espèces" },
+]
+
+const countries = [
+  { value: "FR", label: "France 🇫🇷" },
+  { value: "MA", label: "Maroc 🇲🇦" },
+  { value: "TN", label: "Tunisie 🇹🇳" },
+  { value: "DZ", label: "Algérie 🇩🇿" },
+  { value: "BE", label: "Belgique 🇧🇪" },
+  { value: "CH", label: "Suisse 🇨🇭" },
+  { value: "CA", label: "Canada 🇨🇦" },
+  { value: "OTHER", label: "Autre" },
 ]
 
 const moroccanRegions = [
@@ -94,7 +107,7 @@ function mapSizeToSelect(size: string): string {
 
 export function EditClientForm({ profile }: { profile: ClientProfile }) {
   const [isPending, setIsPending] = useState(false)
-  const [personType, setPersonType] = useState(profile.personType || "MORAL")
+  const [personType, setPersonType] = useState<"PHYSICAL" | "MORAL">((profile.personType as "PHYSICAL" | "MORAL") || "MORAL")
   const [country, setCountry] = useState(profile.country || "MA")
   const [showCompanySearch, setShowCompanySearch] = useState(false)
 
@@ -107,7 +120,6 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
   const [postalCode, setPostalCode] = useState(profile.postalCode || "")
   const [rc, setRc] = useState(profile.rc || "")
 
-  const isMoral = personType === "MORAL"
   const isFrance = country === "FR"
 
   const handleCompanySelect = (company: CompanyResult) => {
@@ -157,7 +169,11 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
         }}
         className="space-y-6"
       >
-        {/* Section 1: Type de personne */}
+        {/* Hidden inputs for personType and country */}
+        <input type="hidden" name="personType" value={personType} />
+        <input type="hidden" name="country" value={country} />
+
+        {/* Section 1: Type de personne + Pays */}
         <Card className="bg-neutral-900 border-neutral-800">
           <CardHeader>
             <CardTitle className="text-white text-base flex items-center gap-2">
@@ -166,43 +182,50 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-neutral-300">Type de personne</Label>
-                <Select
-                  name="personType"
-                  value={personType}
-                  onValueChange={setPersonType}
+            {/* Person Type Toggle */}
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Type de personne</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPersonType("PHYSICAL")}
+                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
+                    personType === "PHYSICAL"
+                      ? "bg-lime-400 text-neutral-900 border-lime-400"
+                      : "bg-neutral-800 text-neutral-300 border-neutral-700 hover:border-neutral-600"
+                  }`}
                 >
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
-                    <SelectValue placeholder="Choisir..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
-                    <SelectItem value="PHYSICAL">Personne physique</SelectItem>
-                    <SelectItem value="MORAL">Personne morale (société)</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <User className="h-4 w-4" />
+                  Personne physique
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPersonType("MORAL")}
+                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
+                    personType === "MORAL"
+                      ? "bg-lime-400 text-neutral-900 border-lime-400"
+                      : "bg-neutral-800 text-neutral-300 border-neutral-700 hover:border-neutral-600"
+                  }`}
+                >
+                  <Building2 className="h-4 w-4" />
+                  Personne morale
+                </button>
               </div>
-              <div className="space-y-2">
-                <Label className="text-neutral-300">Pays</Label>
-                <Select name="country" value={country} onValueChange={setCountry}>
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
-                    <SelectValue placeholder="Choisir..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
-                    <SelectItem value="FR">🇫🇷 France</SelectItem>
-                    <SelectItem value="MA">🇲🇦 Maroc</SelectItem>
-                    <SelectItem value="TN">🇹🇳 Tunisie</SelectItem>
-                    <SelectItem value="DZ">🇩🇿 Algérie</SelectItem>
-                    <SelectItem value="BE">🇧🇪 Belgique</SelectItem>
-                    <SelectItem value="CH">🇨🇭 Suisse</SelectItem>
-                    <SelectItem value="CA">🇨🇦 Canada</SelectItem>
-                    <SelectItem value="SN">🇸🇳 Sénégal</SelectItem>
-                    <SelectItem value="CI">🇨🇮 Côte d&apos;Ivoire</SelectItem>
-                    <SelectItem value="OTHER">Autre</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            </div>
+
+            {/* Country Selector */}
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Pays</Label>
+              <Select value={country} onValueChange={setCountry}>
+                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectValue placeholder="Choisir un pays..." />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-800 border-neutral-700">
+                  {countries.map((c) => (
+                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {personType === "PHYSICAL" && (
@@ -231,7 +254,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
         </Card>
 
         {/* Section 2: Infos société (si personne morale) */}
-        {isMoral && (
+        {personType === "MORAL" && (
           <Card className="bg-neutral-900 border-neutral-800">
             <CardHeader>
               <CardTitle className="text-white text-base flex items-center justify-between">
@@ -338,7 +361,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-neutral-300">{isFrance ? "SIREN" : "RC (Registre de commerce)"}</Label>
+                  <Label className="text-neutral-300">{isFrance ? "SIREN" : "RC / SIREN"}</Label>
                   <Input
                     name="rc"
                     value={rc}
@@ -357,24 +380,26 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-neutral-300">Patente</Label>
-                  <Input
-                    name="patente"
-                    defaultValue={profile.patente || ""}
-                    className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
-                  />
+              {!isFrance && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-neutral-300">Patente</Label>
+                    <Input
+                      name="patente"
+                      defaultValue={profile.patente || ""}
+                      className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-neutral-300">CNSS</Label>
+                    <Input
+                      name="cnss"
+                      defaultValue={profile.cnss || ""}
+                      className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-neutral-300">CNSS</Label>
-                  <Input
-                    name="cnss"
-                    defaultValue={profile.cnss || ""}
-                    className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
-                  />
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         )}
@@ -394,7 +419,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                 <Input
                   name="phone"
                   defaultValue={profile.phone || ""}
-                  placeholder="+212 6XX XXX XXX"
+                  placeholder={isFrance ? "+33 6 XX XX XX XX" : "+212 6XX XXX XXX"}
                   className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
                 />
               </div>
@@ -403,7 +428,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                 <Input
                   name="phoneSecondary"
                   defaultValue={profile.phoneSecondary || ""}
-                  placeholder="+212 5XX XXX XXX"
+                  placeholder={isFrance ? "+33 1 XX XX XX XX" : "+212 5XX XXX XXX"}
                   className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
                 />
               </div>
@@ -414,7 +439,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                 name="contactEmail"
                 type="email"
                 defaultValue={profile.contactEmail || ""}
-                placeholder="contact@entreprise.ma"
+                placeholder={isFrance ? "contact@entreprise.fr" : "contact@entreprise.ma"}
                 className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
               />
             </div>
@@ -430,8 +455,8 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Address autocomplete for personne physique + France */}
-            {!isMoral && isFrance && (
+            {/* Address autocomplete for France */}
+            {isFrance && (
               <div className="space-y-2">
                 <Label className="text-neutral-300">Recherche d&apos;adresse (France)</Label>
                 <AddressSearch
@@ -472,16 +497,25 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
               </div>
               <div className="space-y-2">
                 <Label className="text-neutral-300">Région</Label>
-                <Select name="region" defaultValue={profile.region || undefined}>
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
-                    <SelectValue placeholder="Choisir..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
-                    {moroccanRegions.map((r) => (
-                      <SelectItem key={r} value={r}>{r}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {!isFrance ? (
+                  <Select name="region" defaultValue={profile.region || undefined}>
+                    <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                      <SelectValue placeholder="Choisir..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-neutral-800 border-neutral-700">
+                      {moroccanRegions.map((r) => (
+                        <SelectItem key={r} value={r}>{r}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    name="region"
+                    defaultValue={profile.region || ""}
+                    placeholder="Île-de-France"
+                    className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
+                  />
+                )}
               </div>
             </div>
           </CardContent>
@@ -515,7 +549,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                 <Input
                   name="bankName"
                   defaultValue={profile.bankName || ""}
-                  placeholder="Ex: Attijariwafa Bank"
+                  placeholder={isFrance ? "Ex: BNP Paribas" : "Ex: Attijariwafa Bank"}
                   className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
                 />
               </div>
