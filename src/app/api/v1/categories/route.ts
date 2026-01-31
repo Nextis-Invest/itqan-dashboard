@@ -2,26 +2,46 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
 export async function GET() {
-  // Aggregate unique categories from freelancer profiles and missions
-  const [freelancerCats, missionCats] = await Promise.all([
-    prisma.freelancerProfile.findMany({
-      where: { category: { not: null } },
-      select: { category: true },
-      distinct: ["category"],
-    }),
-    prisma.mission.findMany({
-      where: { category: { not: null } },
-      select: { category: true },
-      distinct: ["category"],
-    }),
-  ])
-
-  const allCats = new Set<string>()
-  freelancerCats.forEach((f) => f.category && allCats.add(f.category))
-  missionCats.forEach((m) => m.category && allCats.add(m.category))
+  const categories = await prisma.category.findMany({
+    where: { level: 0 },
+    orderBy: { order: "asc" },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      nameAr: true,
+      icon: true,
+      children: {
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          nameAr: true,
+          icon: true,
+          children: {
+            orderBy: { order: "asc" },
+            select: {
+              id: true,
+              slug: true,
+              name: true,
+              nameAr: true,
+              icon: true,
+            },
+          },
+        },
+      },
+    },
+  })
 
   return NextResponse.json(
-    { data: Array.from(allCats).sort() },
-    { headers: { "X-RateLimit-Limit": "100", "X-RateLimit-Remaining": "99" } }
+    { data: categories },
+    {
+      headers: {
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        "X-RateLimit-Limit": "100",
+        "X-RateLimit-Remaining": "99",
+      },
+    }
   )
 }
