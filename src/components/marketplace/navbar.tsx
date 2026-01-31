@@ -24,7 +24,7 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 100)
+      setScrolled(window.scrollY > 10)
     }
     window.addEventListener("scroll", handleScroll, { passive: true })
     handleScroll()
@@ -47,22 +47,16 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "w-full bg-neutral-950/95 backdrop-blur-xl border-b border-neutral-800"
-            : "w-full"
+            ? "bg-neutral-950 backdrop-blur-xl border-b border-neutral-800 shadow-lg shadow-black/20"
+            : "bg-neutral-950"
         }`}
       >
-        <div
-          className={`transition-all duration-300 ${
-            scrolled
-              ? "w-full px-4 md:px-6"
-              : "max-w-4xl mx-auto mt-4 px-4"
-          }`}
-        >
+        <div className={`transition-all duration-300 ${scrolled ? "px-4 md:px-6" : "max-w-5xl mx-auto px-4 pt-3"}`}>
           <div
             className={`flex items-center gap-4 h-14 transition-all duration-300 ${
               scrolled
                 ? ""
-                : "bg-neutral-950/80 backdrop-blur-xl rounded-full px-6 border border-neutral-800/50"
+                : "bg-neutral-900/90 backdrop-blur-xl rounded-full px-6 border border-neutral-800/50"
             }`}
           >
             {/* Logo */}
@@ -117,44 +111,34 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
           </div>
         </div>
 
-        {/* Categories bar — visible after scroll */}
-        <AnimatePresence>
-          {scrolled && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden border-b border-neutral-800/50"
-            >
-              <div className="relative px-4 md:px-6">
-                {/* Gradient fade left */}
-                <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none" />
-                {/* Gradient fade right */}
-                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none" />
+        {/* Categories bar — always visible */}
+        <div className={`hidden md:block ${scrolled ? "border-t border-neutral-800/50" : "mt-2"}`}>
+          <div className={`relative ${scrolled ? "px-4 md:px-6" : "max-w-5xl mx-auto px-4"}`}>
+            {/* Gradient fade left */}
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none" />
+            {/* Gradient fade right */}
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none" />
 
-                <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2">
-                  {categories.map((cat) => {
-                    const isActive = pathname?.startsWith(`/categories/${cat.slug}`)
-                    return (
-                      <Link
-                        key={cat.slug}
-                        href={`/categories/${cat.slug}`}
-                        className={`whitespace-nowrap px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
-                          isActive
-                            ? "text-lime-400 border-lime-400"
-                            : "text-neutral-400 border-transparent hover:text-white hover:border-neutral-600"
-                        }`}
-                      >
-                        {cat.name}
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2">
+              {categories.map((cat) => {
+                const isActive = pathname?.startsWith(`/categories/${cat.slug}`)
+                return (
+                  <Link
+                    key={cat.slug}
+                    href={`/categories/${cat.slug}`}
+                    className={`whitespace-nowrap px-3 py-2 text-[13px] font-medium transition-colors border-b-2 ${
+                      isActive
+                        ? "text-lime-400 border-lime-400"
+                        : "text-neutral-400 border-transparent hover:text-white hover:border-neutral-600"
+                    }`}
+                  >
+                    {cat.name}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </div>
       </nav>
 
       {/* Mobile menu overlay */}
@@ -225,7 +209,7 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
       </AnimatePresence>
 
       {/* Spacer to push content below the navbar */}
-      <div className={`${scrolled ? "h-[104px]" : "h-[72px]"} transition-all duration-300`} />
+      <div className="h-[120px] md:h-[108px]" />
     </>
   )
 }
