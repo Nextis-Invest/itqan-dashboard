@@ -46,31 +46,28 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-neutral-950 backdrop-blur-xl border-b border-neutral-800 shadow-lg shadow-black/20"
             : "bg-neutral-950"
         }`}
       >
-        <div
-          className="mx-auto px-4 md:px-10 transition-all duration-500 ease-in-out"
-          style={{ maxWidth: scrolled ? "100%" : "64rem", paddingTop: scrolled ? 0 : 12 }}
-        >
+        <div className={`transition-all duration-300 ${scrolled ? "px-4 md:px-6" : "max-w-5xl mx-auto px-4 pt-3"}`}>
           <div
-            className={`flex items-center gap-4 h-14 transition-all duration-500 ease-in-out ${
+            className={`flex items-center gap-4 h-14 transition-all duration-300 ${
               scrolled
-                ? "bg-transparent px-0"
+                ? ""
                 : "bg-neutral-900/90 backdrop-blur-xl rounded-full px-6 border border-neutral-800/50"
             }`}
           >
             {/* Logo */}
-            <Link href="/marketplace/categories" className="shrink-0">
+            <Link href="/categories" className="shrink-0">
               <Image
                 src="/icons/itqan-logo.svg"
                 alt="Itqan"
-                width={160}
-                height={48}
-                className="h-14 w-auto"
+                width={100}
+                height={34}
+                className="h-8 w-auto"
               />
             </Link>
 
@@ -118,24 +115,21 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
           </div>
         </div>
 
-        {/* Categories bar — always visible, full width */}
+        {/* Categories bar — always visible */}
         <div className={`hidden md:block ${scrolled ? "border-t border-neutral-800/50" : "mt-2"}`}>
-          <div
-            className="relative mx-auto px-4 md:px-10 transition-all duration-500 ease-in-out"
-            style={{ maxWidth: scrolled ? "100%" : "64rem" }}
-          >
+          <div className={`relative ${scrolled ? "px-4 md:px-6" : "max-w-5xl mx-auto px-4"}`}>
             {/* Gradient fade left */}
             <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none" />
             {/* Gradient fade right */}
             <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none" />
 
-            <div className="flex items-center justify-center gap-1 overflow-x-auto scrollbar-hide py-2">
+            <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2">
               {categories.map((cat) => {
-                const isActive = pathname?.startsWith(`/marketplace/categories/${cat.slug}`)
+                const isActive = pathname?.startsWith(`/categories/${cat.slug}`)
                 return (
                   <Link
                     key={cat.slug}
-                    href={`/marketplace/categories/${cat.slug}`}
+                    href={`/categories/${cat.slug}`}
                     className={`whitespace-nowrap px-3 py-2 text-[13px] font-medium transition-colors border-b-2 ${
                       isActive
                         ? "text-lime-400 border-lime-400"
@@ -181,11 +175,11 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
                   Catégories
                 </p>
                 {categories.map((cat) => {
-                  const isActive = pathname?.startsWith(`/marketplace/categories/${cat.slug}`)
+                  const isActive = pathname?.startsWith(`/categories/${cat.slug}`)
                   return (
                     <Link
                       key={cat.slug}
-                      href={`/marketplace/categories/${cat.slug}`}
+                      href={`/categories/${cat.slug}`}
                       className={`block px-4 py-3 rounded-lg text-sm transition-colors ${
                         isActive
                           ? "bg-lime-400/10 text-lime-400 font-medium"

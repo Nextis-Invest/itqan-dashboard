@@ -95,19 +95,19 @@ export default async function SubcategoryPage({
     Object.entries(merged).forEach(([k, v]) => {
       if (v) p.set(k, v)
     })
-    return `/marketplace/categories/${slug}/${sub}?${p.toString()}`
+    return `/categories/${slug}/${sub}?${p.toString()}`
   }
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/marketplace/categories" className="hover:text-lime-400 transition-colors">
+        <Link href="/categories" className="hover:text-lime-400 transition-colors">
           Catégories
         </Link>
         <ChevronRight className="h-4 w-4" />
         <Link
-          href={`/marketplace/categories/${slug}`}
+          href={`/categories/${slug}`}
           className="hover:text-lime-400 transition-colors"
         >
           {parentCat.name}
@@ -126,7 +126,7 @@ export default async function SubcategoryPage({
           </h3>
           <div className="space-y-1">
             <Link
-              href={`/marketplace/categories/${slug}`}
+              href={`/categories/${slug}`}
               className="block px-3 py-2 rounded-lg text-sm text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
             >
               ← Toutes
@@ -134,7 +134,7 @@ export default async function SubcategoryPage({
             {parentCat.children.map((sibling) => (
               <Link
                 key={sibling.id}
-                href={`/marketplace/categories/${slug}/${sibling.slug}`}
+                href={`/categories/${slug}/${sibling.slug}`}
                 className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
                   sibling.slug === sub
                     ? "bg-lime-400/10 text-lime-400 font-medium"

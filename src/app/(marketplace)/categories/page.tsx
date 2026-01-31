@@ -67,7 +67,7 @@ export default async function CategoriesPage() {
           <div key={cat.id} className="space-y-4">
             {/* Root category header */}
             <Link
-              href={`/marketplace/categories/${cat.slug}`}
+              href={`/categories/${cat.slug}`}
               className="group flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
               <span className="text-3xl">{getIcon(cat.icon)}</span>
@@ -83,7 +83,7 @@ export default async function CategoriesPage() {
                 {cat.children.map((sub) => (
                   <Link
                     key={sub.id}
-                    href={`/marketplace/categories/${cat.slug}/${sub.slug}`}
+                    href={`/categories/${cat.slug}/${sub.slug}`}
                     className="group flex items-center gap-2 px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-lime-400/50 hover:bg-neutral-800/50 transition-all"
                   >
                     <span className="text-sm text-neutral-300 group-hover:text-lime-400 transition-colors">

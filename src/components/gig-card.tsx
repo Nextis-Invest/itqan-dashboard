@@ -37,7 +37,7 @@ export function GigCard({ gig }: GigCardProps) {
     .toUpperCase()
 
   return (
-    <Link href={`/marketplace/gigs/${gig.id}`}>
+    <Link href={`/gigs/${gig.id}`}>
       <Card className="group bg-neutral-900 border-neutral-800 hover:border-lime-400/50 transition-all duration-200 overflow-hidden hover:shadow-lg hover:shadow-lime-400/5">
         {/* Image */}
         <div className="aspect-video w-full overflow-hidden">

@@ -88,14 +88,14 @@ export default async function CategoryPage({
     Object.entries(merged).forEach(([k, v]) => {
       if (v) p.set(k, v)
     })
-    return `/marketplace/categories/${slug}?${p.toString()}`
+    return `/categories/${slug}?${p.toString()}`
   }
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/marketplace/categories" className="hover:text-lime-400 transition-colors">
+        <Link href="/categories" className="hover:text-lime-400 transition-colors">
           Catégories
         </Link>
         <ChevronRight className="h-4 w-4" />
