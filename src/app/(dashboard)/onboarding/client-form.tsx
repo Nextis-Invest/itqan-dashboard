@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Loader2, Save, Search, PenLine } from "lucide-react"
+import { Loader2, Save, Search } from "lucide-react"
 import { createClientProfile } from "@/lib/actions/profile"
 import { CompanySearch, type CompanyResult } from "@/components/company-search"
 
@@ -40,15 +40,25 @@ const formesJuridiques = [
   { value: "OTHER", label: "Autre" },
 ]
 
-// Map API size strings to form select values
+const countries = [
+  { value: "FR", label: "🇫🇷 France" },
+  { value: "MA", label: "🇲🇦 Maroc" },
+  { value: "TN", label: "🇹🇳 Tunisie" },
+  { value: "DZ", label: "🇩🇿 Algérie" },
+  { value: "BE", label: "🇧🇪 Belgique" },
+  { value: "CH", label: "🇨🇭 Suisse" },
+  { value: "CA", label: "🇨🇦 Canada" },
+  { value: "SN", label: "🇸🇳 Sénégal" },
+  { value: "CI", label: "🇨🇮 Côte d'Ivoire" },
+  { value: "OTHER", label: "Autre" },
+]
+
 function mapSizeToSelect(size: string): string {
-  if (size.includes("5000")) return "200+"
-  if (size.includes("250")) return "200+"
+  if (size.includes("5000") || size.includes("250")) return "200+"
   if (size.includes("10-249") || size.includes("PME")) return "51-200"
   return "1-10"
 }
 
-// Map API legal form to form select value
 function mapLegalFormToSelect(legalForm: string): string {
   const lower = legalForm.toLowerCase()
   if (lower.includes("sasu") || lower.includes("sas à associé unique")) return "SASU"
@@ -64,7 +74,11 @@ function mapLegalFormToSelect(legalForm: string): string {
 
 export function ClientOnboardingForm() {
   const [isPending, setIsPending] = useState(false)
+  const [personType, setPersonType] = useState("")
+  const [country, setCountry] = useState("")
   const [manualMode, setManualMode] = useState(false)
+
+  // Controlled fields for auto-fill from company search
   const [companyName, setCompanyName] = useState("")
   const [formeJuridique, setFormeJuridique] = useState("")
   const [companySize, setCompanySize] = useState("")
@@ -72,7 +86,10 @@ export function ClientOnboardingForm() {
   const [city, setCity] = useState("")
   const [postalCode, setPostalCode] = useState("")
   const [siren, setSiren] = useState("")
-  const formRef = useRef<HTMLFormElement>(null)
+
+  const isMoral = personType === "MORAL"
+  const isFrance = country === "FR"
+  const showCompanySearch = isMoral && isFrance && !manualMode
 
   const handleCompanySelect = (company: CompanyResult) => {
     setCompanyName(company.name)
@@ -94,7 +111,6 @@ export function ClientOnboardingForm() {
       </CardHeader>
       <CardContent>
         <form
-          ref={formRef}
           action={async (formData) => {
             setIsPending(true)
             try {
@@ -105,99 +121,149 @@ export function ClientOnboardingForm() {
           }}
           className="space-y-6"
         >
-          {/* Company Search Section */}
-          {!manualMode ? (
+          {/* Step 1: Person type + Country */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Type de personne *</Label>
+              <Select name="personType" value={personType} onValueChange={setPersonType}>
+                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectValue placeholder="Choisir..." />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectItem value="PHYSICAL">Personne physique</SelectItem>
+                  <SelectItem value="MORAL">Personne morale (société)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Pays *</Label>
+              <Select name="country" value={country} onValueChange={setCountry}>
+                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectValue placeholder="Choisir..." />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-800 border-neutral-700">
+                  {countries.map((c) => (
+                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Personne physique: CIN field */}
+          {personType === "PHYSICAL" && (
+            <div className="space-y-2">
+              <Label className="text-neutral-300">CIN (Carte d&apos;identité nationale)</Label>
+              <Input
+                name="cin"
+                placeholder="Ex: AB123456"
+                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+              />
+            </div>
+          )}
+
+          {/* Company search: only for personne morale + France */}
+          {showCompanySearch && (
             <div className="space-y-2">
               <Label className="text-neutral-300 flex items-center gap-2">
                 <Search className="h-3.5 w-3.5" />
-                Rechercher votre entreprise (France)
+                Rechercher votre entreprise (data.gouv.fr)
               </Label>
               <CompanySearch
                 onSelect={handleCompanySelect}
                 onManualMode={() => setManualMode(true)}
               />
             </div>
-          ) : (
+          )}
+
+          {/* Toggle back to search if in manual mode + France + Moral */}
+          {isMoral && isFrance && manualMode && (
             <button
               type="button"
               onClick={() => setManualMode(false)}
               className="text-sm text-neutral-400 hover:text-lime-400 transition-colors flex items-center gap-1.5"
             >
               <Search className="h-3.5 w-3.5" />
-              Rechercher une entreprise
+              Rechercher une entreprise (data.gouv.fr)
             </button>
           )}
 
-          <div className="space-y-2">
-            <Label className="text-neutral-300">Nom de l&apos;entreprise *</Label>
-            <Input
-              name="companyName"
-              required
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Ex: Itqan Technologies"
-              className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
-            />
-          </div>
+          {/* Company fields: only for personne morale */}
+          {isMoral && (
+            <>
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Nom de l&apos;entreprise *</Label>
+                <Input
+                  name="companyName"
+                  required
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Ex: Itqan Technologies"
+                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                />
+              </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-neutral-300">Forme juridique</Label>
-              <Select name="formeJuridique" value={formeJuridique} onValueChange={setFormeJuridique}>
-                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
-                  <SelectValue placeholder="Choisir..." />
-                </SelectTrigger>
-                <SelectContent className="bg-neutral-800 border-neutral-700">
-                  {formesJuridiques.map((f) => (
-                    <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-neutral-300">SIREN</Label>
-              <Input
-                name="rc"
-                value={siren}
-                onChange={(e) => setSiren(e.target.value)}
-                placeholder="Ex: 123456789"
-                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
-              />
-            </div>
-          </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-neutral-300">Forme juridique</Label>
+                  <Select name="formeJuridique" value={formeJuridique} onValueChange={setFormeJuridique}>
+                    <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                      <SelectValue placeholder="Choisir..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-neutral-800 border-neutral-700">
+                      {formesJuridiques.map((f) => (
+                        <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-neutral-300">{isFrance ? "SIREN" : "RC (Registre de commerce)"}</Label>
+                  <Input
+                    name="rc"
+                    value={siren}
+                    onChange={(e) => setSiren(e.target.value)}
+                    placeholder={isFrance ? "Ex: 123456789" : "Ex: 12345"}
+                    className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                  />
+                </div>
+              </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-neutral-300">Taille de l&apos;entreprise</Label>
-              <Select name="companySize" value={companySize} onValueChange={setCompanySize}>
-                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
-                  <SelectValue placeholder="Choisir..." />
-                </SelectTrigger>
-                <SelectContent className="bg-neutral-800 border-neutral-700">
-                  <SelectItem value="1-10">1-10 employés</SelectItem>
-                  <SelectItem value="11-50">11-50 employés</SelectItem>
-                  <SelectItem value="51-200">51-200 employés</SelectItem>
-                  <SelectItem value="200+">200+ employés</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-neutral-300">Secteur</Label>
-              <Select name="industry">
-                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
-                  <SelectValue placeholder="Choisir..." />
-                </SelectTrigger>
-                <SelectContent className="bg-neutral-800 border-neutral-700">
-                  {industries.map((ind) => (
-                    <SelectItem key={ind.value} value={ind.value}>
-                      {ind.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-neutral-300">Taille de l&apos;entreprise</Label>
+                  <Select name="companySize" value={companySize} onValueChange={setCompanySize}>
+                    <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                      <SelectValue placeholder="Choisir..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-neutral-800 border-neutral-700">
+                      <SelectItem value="1-10">1-10 employés</SelectItem>
+                      <SelectItem value="11-50">11-50 employés</SelectItem>
+                      <SelectItem value="51-200">51-200 employés</SelectItem>
+                      <SelectItem value="200+">200+ employés</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-neutral-300">Secteur</Label>
+                  <Select name="industry">
+                    <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                      <SelectValue placeholder="Choisir..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-neutral-800 border-neutral-700">
+                      {industries.map((ind) => (
+                        <SelectItem key={ind.value} value={ind.value}>
+                          {ind.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </>
+          )}
 
+          {/* Address fields: always shown (for both types) */}
           <div className="space-y-2">
             <Label className="text-neutral-300">Adresse</Label>
             <Input
@@ -242,7 +308,7 @@ export function ClientOnboardingForm() {
 
           <Button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || !personType || !country}
             className="w-full bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold"
           >
             {isPending ? (

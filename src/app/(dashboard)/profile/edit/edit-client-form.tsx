@@ -94,6 +94,7 @@ function mapSizeToSelect(size: string): string {
 export function EditClientForm({ profile }: { profile: ClientProfile }) {
   const [isPending, setIsPending] = useState(false)
   const [personType, setPersonType] = useState(profile.personType || "MORAL")
+  const [country, setCountry] = useState(profile.country || "MA")
   const [showCompanySearch, setShowCompanySearch] = useState(false)
 
   // Controlled fields for auto-fill
@@ -104,6 +105,9 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
   const [city, setCity] = useState(profile.city || "")
   const [postalCode, setPostalCode] = useState(profile.postalCode || "")
   const [rc, setRc] = useState(profile.rc || "")
+
+  const isMoral = personType === "MORAL"
+  const isFrance = country === "FR"
 
   const handleCompanySelect = (company: CompanyResult) => {
     setCompanyName(company.name)
@@ -155,21 +159,43 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-neutral-300">Type de personne</Label>
-              <Select
-                name="personType"
-                defaultValue={profile.personType || "MORAL"}
-                onValueChange={setPersonType}
-              >
-                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
-                  <SelectValue placeholder="Choisir..." />
-                </SelectTrigger>
-                <SelectContent className="bg-neutral-800 border-neutral-700">
-                  <SelectItem value="PHYSICAL">Personne physique</SelectItem>
-                  <SelectItem value="MORAL">Personne morale (société)</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Type de personne</Label>
+                <Select
+                  name="personType"
+                  value={personType}
+                  onValueChange={setPersonType}
+                >
+                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                    <SelectValue placeholder="Choisir..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                    <SelectItem value="PHYSICAL">Personne physique</SelectItem>
+                    <SelectItem value="MORAL">Personne morale (société)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Pays</Label>
+                <Select name="country" value={country} onValueChange={setCountry}>
+                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                    <SelectValue placeholder="Choisir..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                    <SelectItem value="FR">🇫🇷 France</SelectItem>
+                    <SelectItem value="MA">🇲🇦 Maroc</SelectItem>
+                    <SelectItem value="TN">🇹🇳 Tunisie</SelectItem>
+                    <SelectItem value="DZ">🇩🇿 Algérie</SelectItem>
+                    <SelectItem value="BE">🇧🇪 Belgique</SelectItem>
+                    <SelectItem value="CH">🇨🇭 Suisse</SelectItem>
+                    <SelectItem value="CA">🇨🇦 Canada</SelectItem>
+                    <SelectItem value="SN">🇸🇳 Sénégal</SelectItem>
+                    <SelectItem value="CI">🇨🇮 Côte d&apos;Ivoire</SelectItem>
+                    <SelectItem value="OTHER">Autre</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {personType === "PHYSICAL" && (
@@ -198,7 +224,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
         </Card>
 
         {/* Section 2: Infos société (si personne morale) */}
-        {personType === "MORAL" && (
+        {isMoral && (
           <Card className="bg-neutral-900 border-neutral-800">
             <CardHeader>
               <CardTitle className="text-white text-base flex items-center justify-between">
@@ -206,18 +232,20 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                   <Building2 className="h-4 w-4 text-lime-400" />
                   Informations société
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setShowCompanySearch(!showCompanySearch)}
-                  className="text-xs text-neutral-400 hover:text-lime-400 transition-colors flex items-center gap-1 font-normal"
-                >
-                  <Search className="h-3 w-3" />
-                  {showCompanySearch ? "Masquer la recherche" : "Rechercher (data.gouv.fr)"}
-                </button>
+                {isFrance && (
+                  <button
+                    type="button"
+                    onClick={() => setShowCompanySearch(!showCompanySearch)}
+                    className="text-xs text-neutral-400 hover:text-lime-400 transition-colors flex items-center gap-1 font-normal"
+                  >
+                    <Search className="h-3 w-3" />
+                    {showCompanySearch ? "Masquer la recherche" : "Rechercher (data.gouv.fr)"}
+                  </button>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {showCompanySearch && (
+              {isFrance && showCompanySearch && (
                 <CompanySearch
                   onSelect={handleCompanySelect}
                   className="pb-4 border-b border-neutral-700/50"
@@ -303,7 +331,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-neutral-300">RC / SIREN</Label>
+                  <Label className="text-neutral-300">{isFrance ? "SIREN" : "RC (Registre de commerce)"}</Label>
                   <Input
                     name="rc"
                     value={rc}
@@ -438,14 +466,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                 </Select>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-neutral-300">Pays</Label>
-              <Input
-                name="country"
-                defaultValue={profile.country || "MA"}
-                className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
-              />
-            </div>
+            {/* Country is set in the "Informations personnelles" section above */}
           </CardContent>
         </Card>
 
