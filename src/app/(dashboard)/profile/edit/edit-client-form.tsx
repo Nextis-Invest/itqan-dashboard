@@ -17,6 +17,7 @@ import { updateClientProfile } from "@/lib/actions/profile"
 import Link from "next/link"
 import type { ClientProfile } from "@prisma/client"
 import { CompanySearch, type CompanyResult } from "@/components/company-search"
+import { AddressSearch } from "@/components/address-search"
 
 const industries = [
   { value: "tech", label: "Technologie" },
@@ -118,6 +119,12 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
     setPostalCode(company.postalCode)
     setRc(company.siren)
     setShowCompanySearch(false)
+  }
+
+  const handleAddressSelect = (result: { address: string; postalCode: string; city: string; region: string }) => {
+    setAddress(result.address)
+    setPostalCode(result.postalCode)
+    setCity(result.city)
   }
 
   const formatDateForInput = (date: Date | null): string => {
@@ -423,6 +430,17 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Address autocomplete for personne physique + France */}
+            {!isMoral && isFrance && (
+              <div className="space-y-2">
+                <Label className="text-neutral-300">Recherche d&apos;adresse (France)</Label>
+                <AddressSearch
+                  onSelect={handleAddressSelect}
+                  defaultValue={address}
+                />
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label className="text-neutral-300">Adresse</Label>
               <Input
@@ -466,7 +484,6 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                 </Select>
               </div>
             </div>
-            {/* Country is set in the "Informations personnelles" section above */}
           </CardContent>
         </Card>
 
