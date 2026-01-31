@@ -123,7 +123,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
   }
 
   return (
-    <Sidebar collapsible="icon" {...props} className="border-r border-neutral-800">
+    <Sidebar collapsible="icon" {...props} className="border-r border-neutral-800 overflow-x-hidden">
       <SidebarHeader className="border-b border-neutral-800 pb-4">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -136,7 +136,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-4">
+      <SidebarContent className="px-2 py-4 overflow-x-hidden">
         <div className="mb-2 px-3">
           <span className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 font-medium">
             Navigation
