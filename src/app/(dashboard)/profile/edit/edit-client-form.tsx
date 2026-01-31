@@ -12,10 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Loader2, Save, ArrowLeft, Building2, UserCircle, Phone, MapPin, CreditCard } from "lucide-react"
+import { Loader2, Save, ArrowLeft, Building2, UserCircle, Phone, MapPin, CreditCard, Search } from "lucide-react"
 import { updateClientProfile } from "@/lib/actions/profile"
 import Link from "next/link"
 import type { ClientProfile } from "@prisma/client"
+import { CompanySearch, type CompanyResult } from "@/components/company-search"
 
 const industries = [
   { value: "tech", label: "Technologie" },
@@ -69,9 +70,51 @@ const moroccanRegions = [
   "Dakhla-Oued Ed-Dahab",
 ]
 
+// Map API legal form to form select value
+function mapLegalFormToSelect(legalForm: string): string {
+  const lower = legalForm.toLowerCase()
+  if (lower.includes("sasu") || lower.includes("sas à associé unique")) return "SASU"
+  if (lower.includes("sas")) return "SAS"
+  if (lower.includes("eurl") || lower.includes("sarl unipersonnelle")) return "EURL"
+  if (lower.includes("sarl")) return "SARL"
+  if (lower.includes("sa ")) return "SA"
+  if (lower.includes("snc")) return "SNC"
+  if (lower.includes("entrepreneur")) return "AUTO_ENTREPRENEUR"
+  if (lower.includes("association")) return "ASSOCIATION"
+  return "OTHER"
+}
+
+function mapSizeToSelect(size: string): string {
+  if (size.includes("5000")) return "200+"
+  if (size.includes("250")) return "200+"
+  if (size.includes("10-249") || size.includes("PME")) return "51-200"
+  return "1-10"
+}
+
 export function EditClientForm({ profile }: { profile: ClientProfile }) {
   const [isPending, setIsPending] = useState(false)
   const [personType, setPersonType] = useState(profile.personType || "MORAL")
+  const [showCompanySearch, setShowCompanySearch] = useState(false)
+
+  // Controlled fields for auto-fill
+  const [companyName, setCompanyName] = useState(profile.companyName || "")
+  const [formeJuridique, setFormeJuridique] = useState(profile.formeJuridique || "")
+  const [companySize, setCompanySize] = useState(profile.companySize || "")
+  const [address, setAddress] = useState(profile.address || "")
+  const [city, setCity] = useState(profile.city || "")
+  const [postalCode, setPostalCode] = useState(profile.postalCode || "")
+  const [rc, setRc] = useState(profile.rc || "")
+
+  const handleCompanySelect = (company: CompanyResult) => {
+    setCompanyName(company.name)
+    setFormeJuridique(mapLegalFormToSelect(company.legalForm))
+    setCompanySize(mapSizeToSelect(company.size))
+    setAddress(company.address)
+    setCity(company.city)
+    setPostalCode(company.postalCode)
+    setRc(company.siren)
+    setShowCompanySearch(false)
+  }
 
   const formatDateForInput = (date: Date | null): string => {
     if (!date) return ""
@@ -158,24 +201,42 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
         {personType === "MORAL" && (
           <Card className="bg-neutral-900 border-neutral-800">
             <CardHeader>
-              <CardTitle className="text-white text-base flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-lime-400" />
-                Informations société
+              <CardTitle className="text-white text-base flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-lime-400" />
+                  Informations société
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowCompanySearch(!showCompanySearch)}
+                  className="text-xs text-neutral-400 hover:text-lime-400 transition-colors flex items-center gap-1 font-normal"
+                >
+                  <Search className="h-3 w-3" />
+                  {showCompanySearch ? "Masquer la recherche" : "Rechercher (data.gouv.fr)"}
+                </button>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {showCompanySearch && (
+                <CompanySearch
+                  onSelect={handleCompanySelect}
+                  className="pb-4 border-b border-neutral-700/50"
+                />
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-neutral-300">Nom de l&apos;entreprise</Label>
                   <Input
                     name="companyName"
-                    defaultValue={profile.companyName || ""}
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
                     className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-neutral-300">Forme juridique</Label>
-                  <Select name="formeJuridique" defaultValue={profile.formeJuridique || undefined}>
+                  <Select name="formeJuridique" value={formeJuridique || undefined} onValueChange={setFormeJuridique}>
                     <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
                       <SelectValue placeholder="Choisir..." />
                     </SelectTrigger>
@@ -191,7 +252,7 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-neutral-300">Taille de l&apos;entreprise</Label>
-                  <Select name="companySize" defaultValue={profile.companySize || undefined}>
+                  <Select name="companySize" value={companySize || undefined} onValueChange={setCompanySize}>
                     <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
                       <SelectValue placeholder="Choisir..." />
                     </SelectTrigger>
@@ -242,10 +303,11 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-neutral-300">RC (Registre de commerce)</Label>
+                  <Label className="text-neutral-300">RC / SIREN</Label>
                   <Input
                     name="rc"
-                    defaultValue={profile.rc || ""}
+                    value={rc}
+                    onChange={(e) => setRc(e.target.value)}
                     className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
                   />
                 </div>
@@ -337,7 +399,8 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
               <Label className="text-neutral-300">Adresse</Label>
               <Input
                 name="address"
-                defaultValue={profile.address || ""}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 placeholder="Rue, numéro, quartier..."
                 className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
               />
@@ -347,7 +410,8 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                 <Label className="text-neutral-300">Ville</Label>
                 <Input
                   name="city"
-                  defaultValue={profile.city || ""}
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
                   className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
                 />
               </div>
@@ -355,7 +419,8 @@ export function EditClientForm({ profile }: { profile: ClientProfile }) {
                 <Label className="text-neutral-300">Code postal</Label>
                 <Input
                   name="postalCode"
-                  defaultValue={profile.postalCode || ""}
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
                   className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
                 />
               </div>
