@@ -1,4 +1,7 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = { title: "Onboarding" }
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma"
 import { FreelancerOnboardingForm } from "./freelancer-form"

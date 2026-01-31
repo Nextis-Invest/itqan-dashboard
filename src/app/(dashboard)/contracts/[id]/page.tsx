@@ -1,5 +1,8 @@
+import type { Metadata } from "next"
 import { redirect, notFound } from "next/navigation"
 import { auth } from "@/lib/auth/config"
+
+export const metadata: Metadata = { title: "Détail du contrat" }
 import { getContract, signContract, completeContract } from "@/lib/actions/contract"
 import { submitMilestone, approveMilestone, requestRevision, startMilestone, createMilestone } from "@/lib/actions/milestone"
 import { prisma } from "@/lib/prisma"

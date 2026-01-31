@@ -1,6 +1,9 @@
+import type { Metadata } from "next"
 import { redirect, notFound } from "next/navigation"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma"
+
+export const metadata: Metadata = { title: "Gestion du litige" }
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft } from "lucide-react"

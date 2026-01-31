@@ -1,4 +1,7 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = { title: "Contrats" }
 import { auth } from "@/lib/auth/config"
 import { getContracts } from "@/lib/actions/contract"
 import { Card, CardContent } from "@/components/ui/card"

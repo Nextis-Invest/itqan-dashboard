@@ -1,4 +1,7 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = { title: "Mon TJM" }
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"

@@ -1,6 +1,13 @@
+import type { Metadata } from "next"
 import { redirect, notFound } from "next/navigation"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const gig = await prisma.gig.findUnique({ where: { id }, select: { title: true } })
+  return { title: gig?.title ? `Modifier : ${gig.title}` : "Modifier le service" }
+}
 import { GigEditForm } from "./gig-edit-form"
 
 export const dynamic = "force-dynamic"

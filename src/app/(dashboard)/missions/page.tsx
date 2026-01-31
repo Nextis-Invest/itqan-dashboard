@@ -1,4 +1,7 @@
+import type { Metadata } from "next"
 import Link from "next/link"
+
+export const metadata: Metadata = { title: "Mes missions" }
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"

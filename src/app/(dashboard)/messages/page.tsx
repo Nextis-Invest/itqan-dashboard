@@ -1,4 +1,7 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = { title: "Messages" }
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma"
 import { MessagesClient } from "./messages-client"

@@ -1,6 +1,13 @@
+import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const mission = await prisma.mission.findUnique({ where: { id }, select: { title: true } })
+  return { title: mission?.title ?? "Mission" }
+}
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
