@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Search, Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -60,11 +61,14 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
             }`}
           >
             {/* Logo */}
-            <Link
-              href="/categories"
-              className="text-xl font-bold text-lime-400 shrink-0 tracking-tight"
-            >
-              إتقان
+            <Link href="/categories" className="shrink-0">
+              <Image
+                src="/icons/itqan-logo.svg"
+                alt="Itqan"
+                width={100}
+                height={34}
+                className="h-8 w-auto"
+              />
             </Link>
 
             {/* Search bar — desktop */}
