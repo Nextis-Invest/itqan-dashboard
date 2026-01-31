@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Users } from "lucide-react"
 import { AdminUserActions } from "./user-actions"
+import { AdminBadgeManager } from "@/components/admin-badge-manager"
 
 export const dynamic = "force-dynamic"
 
@@ -36,6 +37,7 @@ export default async function AdminUsersPage({
     include: {
       freelancerProfile: { select: { verified: true } },
       clientProfile: { select: { verified: true } },
+      badges: { select: { id: true, type: true, name: true, icon: true } },
     },
     orderBy: { createdAt: "desc" },
     take: 100,
@@ -113,7 +115,10 @@ export default async function AdminUsersPage({
                       {new Date(u.createdAt).toLocaleDateString("fr-FR")}
                     </TableCell>
                     <TableCell>
-                      <AdminUserActions userId={u.id} verified={verified} suspended={u.suspended} />
+                      <div className="flex items-center gap-1">
+                        <AdminUserActions userId={u.id} verified={verified} suspended={u.suspended} />
+                        <AdminBadgeManager userId={u.id} currentBadges={u.badges} />
+                      </div>
                     </TableCell>
                   </TableRow>
                 )

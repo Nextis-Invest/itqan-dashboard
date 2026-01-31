@@ -19,6 +19,8 @@ import { ExperienceManager } from "@/components/experience-form"
 import { LinkedInImportButton } from "@/components/linkedin-import-button"
 import { getCertifications } from "@/lib/actions/certification"
 import { getEducations } from "@/lib/actions/education"
+import { getUserBadges } from "@/lib/actions/badge"
+import { BadgeDisplay } from "@/components/badge-display"
 
 export const dynamic = "force-dynamic"
 
@@ -63,9 +65,10 @@ export default async function ProfilePage() {
     .toUpperCase()
     .slice(0, 2)
 
-  const [certifications, educations] = await Promise.all([
+  const [certifications, educations, badges] = await Promise.all([
     getCertifications(session.user.id),
     getEducations(session.user.id),
+    getUserBadges(session.user.id),
   ])
 
   const hasLinkedInToken = !!(session.user as any).linkedinAccessToken
@@ -97,6 +100,7 @@ export default async function ProfilePage() {
                 {(fp?.verified || cp?.verified) && (
                   <CheckCircle className="h-5 w-5 text-lime-400" />
                 )}
+                <BadgeDisplay badges={badges} />
               </div>
               {fp && (
                 <p className="text-lime-400 font-medium mt-1">{fp.title}</p>

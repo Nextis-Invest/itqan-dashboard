@@ -105,6 +105,7 @@ model User {
   favorites         Favorite[]
   invitationsReceived Invitation[] @relation("InvitationsReceived")
   invitationsSent     Invitation[] @relation("InvitationsSent")
+  badges              Badge[]
 }
 
 model FreelancerProfile {
@@ -547,6 +548,19 @@ enum InvitationStatus {
   PENDING
   ACCEPTED
   DECLINED
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String
+  name        String
+  description String?
+  icon        String?
+  earnedAt    DateTime @default(now())
+
+  @@unique([userId, type])
 }
 
 model Favorite {

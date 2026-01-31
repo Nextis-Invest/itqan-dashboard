@@ -11,6 +11,8 @@ import {
   CheckCircle,
 } from "lucide-react"
 import { ExperienceList } from "@/components/experience-list"
+import { getUserBadges } from "@/lib/actions/badge"
+import { BadgeDisplay } from "@/components/badge-display"
 
 export const dynamic = "force-dynamic"
 
@@ -43,6 +45,8 @@ export default async function PublicProfilePage({
 
   if (!user) notFound()
 
+  const badges = await getUserBadges(userId)
+
   const fp = user.freelancerProfile
   const cp = user.clientProfile
   const initials = (user.name || user.email)
@@ -68,6 +72,7 @@ export default async function PublicProfilePage({
                 {(fp?.verified || cp?.verified) && (
                   <CheckCircle className="h-5 w-5 text-lime-400" />
                 )}
+                <BadgeDisplay badges={badges} />
                 <Badge className="bg-neutral-800 text-neutral-400 border-0 text-xs">{user.role}</Badge>
               </div>
               {fp?.title && <p className="text-lime-400 font-medium mt-1">{fp.title}</p>}
