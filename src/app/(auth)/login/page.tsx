@@ -269,7 +269,7 @@ function LoginContent() {
     return (
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center">
-          <Image src="/icons/itqan-logo.svg" alt="Itqan" width={120} height={40} className="h-12 w-auto" />
+          <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
         </div>
         <Card className="bg-neutral-900 border-neutral-800">
           <CardHeader className="space-y-4 text-center pb-2">
@@ -346,7 +346,7 @@ function LoginContent() {
     return (
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center gap-4 mb-4">
-          <Image src="/icons/itqan-logo.svg" alt="Itqan" width={140} height={48} className="h-12 w-auto" />
+          <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
           <p className="text-neutral-500 text-sm">La plateforme freelance au Maroc</p>
         </div>
 
@@ -387,7 +387,7 @@ function LoginContent() {
     return (
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center">
-          <Image src="/icons/itqan-logo.svg" alt="Itqan" width={120} height={40} className="h-12 w-auto" />
+          <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
         </div>
 
         <Card className="bg-neutral-900 border-neutral-800">
@@ -513,7 +513,7 @@ function LoginContent() {
   return (
     <div className="w-full max-w-md space-y-6">
       <div className="flex justify-center">
-        <Image src="/icons/itqan-logo.svg" alt="Itqan" width={120} height={40} className="h-12 w-auto" />
+        <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
       </div>
 
       <Card className="bg-neutral-900 border-neutral-800">
