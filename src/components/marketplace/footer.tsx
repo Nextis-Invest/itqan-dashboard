@@ -33,7 +33,7 @@ export function MarketplaceFooter() {
                 className="h-8 w-auto"
               />
             </Link>
-            <p className="text-gray-300 mb-6 leading-relaxed">
+            <p className="text-muted-foreground mb-6 leading-relaxed">
               La marketplace de freelances au Maroc et en France. Trouvez les meilleurs talents pour vos projets digitaux.
             </p>
             <div className="flex gap-4">
@@ -45,7 +45,7 @@ export function MarketplaceFooter() {
                 <motion.a
                   key={social.name}
                   href={social.href}
-                  className="w-10 h-10 bg-muted backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center hover:bg-accent hover:border-white/20 transition-all duration-300"
+                  className="w-10 h-10 bg-muted backdrop-blur-xl border border-border rounded-full flex items-center justify-center hover:bg-accent hover:border-border transition-all duration-300"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   initial={{ opacity: 0, y: 20 }}
@@ -67,7 +67,7 @@ export function MarketplaceFooter() {
             viewport={{ once: true }}
           >
             <h3 className="font-semibold text-lg mb-4 text-foreground">Catégories</h3>
-            <ul className="space-y-3 text-gray-300">
+            <ul className="space-y-3 text-muted-foreground">
               {[
                 { name: "Programmation & Tech", slug: "programming-tech" },
                 { name: "Graphisme & Design", slug: "graphics-design" },
@@ -103,7 +103,7 @@ export function MarketplaceFooter() {
             viewport={{ once: true }}
           >
             <h3 className="font-semibold text-lg mb-4 text-foreground">Navigation</h3>
-            <ul className="space-y-3 text-gray-300">
+            <ul className="space-y-3 text-muted-foreground">
               {[
                 { name: "Explorer les catégories", href: "/categories" },
                 { name: "Devenir freelance", href: "/login" },
@@ -141,14 +141,14 @@ export function MarketplaceFooter() {
             viewport={{ once: true }}
           >
             <h3 className="font-semibold text-lg mb-4 text-foreground">Restez informé</h3>
-            <p className="text-gray-300 mb-4 text-sm">
+            <p className="text-muted-foreground mb-4 text-sm">
               Recevez les dernières opportunités et tendances du marché freelance.
             </p>
             <form className="space-y-3">
               <Input
                 type="email"
                 placeholder="Entrez votre email"
-                className="bg-muted backdrop-blur-xl border-white/10 text-foreground placeholder:text-gray-400 focus:border-lime-400 hover:bg-accent transition-all duration-300"
+                className="bg-muted backdrop-blur-xl border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400 hover:bg-accent transition-all duration-300"
               />
               <motion.div
                 whileHover={{ scale: 1.02 }}
@@ -164,7 +164,7 @@ export function MarketplaceFooter() {
             </form>
 
             {/* Contact Info */}
-            <div className="mt-6 space-y-2 text-sm text-gray-300">
+            <div className="mt-6 space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <span>📧</span>
                 <span>contact@itqan.ma</span>
@@ -191,7 +191,7 @@ export function MarketplaceFooter() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
-          className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400"
+          className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground"
         >
           <div className="mb-4 md:mb-0">
             © {new Date().getFullYear()} Itqan. Tous droits réservés.
