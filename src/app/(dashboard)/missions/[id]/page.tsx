@@ -17,6 +17,8 @@ import { ProposalForm } from "./proposal-form"
 import { ProposalList } from "./proposal-list"
 import { ReviewSection } from "./review-section"
 import { MissionActions } from "./mission-actions"
+import { FreelancerCardClient } from "@/components/freelancer-card-client"
+import { Star } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -78,7 +80,27 @@ export default async function MissionDetailPage({
           },
         },
       },
-      freelancer: { select: { id: true, name: true, email: true } },
+      freelancer: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          freelancerProfile: {
+            select: {
+              title: true,
+              avgRating: true,
+              dailyRate: true,
+              currency: true,
+              skills: true,
+              verified: true,
+              available: true,
+              completedMissions: true,
+              avatar: true,
+            },
+          },
+        },
+      },
       proposals: {
         include: {
           freelancer: {
@@ -248,17 +270,6 @@ export default async function MissionDetailPage({
             <p className="text-foreground font-semibold">{mission.category}</p>
           </div>
         )}
-        {mission.freelancer && (
-          <div className="rounded-xl border border-border bg-card/80 p-4 space-y-1">
-            <div className="flex items-center gap-2 text-muted-foreground text-xs">
-              <User className="h-3.5 w-3.5 text-lime-400" />
-              Freelance
-            </div>
-            <Link href={`/profile/${mission.freelancer.id}`} className="text-foreground font-semibold hover:text-lime-400 transition-colors block">
-              {mission.freelancer.name || mission.freelancer.email}
-            </Link>
-          </div>
-        )}
         {mission.duration && (
           <div className="rounded-xl border border-border bg-card/80 p-4 space-y-1">
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
@@ -289,6 +300,54 @@ export default async function MissionDetailPage({
           </p>
         </div>
       </div>
+
+      {/* Assigned Freelancer Card */}
+      {mission.freelancer && mission.freelancer.freelancerProfile && (
+        <div>
+          <h3 className="text-foreground font-semibold text-base mb-3 flex items-center gap-2">
+            <User className="h-4 w-4 text-lime-400" />
+            Freelance assigné
+          </h3>
+          <FreelancerCardClient
+            id={mission.freelancer.id}
+            name={mission.freelancer.name || mission.freelancer.email}
+            title={mission.freelancer.freelancerProfile.title || "Freelance"}
+            avatarSrc={
+              mission.freelancer.freelancerProfile.avatar ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                mission.freelancer.name || mission.freelancer.email
+              )}&background=a3e635&color=1a1a1a`
+            }
+            stats={[
+              {
+                icon: Star,
+                value: mission.freelancer.freelancerProfile.avgRating?.toFixed(1) || "N/A",
+                label: "note",
+              },
+              {
+                value: String(mission.freelancer.freelancerProfile.completedMissions || 0),
+                label: "missions",
+              },
+              {
+                value: mission.freelancer.freelancerProfile.dailyRate
+                  ? `${mission.freelancer.freelancerProfile.dailyRate} ${mission.freelancer.freelancerProfile.currency}/j`
+                  : "N/A",
+                label: "TJM",
+              },
+            ]}
+            badges={[
+              ...(mission.freelancer.freelancerProfile.verified
+                ? [{ label: "Vérifié", className: "bg-lime-400/10 text-lime-400 border-lime-400/20" }]
+                : []),
+              ...(mission.freelancer.freelancerProfile.available
+                ? [{ label: "Disponible", className: "bg-green-400/10 text-green-400 border-green-400/20" }]
+                : []),
+            ]}
+            buttonLabel="Voir profil"
+            hideBookmark={true}
+          />
+        </div>
+      )}
 
       {/* Skills */}
       {mission.skills.length > 0 && (

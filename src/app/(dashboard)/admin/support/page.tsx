@@ -142,12 +142,12 @@ export default async function AdminSupportPage({
                   return (
                     <TableRow
                       key={ticket.id}
-                      className="border-border hover:bg-accent/20 transition-colors"
+                      className="border-border hover:bg-accent/20 transition-colors group relative"
                     >
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <div className={`h-2 w-2 rounded-full shrink-0 ${st.dot}`} />
-                          <Link href={`/admin/support/${ticket.id}`} className="text-foreground font-medium hover:text-lime-400 transition-colors text-sm">
+                          <Link href={`/admin/support/${ticket.id}`} className="text-foreground font-medium group-hover:text-lime-400 transition-colors text-sm after:absolute after:inset-0 after:content-['']">
                             {ticket.subject}
                           </Link>
                         </div>

@@ -134,11 +134,11 @@ export default async function AdminMissionsPage({
               {missions.map((m) => {
                 const st = statusMap[m.status] || statusMap.DRAFT
                 return (
-                  <TableRow key={m.id} className="border-border hover:bg-accent/20 transition-colors">
+                  <TableRow key={m.id} className="border-border hover:bg-accent/20 transition-colors group relative">
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className={`h-2 w-2 rounded-full shrink-0 ${st.dot}`} />
-                        <Link href={`/missions/${m.id}`} className="text-foreground font-medium hover:text-lime-400 transition-colors text-sm">
+                        <Link href={`/missions/${m.id}`} className="text-foreground font-medium group-hover:text-lime-400 transition-colors text-sm after:absolute after:inset-0 after:content-['']">
                           {m.title}
                         </Link>
                         {m.featured && <Badge className="bg-yellow-400/10 text-yellow-400 border-0 text-[10px]">⭐</Badge>}
@@ -161,7 +161,9 @@ export default async function AdminMissionsPage({
                       {new Date(m.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                     </TableCell>
                     <TableCell>
-                      <AdminMissionActions missionId={m.id} status={m.status} featured={m.featured} />
+                      <div className="relative z-10">
+                        <AdminMissionActions missionId={m.id} status={m.status} featured={m.featured} />
+                      </div>
                     </TableCell>
                   </TableRow>
                 )

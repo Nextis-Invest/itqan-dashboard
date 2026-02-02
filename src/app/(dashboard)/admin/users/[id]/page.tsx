@@ -24,6 +24,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { AdminNotesForm } from "./admin-notes-form"
+import { FreelancerCardClient } from "@/components/freelancer-card-client"
 
 export const dynamic = "force-dynamic"
 
@@ -180,6 +181,50 @@ export default async function AdminUserDetailPage({
           </p>
         </div>
       </div>
+
+      {/* Freelancer Profile Card */}
+      {fp && user.role === "FREELANCER" && (
+        <div>
+          <FreelancerCardClient
+            id={user.id}
+            name={user.name || user.email}
+            title={fp.title || "Freelance"}
+            avatarSrc={
+              fp.avatar ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                user.name || user.email
+              )}&background=a3e635&color=1a1a1a`
+            }
+            stats={[
+              {
+                icon: Star,
+                value: fp.avgRating?.toFixed(1) || "N/A",
+                label: "note",
+              },
+              {
+                value: String(fp.completedMissions || 0),
+                label: "missions",
+              },
+              {
+                value: fp.dailyRate
+                  ? `${fp.dailyRate} ${fp.currency}/j`
+                  : "N/A",
+                label: "TJM",
+              },
+            ]}
+            badges={[
+              ...(fp.verified
+                ? [{ label: "Vérifié", className: "bg-lime-400/10 text-lime-400 border-lime-400/20" }]
+                : []),
+              ...(user.suspended
+                ? [{ label: "Suspendu", className: "bg-red-400/10 text-red-400 border-red-400/20" }]
+                : []),
+            ]}
+            hideButton={true}
+            hideBookmark={true}
+          />
+        </div>
+      )}
 
       {/* Client Profile — Full Detail */}
       {cp && (
@@ -380,56 +425,6 @@ export default async function AdminUserDetailPage({
           {/* Admin Notes */}
           <AdminNotesForm userId={user.id} currentNotes={cp.adminNotes} />
         </>
-      )}
-
-      {/* Freelancer Profile Summary */}
-      {fp && (
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-foreground text-base flex items-center gap-2">
-              <User className="h-4 w-4 text-lime-400" />
-              Profil Freelancer
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            {fp.title && <InfoRow label="Titre" value={fp.title} />}
-            {fp.category && <InfoRow label="Catégorie" value={fp.category} />}
-            {fp.city && <InfoRow label="Ville" value={fp.city} />}
-            {fp.dailyRate && (
-              <InfoRow
-                label="Tarif journalier"
-                value={`${fp.dailyRate} ${fp.currency}`}
-              />
-            )}
-            <InfoRow
-              label="Missions terminées"
-              value={String(fp.completedMissions)}
-            />
-            {fp.avgRating !== null && fp.avgRating !== undefined && (
-              <InfoRow
-                label="Note moyenne"
-                value={`${fp.avgRating.toFixed(1)} ⭐`}
-              />
-            )}
-            <InfoRow
-              label="Disponible"
-              value={fp.available ? "Oui" : "Non"}
-            />
-            <InfoRow label="Remote" value={fp.remote ? "Oui" : "Non"} />
-            {fp.skills.length > 0 && (
-              <div className="flex flex-wrap gap-1 pt-2">
-                {fp.skills.map((s) => (
-                  <Badge
-                    key={s}
-                    className="bg-lime-400/10 text-lime-400 border-0 text-xs"
-                  >
-                    {s}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       )}
 
       {/* Missions */}

@@ -131,7 +131,7 @@ export default async function AdminUsersPage({
               {users.map((u) => {
                 const verified = u.freelancerProfile?.verified || u.clientProfile?.verified || false
                 return (
-                  <TableRow key={u.id} className="border-border/60 hover:bg-secondary/20 transition-colors">
+                  <TableRow key={u.id} className="border-border/60 hover:bg-secondary/20 transition-colors group relative">
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
@@ -142,7 +142,7 @@ export default async function AdminUsersPage({
                           {(u.name || u.email)?.[0]?.toUpperCase() || "?"}
                         </div>
                         <div>
-                          <Link href={`/admin/users/${u.id}`} className="text-foreground font-medium hover:text-lime-400 transition-colors text-sm">
+                          <Link href={`/admin/users/${u.id}`} className="text-foreground font-medium group-hover:text-lime-400 transition-colors text-sm after:absolute after:inset-0 after:content-['']">
                             {u.name || "—"}
                           </Link>
                           <p className="text-muted-foreground text-xs">{u.email}</p>
@@ -172,7 +172,7 @@ export default async function AdminUsersPage({
                       {new Date(u.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1">
+                      <div className="relative z-10 flex items-center gap-1">
                         <AdminUserActions
                           userId={u.id}
                           name={u.name}

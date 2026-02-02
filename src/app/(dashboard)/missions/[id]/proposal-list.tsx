@@ -4,10 +4,10 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { FreelancerProfileCard, StatConfig, BadgeConfig } from "@/components/ui/freelancer-profile-card"
 import { Check, X, Loader2, Star } from "lucide-react"
 import { acceptProposal, rejectProposal } from "@/lib/actions/proposal"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 interface Proposal {
   id: string
@@ -48,6 +48,7 @@ export function ProposalList({
   missionStatus: string
 }) {
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const router = useRouter()
 
   const handleAccept = async (id: string) => {
     setLoadingId(id)
@@ -74,73 +75,69 @@ export function ProposalList({
           Propositions ({proposals.length})
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {proposals.map((proposal) => {
-          const initials = (proposal.freelancer.name || proposal.freelancer.email)
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2)
+          const name = proposal.freelancer.name || proposal.freelancer.email
+          const title = proposal.freelancer.freelancerProfile?.title || "Freelance"
+          const avgRating = proposal.freelancer.freelancerProfile?.avgRating
+          
+          // Avatar fallback
+          const avatarSrc = proposal.freelancer.freelancerProfile?.avatar || 
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=a3e635&color=1a1a1a`
+          
+          // Banner SVG
+          const bannerSrc = "data:image/svg+xml,%3Csvg width='400' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23a3e635;stop-opacity:0.3'/%3E%3Cstop offset='100%25' style='stop-color:%23a3e635;stop-opacity:0.05'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23g)'/%3E%3C/svg%3E"
+          
+          // Stats
+          const stats: StatConfig[] = [
+            {
+              icon: Star,
+              value: avgRating?.toFixed(1) || "N/A",
+              label: "note"
+            },
+            {
+              value: proposal.price + " MAD",
+              label: "offre"
+            },
+            {
+              value: (proposal.estimatedDays || "—") + "j",
+              label: "délai"
+            }
+          ]
+          
+          // Status badge
+          const badges: BadgeConfig[] = [
+            {
+              label: statusLabels[proposal.status],
+              className: statusColors[proposal.status]
+            }
+          ]
 
           return (
-            <div
-              key={proposal.id}
-              className="border border-border rounded-lg p-4 space-y-3"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border border-border">
-                    <AvatarFallback className="bg-lime-400/10 text-lime-400 text-xs">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <Link
-                      href={`/profile/${proposal.freelancer.id}`}
-                      className="text-foreground font-medium hover:text-lime-400 transition-colors"
-                    >
-                      {proposal.freelancer.name || proposal.freelancer.email}
-                    </Link>
-                    {proposal.freelancer.freelancerProfile?.title && (
-                      <p className="text-muted-foreground text-xs">
-                        {proposal.freelancer.freelancerProfile.title}
-                      </p>
-                    )}
-                    {proposal.freelancer.freelancerProfile?.avgRating && (
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
-                        <span className="text-muted-foreground text-xs">
-                          {proposal.freelancer.freelancerProfile.avgRating.toFixed(1)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <Badge className={`${statusColors[proposal.status]} border-0`}>
-                  {statusLabels[proposal.status]}
-                </Badge>
-              </div>
+            <div key={proposal.id} className="space-y-3">
+              <FreelancerProfileCard
+                name={name}
+                title={title}
+                avatarSrc={avatarSrc}
+                bannerSrc={bannerSrc}
+                stats={stats}
+                badges={badges}
+                buttonLabel="Voir profil"
+                hideBookmark={true}
+                onGetInTouch={() => router.push(`/profile/${proposal.freelancer.id}`)}
+                className="max-w-none"
+              />
 
-              <div className="flex gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Prix: </span>
-                  <span className="text-foreground font-medium">{proposal.price} MAD</span>
-                </div>
-                {proposal.estimatedDays && (
-                  <div>
-                    <span className="text-muted-foreground">Durée: </span>
-                    <span className="text-foreground">{proposal.estimatedDays} jours</span>
-                  </div>
-                )}
-              </div>
-
+              {/* Proposal message */}
               {proposal.message && (
-                <p className="text-foreground/80 text-sm">{proposal.message}</p>
+                <div className="px-4">
+                  <p className="text-foreground/80 text-sm">{proposal.message}</p>
+                </div>
               )}
 
+              {/* Accept/Reject buttons */}
               {proposal.status === "PENDING" && missionStatus === "OPEN" && (
-                <div className="flex gap-2 pt-2">
+                <div className="flex gap-2 px-4">
                   <Button
                     size="sm"
                     onClick={() => handleAccept(proposal.id)}

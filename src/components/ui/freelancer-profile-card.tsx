@@ -103,6 +103,7 @@ export const FreelancerProfileCard = React.forwardRef<
       duration,
       rate,
       tools,
+      skills,
       badges,
       onGetInTouch,
       onBookmark,
@@ -118,12 +119,15 @@ export const FreelancerProfileCard = React.forwardRef<
       .map((n) => n[0])
       .join("");
 
-    // Build stats from either `stats` prop or legacy props
-    const resolvedStats: StatConfig[] = stats ?? [
-      ...(rating != null ? [{ icon: Star, value: rating.toFixed(1), label: "rating" }] : []),
-      ...(duration != null ? [{ value: duration, label: "duration" }] : []),
-      ...(rate != null ? [{ value: rate, label: "rate" }] : []),
+    // Backward compatibility: convert legacy props to stats if stats not provided
+    const finalStats: StatConfig[] = stats || [
+      ...(rating !== undefined ? [{ icon: Star, value: rating.toFixed(1), label: "rating" }] : []),
+      ...(duration !== undefined ? [{ value: duration, label: "duration" }] : []),
+      ...(rate !== undefined ? [{ value: rate, label: "rate" }] : []),
     ];
+
+    // Use skills if provided, otherwise fall back to tools
+    const displaySkills = skills || tools;
 
     return (
       <motion.div
@@ -173,48 +177,44 @@ export const FreelancerProfileCard = React.forwardRef<
           className="px-6 pb-6 pt-12" // pt-12 to clear avatar
           variants={contentVariants}
         >
-          {/* Name, Title, Badges, and Tools */}
+          {/* Name, Title, Badges, and Skills */}
           <motion.div
-            className="mb-4 flex items-start justify-between"
+            className="mb-4 flex items-start justify-between gap-3"
             variants={itemVariants}
           >
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold text-card-foreground">
-                  {name}
-                </h2>
-                {badges?.map((badge, i) => (
-                  <span
-                    key={i}
-                    className={cn(
-                      "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium",
-                      badge.className || "bg-lime-400/10 text-lime-400 border border-lime-400/20"
-                    )}
-                  >
-                    {badge.label}
-                  </span>
-                ))}
-              </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-xl font-semibold text-card-foreground">
+                {name}
+              </h2>
               <p className="text-sm text-muted-foreground">{title}</p>
+              {badges && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {badges}
+                </div>
+              )}
             </div>
-            {tools && (
-              <div className="flex flex-col items-end gap-1.5">
-                <div className="flex gap-1.5">{tools}</div>
+            {displaySkills && (
+              <div className="flex flex-col items-end gap-1.5 shrink-0">
+                <div className="flex gap-1.5 flex-wrap justify-end">{displaySkills}</div>
                 <span className="text-xs text-muted-foreground">Skills</span>
               </div>
             )}
           </motion.div>
 
           {/* Stats */}
-          {resolvedStats.length > 0 && (
+          {finalStats.length > 0 && (
             <motion.div
               className="my-6 flex items-center justify-around rounded-lg border border-border bg-background/30 p-4"
               variants={itemVariants}
             >
-              {resolvedStats.map((stat, i) => (
-                <React.Fragment key={i}>
-                  {i > 0 && <Divider />}
-                  <StatItem icon={stat.icon} value={stat.value} label={stat.label} />
+              {finalStats.map((stat, index) => (
+                <React.Fragment key={index}>
+                  {index > 0 && <Divider />}
+                  <StatItem
+                    icon={stat.icon}
+                    value={stat.value}
+                    label={stat.label}
+                  />
                 </React.Fragment>
               ))}
             </motion.div>
