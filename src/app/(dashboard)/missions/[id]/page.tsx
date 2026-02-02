@@ -544,6 +544,7 @@ export default async function MissionDetailPage({
         <ProposalList
           proposals={mission.proposals}
           missionStatus={mission.status}
+          missionId={mission.id}
         />
       )}
 

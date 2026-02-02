@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { FreelancerProfileCard, StatConfig, BadgeConfig } from "@/components/ui/freelancer-profile-card"
-import { Check, X, Loader2, Star } from "lucide-react"
+import { Check, X, Loader2, Star, MessageSquare } from "lucide-react"
 import { acceptProposal, rejectProposal } from "@/lib/actions/proposal"
+import { startConversation } from "@/lib/actions/chat"
 import { useRouter } from "next/navigation"
 
 interface Proposal {
@@ -43,12 +44,25 @@ const statusLabels: Record<string, string> = {
 export function ProposalList({
   proposals,
   missionStatus,
+  missionId,
 }: {
   proposals: Proposal[]
   missionStatus: string
+  missionId: string
 }) {
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const [chattingId, setChattingId] = useState<string | null>(null)
   const router = useRouter()
+
+  const handleContact = async (freelancerId: string) => {
+    setChattingId(freelancerId)
+    try {
+      const conversationId = await startConversation(freelancerId, missionId)
+      router.push(`/messages?c=${conversationId}`)
+    } catch {
+      setChattingId(null)
+    }
+  }
 
   const handleAccept = async (id: string) => {
     setLoadingId(id)
@@ -135,33 +149,53 @@ export function ProposalList({
                 </div>
               )}
 
-              {/* Accept/Reject buttons */}
-              {proposal.status === "PENDING" && missionStatus === "OPEN" && (
-                <div className="flex gap-2 px-4">
-                  <Button
-                    size="sm"
-                    onClick={() => handleAccept(proposal.id)}
-                    disabled={loadingId === proposal.id}
-                    className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold"
-                  >
-                    {loadingId === proposal.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <><Check className="mr-1 h-4 w-4" />Accepter</>
-                    )}
-                  </Button>
+              {/* Action buttons */}
+              <div className="flex gap-2 px-4">
+                {/* Accept/Reject for pending proposals on open missions */}
+                {proposal.status === "PENDING" && missionStatus === "OPEN" && (
+                  <>
+                    <Button
+                      size="sm"
+                      onClick={() => handleAccept(proposal.id)}
+                      disabled={loadingId === proposal.id}
+                      className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold"
+                    >
+                      {loadingId === proposal.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <><Check className="mr-1 h-4 w-4" />Accepter</>
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleReject(proposal.id)}
+                      disabled={loadingId === proposal.id}
+                      className="border-border text-foreground/80 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20"
+                    >
+                      <X className="mr-1 h-4 w-4" />
+                      Refuser
+                    </Button>
+                  </>
+                )}
+
+                {/* Contact button — always visible for non-rejected proposals */}
+                {proposal.status !== "REJECTED" && (
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => handleReject(proposal.id)}
-                    disabled={loadingId === proposal.id}
-                    className="border-border text-foreground/80 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20"
+                    onClick={() => handleContact(proposal.freelancer.id)}
+                    disabled={chattingId === proposal.freelancer.id}
+                    className="border-border text-foreground/80 hover:bg-blue-500/10 hover:text-blue-400 hover:border-blue-400/20"
                   >
-                    <X className="mr-1 h-4 w-4" />
-                    Refuser
+                    {chattingId === proposal.freelancer.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <><MessageSquare className="mr-1 h-4 w-4" />Contacter</>
+                    )}
                   </Button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )
         })}
