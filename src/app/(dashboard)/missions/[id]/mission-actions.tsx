@@ -44,12 +44,12 @@ export function MissionActions({
   if (!showEdit && !showPublish && !showComplete && !showCancel) return null
 
   return (
-    <Card className="bg-neutral-900 border-neutral-800">
+    <Card className="bg-card border-border">
       <CardContent className="pt-6">
         <div className="flex flex-wrap gap-3">
           {showEdit && (
             <Link href={`/missions/${missionId}/edit`}>
-              <Button variant="outline" className="border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white">
+              <Button variant="outline" className="border-border text-foreground/80 hover:bg-accent hover:text-foreground">
                 <Pencil className="mr-2 h-4 w-4" />
                 Modifier
               </Button>

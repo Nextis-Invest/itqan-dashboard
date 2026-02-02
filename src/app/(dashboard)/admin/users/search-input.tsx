@@ -29,9 +29,9 @@ export function SearchInput() {
 
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       {isPending && (
-        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500 animate-spin" />
+        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
       )}
       <Input
         placeholder="Rechercher par nom ou email..."
@@ -40,7 +40,7 @@ export function SearchInput() {
           setValue(e.target.value)
           updateSearch(e.target.value)
         }}
-        className="pl-10 bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-500 w-full max-w-sm"
+        className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground w-full max-w-sm"
       />
     </div>
   )

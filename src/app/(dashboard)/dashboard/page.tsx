@@ -4,12 +4,56 @@ import { redirect } from "next/navigation"
 export const metadata: Metadata = { title: "Tableau de bord" }
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Briefcase, Users, DollarSign, TrendingUp, FileText, Star } from "lucide-react"
+import {
+  Briefcase,
+  Users,
+  TrendingUp,
+  FileText,
+  Star,
+  Plus,
+  Search,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react"
 import Link from "next/link"
 
 export const dynamic = "force-dynamic"
+
+const cardThemes = [
+  {
+    gradient: "from-blue-500/10 to-blue-500/5",
+    iconBg: "bg-blue-500/15",
+    iconColor: "text-blue-400",
+    decorColor: "bg-blue-500/[0.07]",
+  },
+  {
+    gradient: "from-emerald-500/10 to-emerald-500/5",
+    iconBg: "bg-emerald-500/15",
+    iconColor: "text-emerald-400",
+    decorColor: "bg-emerald-500/[0.07]",
+  },
+  {
+    gradient: "from-purple-500/10 to-purple-500/5",
+    iconBg: "bg-purple-500/15",
+    iconColor: "text-purple-400",
+    decorColor: "bg-purple-500/[0.07]",
+  },
+  {
+    gradient: "from-amber-500/10 to-amber-500/5",
+    iconBg: "bg-amber-500/15",
+    iconColor: "text-amber-400",
+    decorColor: "bg-amber-500/[0.07]",
+  },
+]
+
+const statusConfig: Record<string, { label: string; dotColor: string; badgeClass: string }> = {
+  DRAFT: { label: "Brouillon", dotColor: "bg-muted-foreground", badgeClass: "bg-muted/50 text-muted-foreground" },
+  OPEN: { label: "Ouverte", dotColor: "bg-lime-400", badgeClass: "bg-lime-400/10 text-lime-400" },
+  IN_PROGRESS: { label: "En cours", dotColor: "bg-blue-400", badgeClass: "bg-blue-400/10 text-blue-400" },
+  COMPLETED: { label: "Terminée", dotColor: "bg-green-400", badgeClass: "bg-green-400/10 text-green-400" },
+  CANCELLED: { label: "Annulée", dotColor: "bg-red-400", badgeClass: "bg-red-400/10 text-red-400" },
+}
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -22,7 +66,6 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login")
 
-  // Check if user needs onboarding
   const needsOnboarding =
     (user.role === "FREELANCER" && !user.freelancerProfile) ||
     (user.role === "CLIENT" && !user.clientProfile)
@@ -74,7 +117,6 @@ export default async function DashboardPage() {
       },
     ]
   } else {
-    // CLIENT or ADMIN
     const [totalMissions, openMissions, pendingProposals, activeMissions] =
       await Promise.all([
         prisma.mission.count({ where: { clientId: user.id } }),
@@ -137,154 +179,191 @@ export default async function DashboardPage() {
     },
   })
 
-  const statusLabels: Record<string, { label: string; color: string }> = {
-    DRAFT: { label: "Brouillon", color: "bg-neutral-500/10 text-neutral-400" },
-    OPEN: { label: "Ouverte", color: "bg-lime-400/10 text-lime-400" },
-    IN_PROGRESS: { label: "En cours", color: "bg-blue-400/10 text-blue-400" },
-    COMPLETED: { label: "Terminée", color: "bg-green-400/10 text-green-400" },
-    CANCELLED: { label: "Annulée", color: "bg-red-400/10 text-red-400" },
-  }
+  const now = new Date()
+  const dateStr = now.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+
+  const displayName = user.name || user.email?.split("@")[0] || "Utilisateur"
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">
-          Tableau de bord
-        </h2>
-        <p className="text-neutral-400 mt-1">
-          Bienvenue, {user.name || user.email}
-        </p>
+    <div className="space-y-8">
+      {/* Welcome Banner */}
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-background via-background to-card p-6 sm:p-8">
+        {/* Decorative elements */}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-lime-400/[0.04]" />
+        <div className="pointer-events-none absolute -right-4 top-4 h-24 w-24 rounded-full bg-emerald-400/[0.06]" />
+        <div className="pointer-events-none absolute right-20 -top-6 h-32 w-32 rounded-full bg-lime-400/[0.03]" />
+
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="h-5 w-5 text-lime-400" />
+              <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {dateStr}
+              </span>
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              <span className="text-foreground">Bonjour, </span>
+              <span className="bg-gradient-to-r from-lime-400 to-emerald-400 bg-clip-text text-transparent">
+                {displayName}
+              </span>
+            </h1>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              Voici un résumé de votre activité.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            {user.role !== "FREELANCER" && (
+              <Link
+                href="/missions/new"
+                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-lime-400 to-emerald-400 px-4 py-2.5 text-sm font-semibold text-neutral-900 transition-all hover:shadow-lg hover:shadow-lime-400/20 hover:brightness-110"
+              >
+                <Plus className="h-4 w-4" />
+                Nouvelle mission
+              </Link>
+            )}
+            <Link
+              href={user.role === "FREELANCER" ? "/missions/explore" : "/missions"}
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card/50 px-4 py-2.5 text-sm font-medium text-foreground/80 transition-all hover:border-border hover:bg-accent hover:text-foreground"
+            >
+              <Search className="h-4 w-4" />
+              Explorer
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, i) => {
           const Icon = stat.icon
+          const theme = cardThemes[i % cardThemes.length]
           return (
-            <Card key={stat.title} className="bg-neutral-900 border-neutral-800">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-neutral-400">
-                  {stat.title}
-                </CardTitle>
-                <Icon className="h-4 w-4 text-lime-400" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white">{stat.value}</div>
-                <p className="text-xs text-neutral-500 mt-1">
-                  {stat.description}
-                </p>
-              </CardContent>
-            </Card>
+            <div
+              key={stat.title}
+              className={`group relative overflow-hidden rounded-xl border border-border bg-gradient-to-br ${theme.gradient} p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/20`}
+            >
+              {/* Decorative circles */}
+              <div className={`pointer-events-none absolute -right-3 -top-3 h-16 w-16 rounded-full ${theme.decorColor}`} />
+              <div className={`pointer-events-none absolute right-5 -top-1 h-8 w-8 rounded-full ${theme.decorColor}`} />
+
+              <div className="relative">
+                <div className="flex items-center justify-between">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${theme.iconBg}`}>
+                    <Icon className={`h-5 w-5 ${theme.iconColor}`} />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <p className="tabular-nums text-3xl font-bold text-foreground">{stat.value}</p>
+                  <p className="mt-0.5 text-sm font-medium text-foreground/80">{stat.title}</p>
+                  <p className="text-xs text-muted-foreground">{stat.description}</p>
+                </div>
+              </div>
+            </div>
           )
         })}
       </div>
 
-      {/* Recent Missions + Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardHeader>
-            <CardTitle className="text-white">Missions récentes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {recentMissions.length === 0 ? (
-              <div className="text-neutral-500 text-sm text-center py-8">
-                Aucune mission pour le moment.
-                <br />
-                {user.role !== "FREELANCER" && (
-                  <Link
-                    href="/missions/new"
-                    className="text-lime-400 cursor-pointer hover:underline"
-                  >
-                    Créer votre première mission
-                  </Link>
-                )}
-                {user.role === "FREELANCER" && (
-                  <Link
-                    href="/missions"
-                    className="text-lime-400 cursor-pointer hover:underline"
-                  >
-                    Parcourir les missions
-                  </Link>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {recentMissions.map((mission) => {
-                  const st = statusLabels[mission.status] || statusLabels.DRAFT
-                  return (
-                    <Link
-                      key={mission.id}
-                      href={`/missions/${mission.id}`}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-neutral-800/50 transition-colors"
-                    >
-                      <div>
-                        <p className="text-white text-sm font-medium">
-                          {mission.title}
-                        </p>
-                        <p className="text-neutral-500 text-xs">
-                          {new Date(mission.createdAt).toLocaleDateString("fr-FR")}
-                          {mission._count.proposals > 0 &&
-                            ` · ${mission._count.proposals} proposition(s)`}
-                        </p>
-                      </div>
-                      <Badge className={`${st.color} border-0 text-xs`}>
-                        {st.label}
-                      </Badge>
-                    </Link>
-                  )
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      {/* Recent Missions */}
+      <div className="rounded-xl border border-border bg-card/50">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Missions récentes</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Vos dernières missions</p>
+          </div>
+          {recentMissions.length > 0 && (
+            <Link
+              href="/missions"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-lime-400 transition-colors hover:text-lime-300"
+            >
+              Voir tout
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          )}
+        </div>
 
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardHeader>
-            <CardTitle className="text-white">Actions rapides</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {user.role !== "FREELANCER" && (
-                <Link
-                  href="/missions/new"
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-800/50 transition-colors"
-                >
-                  <div className="h-8 w-8 rounded-lg bg-lime-400/10 flex items-center justify-center">
-                    <Briefcase className="h-4 w-4 text-lime-400" />
-                  </div>
-                  <div>
-                    <p className="text-white text-sm font-medium">Nouvelle mission</p>
-                    <p className="text-neutral-500 text-xs">Publier un nouveau projet</p>
-                  </div>
-                </Link>
-              )}
+        <div className="p-2">
+          {recentMissions.length === 0 ? (
+            /* Empty state */
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary mb-4">
+                <Briefcase className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">Aucune mission pour le moment</p>
+              <p className="text-xs text-muted-foreground mb-5 text-center max-w-xs">
+                {user.role === "FREELANCER"
+                  ? "Explorez les missions disponibles et envoyez vos propositions."
+                  : "Créez votre première mission et trouvez le freelance idéal."}
+              </p>
               <Link
-                href="/missions"
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-800/50 transition-colors"
+                href={user.role === "FREELANCER" ? "/missions/explore" : "/missions/new"}
+                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-lime-400 to-emerald-400 px-4 py-2 text-sm font-semibold text-neutral-900 transition-all hover:shadow-lg hover:shadow-lime-400/20 hover:brightness-110"
               >
-                <div className="h-8 w-8 rounded-lg bg-lime-400/10 flex items-center justify-center">
-                  <FileText className="h-4 w-4 text-lime-400" />
-                </div>
-                <div>
-                  <p className="text-white text-sm font-medium">Voir les missions</p>
-                  <p className="text-neutral-500 text-xs">Parcourir toutes les missions</p>
-                </div>
-              </Link>
-              <Link
-                href="/profile"
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-800/50 transition-colors"
-              >
-                <div className="h-8 w-8 rounded-lg bg-lime-400/10 flex items-center justify-center">
-                  <Users className="h-4 w-4 text-lime-400" />
-                </div>
-                <div>
-                  <p className="text-white text-sm font-medium">Mon profil</p>
-                  <p className="text-neutral-500 text-xs">Mettre à jour mes informations</p>
-                </div>
+                {user.role === "FREELANCER" ? (
+                  <>
+                    <Search className="h-4 w-4" />
+                    Explorer les missions
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4" />
+                    Créer une mission
+                  </>
+                )}
               </Link>
             </div>
-          </CardContent>
-        </Card>
+          ) : (
+            <div className="space-y-1">
+              {recentMissions.map((mission) => {
+                const st = statusConfig[mission.status] || statusConfig.DRAFT
+                return (
+                  <Link
+                    key={mission.id}
+                    href={`/missions/${mission.id}`}
+                    className="group flex items-center gap-4 rounded-lg border border-transparent px-4 py-3.5 transition-all duration-200 hover:border-border hover:bg-accent/40 hover:border-l-2 hover:border-l-lime-400/60"
+                  >
+                    {/* Status dot */}
+                    <div className="flex-shrink-0">
+                      <div className={`h-2.5 w-2.5 rounded-full ${st.dotColor}`} />
+                    </div>
+
+                    {/* Content */}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-foreground group-hover:text-lime-400/90 transition-colors">
+                        {mission.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {new Date(mission.createdAt).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
+
+                    {/* Proposal count badge */}
+                    {mission._count.proposals > 0 && (
+                      <span className="flex-shrink-0 inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-foreground/80">
+                        {mission._count.proposals} prop.
+                      </span>
+                    )}
+
+                    {/* Status badge */}
+                    <Badge className={`flex-shrink-0 border-0 text-xs ${st.badgeClass}`}>
+                      {st.label}
+                    </Badge>
+
+                    <ArrowRight className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:text-muted-foreground" />
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

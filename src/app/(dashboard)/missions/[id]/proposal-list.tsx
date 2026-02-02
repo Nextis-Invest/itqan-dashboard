@@ -68,9 +68,9 @@ export function ProposalList({
   }
 
   return (
-    <Card className="bg-neutral-900 border-neutral-800">
+    <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-white text-base">
+        <CardTitle className="text-foreground text-base">
           Propositions ({proposals.length})
         </CardTitle>
       </CardHeader>
@@ -86,11 +86,11 @@ export function ProposalList({
           return (
             <div
               key={proposal.id}
-              className="border border-neutral-800 rounded-lg p-4 space-y-3"
+              className="border border-border rounded-lg p-4 space-y-3"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border border-neutral-700">
+                  <Avatar className="h-10 w-10 border border-border">
                     <AvatarFallback className="bg-lime-400/10 text-lime-400 text-xs">
                       {initials}
                     </AvatarFallback>
@@ -98,19 +98,19 @@ export function ProposalList({
                   <div>
                     <Link
                       href={`/profile/${proposal.freelancer.id}`}
-                      className="text-white font-medium hover:text-lime-400 transition-colors"
+                      className="text-foreground font-medium hover:text-lime-400 transition-colors"
                     >
                       {proposal.freelancer.name || proposal.freelancer.email}
                     </Link>
                     {proposal.freelancer.freelancerProfile?.title && (
-                      <p className="text-neutral-500 text-xs">
+                      <p className="text-muted-foreground text-xs">
                         {proposal.freelancer.freelancerProfile.title}
                       </p>
                     )}
                     {proposal.freelancer.freelancerProfile?.avgRating && (
                       <div className="flex items-center gap-1 mt-0.5">
                         <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
-                        <span className="text-neutral-400 text-xs">
+                        <span className="text-muted-foreground text-xs">
                           {proposal.freelancer.freelancerProfile.avgRating.toFixed(1)}
                         </span>
                       </div>
@@ -124,19 +124,19 @@ export function ProposalList({
 
               <div className="flex gap-4 text-sm">
                 <div>
-                  <span className="text-neutral-500">Prix: </span>
-                  <span className="text-white font-medium">{proposal.price} MAD</span>
+                  <span className="text-muted-foreground">Prix: </span>
+                  <span className="text-foreground font-medium">{proposal.price} MAD</span>
                 </div>
                 {proposal.estimatedDays && (
                   <div>
-                    <span className="text-neutral-500">Durée: </span>
-                    <span className="text-white">{proposal.estimatedDays} jours</span>
+                    <span className="text-muted-foreground">Durée: </span>
+                    <span className="text-foreground">{proposal.estimatedDays} jours</span>
                   </div>
                 )}
               </div>
 
               {proposal.message && (
-                <p className="text-neutral-300 text-sm">{proposal.message}</p>
+                <p className="text-foreground/80 text-sm">{proposal.message}</p>
               )}
 
               {proposal.status === "PENDING" && missionStatus === "OPEN" && (
@@ -158,7 +158,7 @@ export function ProposalList({
                     variant="outline"
                     onClick={() => handleReject(proposal.id)}
                     disabled={loadingId === proposal.id}
-                    className="border-neutral-700 text-neutral-300 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20"
+                    className="border-border text-foreground/80 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20"
                   >
                     <X className="mr-1 h-4 w-4" />
                     Refuser

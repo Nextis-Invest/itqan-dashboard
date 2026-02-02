@@ -24,13 +24,13 @@ export function AdminMissionsSearch({
 
   return (
     <div className="relative max-w-md">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       <Input
         value={q}
         onChange={(e) => setQ(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
         placeholder="Rechercher par titre..."
-        className="pl-9 bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+        className="pl-9 bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
       />
     </div>
   )

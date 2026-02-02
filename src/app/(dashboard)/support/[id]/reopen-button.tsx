@@ -14,7 +14,7 @@ export function ReopenButton({ ticketId }: { ticketId: string }) {
     <Button
       variant="outline"
       disabled={isPending}
-      className="border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+      className="border-border text-foreground/80 hover:bg-secondary hover:text-foreground"
       onClick={async () => {
         setIsPending(true)
         try {

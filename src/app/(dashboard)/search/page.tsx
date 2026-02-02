@@ -4,17 +4,12 @@ import { auth } from "@/lib/auth/config"
 export const metadata: Metadata = { title: "Recherche" }
 import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Search, MapPin, Calendar, DollarSign } from "lucide-react"
+import { Search, MapPin, Calendar, DollarSign, FileText, Compass } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export const dynamic = "force-dynamic"
-
-const statusLabels: Record<string, { label: string; color: string }> = {
-  OPEN: { label: "Ouverte", color: "bg-lime-400/10 text-lime-400" },
-}
 
 export default async function SearchPage({
   searchParams,
@@ -48,104 +43,151 @@ export default async function SearchPage({
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Rechercher des missions</h2>
-        <p className="text-neutral-400 mt-1">Trouvez des projets qui correspondent à vos compétences</p>
+        <h2 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-3">
+          <Search className="h-6 w-6 text-lime-400" />
+          Rechercher des missions
+        </h2>
+        <p className="text-muted-foreground mt-1">Trouvez des projets qui correspondent à vos compétences</p>
       </div>
 
-      {/* Search bar */}
-      <form method="GET" className="flex gap-3">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+      {/* Search bar - prominent */}
+      <form method="GET" className="space-y-3">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <input
             name="q"
             defaultValue={sp.q || ""}
-            placeholder="Rechercher par titre, description..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-neutral-800 border border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50 focus:outline-none text-sm"
+            placeholder="Rechercher par titre, description, compétence..."
+            className="w-full pl-12 pr-4 py-4 rounded-xl bg-card border border-border text-foreground text-base placeholder:text-muted-foreground focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/20 transition-all"
           />
         </div>
-        <select name="category" defaultValue={sp.category || ""} className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700 text-white text-sm">
-          <option value="">Toutes catégories</option>
-          <option value="development">Développement</option>
-          <option value="design">Design</option>
-          <option value="marketing">Marketing</option>
-          <option value="writing">Rédaction</option>
-          <option value="video">Vidéo</option>
-          <option value="data">Data & IA</option>
-          <option value="consulting">Consulting</option>
-        </select>
-        <Button type="submit" className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold">
-          <Search className="h-4 w-4 mr-2" />Rechercher
-        </Button>
+
+        {/* Filter row */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <select
+            name="category"
+            defaultValue={sp.category || ""}
+            className="px-4 py-2.5 rounded-lg bg-muted/50 border border-border text-foreground text-sm focus:border-lime-400/50 focus:outline-none"
+          >
+            <option value="">Toutes catégories</option>
+            <option value="development">Développement</option>
+            <option value="design">Design</option>
+            <option value="marketing">Marketing</option>
+            <option value="writing">Rédaction</option>
+            <option value="video">Vidéo</option>
+            <option value="data">Data & IA</option>
+            <option value="consulting">Consulting</option>
+          </select>
+
+          <Button type="submit" className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold shadow-lg shadow-lime-400/10 px-6">
+            <Search className="h-4 w-4 mr-2" />
+            Rechercher
+          </Button>
+
+          {sp.q && (
+            <span className="text-muted-foreground text-sm">
+              <span className="text-foreground font-medium">{missions.length}</span> résultat(s) pour &ldquo;{sp.q}&rdquo;
+            </span>
+          )}
+        </div>
       </form>
 
       {/* Results */}
       {missions.length === 0 ? (
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="py-12">
-            <div className="text-neutral-500 text-sm text-center">
-              <Search className="h-12 w-12 mx-auto mb-4 text-neutral-600" />
-              <p>Aucune mission trouvée{sp.q ? ` pour "${sp.q}"` : ""}.</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-20 px-4 rounded-2xl border border-dashed border-border bg-card/30">
+          <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
+            <Compass className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <p className="text-muted-foreground text-base font-medium">
+            Aucune mission trouvée{sp.q ? ` pour "${sp.q}"` : ""}
+          </p>
+          <p className="text-muted-foreground text-sm mt-1">Essayez d&apos;autres mots-clés ou élargissez votre recherche.</p>
+        </div>
       ) : (
-        <div className="space-y-4">
-          {missions.map((mission) => (
-            <Card key={mission.id} className="bg-neutral-900 border-neutral-800 hover:border-neutral-700 transition-colors">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <Link href={`/missions/${mission.id}`} className="text-white font-medium hover:text-lime-400 transition-colors text-lg">
+        <div className="space-y-3">
+          {missions.map((mission) => {
+            const budgetDisplay = mission.budget
+              ? `${mission.budget} ${mission.currency}`
+              : mission.budgetMin && mission.budgetMax
+              ? `${mission.budgetMin} - ${mission.budgetMax} ${mission.currency}`
+              : null
+
+            return (
+              <div
+                key={mission.id}
+                className="group rounded-xl border border-border bg-card/80 p-5 transition-all duration-200 hover:border-lime-400/30 hover:shadow-lg hover:shadow-lime-400/5 hover:-translate-y-0.5"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      href={`/missions/${mission.id}`}
+                      className="text-foreground font-semibold text-lg hover:text-lime-400 transition-colors"
+                    >
                       {mission.title}
                     </Link>
-                    <p className="text-neutral-500 text-sm mt-1">
-                      {mission.client.name || mission.client.email} · {new Date(mission.createdAt).toLocaleDateString("fr-FR")}
-                    </p>
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1.5">
+                      <span className="flex items-center gap-1.5">
+                        <div className="w-4 h-4 rounded-full bg-secondary flex items-center justify-center text-[9px] text-foreground/80 font-medium">
+                          {(mission.client.name?.[0] || mission.client.email[0]).toUpperCase()}
+                        </div>
+                        {mission.client.name || mission.client.email}
+                      </span>
+                      <span className="text-muted-foreground">·</span>
+                      <span>{new Date(mission.createdAt).toLocaleDateString("fr-FR")}</span>
+                    </div>
+
                     {mission.description && (
-                      <p className="text-neutral-400 text-sm mt-2 line-clamp-2">{mission.description}</p>
+                      <p className="text-muted-foreground text-sm mt-2 line-clamp-2 leading-relaxed">{mission.description}</p>
                     )}
-                    <div className="flex items-center gap-4 mt-3 text-sm">
-                      {mission.budget && (
-                        <span className="flex items-center gap-1 text-lime-400">
-                          <DollarSign className="h-3.5 w-3.5" />
-                          {mission.budget} {mission.currency}
+
+                    {/* Meta pills */}
+                    <div className="flex items-center gap-3 mt-3 flex-wrap">
+                      {budgetDisplay && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-lime-400/10 text-lime-400 text-xs font-semibold">
+                          <DollarSign className="h-3 w-3" />
+                          {budgetDisplay}
                         </span>
                       )}
                       {mission.deadline && (
-                        <span className="flex items-center gap-1 text-neutral-400">
-                          <Calendar className="h-3.5 w-3.5" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-secondary text-foreground/80 text-xs">
+                          <Calendar className="h-3 w-3" />
                           {new Date(mission.deadline).toLocaleDateString("fr-FR")}
                         </span>
                       )}
                       {mission.remote && (
-                        <Badge className="bg-green-400/10 text-green-400 border-0 text-xs">Remote</Badge>
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-green-400/10 text-green-400 text-xs">
+                          <MapPin className="h-3 w-3" />
+                          Remote
+                        </span>
                       )}
                       {mission.category && (
-                        <Badge className="bg-neutral-800 text-neutral-400 border-0 text-xs">{mission.category}</Badge>
+                        <Badge className="bg-secondary text-muted-foreground border-0 text-xs">{mission.category}</Badge>
                       )}
+                      {mission.skills.length > 0 && mission.skills.slice(0, 3).map((s) => (
+                        <Badge key={s} className="bg-secondary text-foreground/80 border-0 text-[11px]">{s}</Badge>
+                      ))}
                     </div>
-                    {mission.skills.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {mission.skills.slice(0, 5).map((s) => (
-                          <Badge key={s} className="bg-lime-400/10 text-lime-400 border-0 text-xs">{s}</Badge>
-                        ))}
-                      </div>
-                    )}
                   </div>
-                  <div className="text-right ml-4 shrink-0">
-                    <Badge className="bg-lime-400/10 text-lime-400 border-0">Ouverte</Badge>
-                    <p className="text-neutral-500 text-xs mt-2">{mission._count.proposals} proposition(s)</p>
+
+                  {/* Right side */}
+                  <div className="text-right shrink-0 flex flex-col items-end gap-2">
+                    <Badge className="bg-lime-400/10 text-lime-400 border border-lime-400/20 text-xs">Ouverte</Badge>
+                    <span className="text-muted-foreground text-xs flex items-center gap-1">
+                      <FileText className="h-3 w-3" />
+                      {mission._count.proposals} proposition(s)
+                    </span>
                     <Link href={`/missions/${mission.id}`}>
-                      <Button size="sm" className="mt-2 bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold text-xs">
+                      <Button size="sm" className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold text-xs shadow-lg shadow-lime-400/10 mt-1">
                         Postuler
                       </Button>
                     </Link>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

@@ -54,50 +54,50 @@ export default function NewGigPage() {
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="flex items-center gap-4">
         <Link href="/gigs">
-          <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white hover:bg-neutral-800">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-secondary">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Créer un Gig</h2>
-          <p className="text-neutral-400 mt-1">Étape {step} sur 4</p>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">Créer un Gig</h2>
+          <p className="text-muted-foreground mt-1">Étape {step} sur 4</p>
         </div>
       </div>
 
       {/* Progress bar */}
       <div className="flex gap-2">
         {[1, 2, 3, 4].map((s) => (
-          <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors ${s <= step ? "bg-lime-400" : "bg-neutral-800"}`} />
+          <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors ${s <= step ? "bg-lime-400" : "bg-secondary"}`} />
         ))}
       </div>
 
       {/* Step 1: Basic Info */}
       {step === 1 && (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white">Titre & Catégorie</CardTitle>
-            <CardDescription className="text-neutral-400">Donnez un titre accrocheur à votre service</CardDescription>
+            <CardTitle className="text-foreground">Titre & Catégorie</CardTitle>
+            <CardDescription className="text-muted-foreground">Donnez un titre accrocheur à votre service</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-neutral-300">Titre du gig *</Label>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Je vais créer votre site web React" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+              <Label className="text-foreground/80">Titre du gig *</Label>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Je vais créer votre site web React" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">Catégorie *</Label>
+                <Label className="text-foreground/80">Catégorie *</Label>
                 <Select value={category} onValueChange={(v) => { setCategory(v); setSubcategory("") }}>
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white"><SelectValue placeholder="Choisir..." /></SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectTrigger className="bg-secondary border-border text-foreground"><SelectValue placeholder="Choisir..." /></SelectTrigger>
+                  <SelectContent className="bg-secondary border-border">
                     {categories.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Sous-catégorie</Label>
+                <Label className="text-foreground/80">Sous-catégorie</Label>
                 <Select value={subcategory} onValueChange={setSubcategory} disabled={!subcats.length}>
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white"><SelectValue placeholder="Choisir..." /></SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectTrigger className="bg-secondary border-border text-foreground"><SelectValue placeholder="Choisir..." /></SelectTrigger>
+                  <SelectContent className="bg-secondary border-border">
                     {subcats.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
@@ -109,10 +109,10 @@ export default function NewGigPage() {
 
       {/* Step 2: Pricing */}
       {step === 2 && (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white">Tarification</CardTitle>
-            <CardDescription className="text-neutral-400">Définissez vos paliers de prix (style Fiverr)</CardDescription>
+            <CardTitle className="text-foreground">Tarification</CardTitle>
+            <CardDescription className="text-muted-foreground">Définissez vos paliers de prix (style Fiverr)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {[
@@ -120,16 +120,16 @@ export default function NewGigPage() {
               { label: "Standard", price: standardPrice, setPrice: setStandardPrice, desc: standardDesc, setDesc: setStandardDesc, required: false },
               { label: "Premium", price: premiumPrice, setPrice: setPremiumPrice, desc: premiumDesc, setDesc: setPremiumDesc, required: false },
             ].map((tier) => (
-              <div key={tier.label} className="p-4 rounded-lg border border-neutral-800 space-y-3">
-                <h4 className="text-white font-medium">{tier.label} {tier.required && <span className="text-lime-400">*</span>}</h4>
+              <div key={tier.label} className="p-4 rounded-lg border border-border space-y-3">
+                <h4 className="text-foreground font-medium">{tier.label} {tier.required && <span className="text-lime-400">*</span>}</h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-neutral-400 text-xs">Prix (MAD)</Label>
-                    <Input type="number" step="0.01" value={tier.price} onChange={(e) => tier.setPrice(e.target.value)} placeholder="500" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+                    <Label className="text-muted-foreground text-xs">Prix (MAD)</Label>
+                    <Input type="number" step="0.01" value={tier.price} onChange={(e) => tier.setPrice(e.target.value)} placeholder="500" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-neutral-400 text-xs">Description</Label>
-                    <Input value={tier.desc} onChange={(e) => tier.setDesc(e.target.value)} placeholder="Ce qui est inclus..." className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+                    <Label className="text-muted-foreground text-xs">Description</Label>
+                    <Input value={tier.desc} onChange={(e) => tier.setDesc(e.target.value)} placeholder="Ce qui est inclus..." className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
                   </div>
                 </div>
               </div>
@@ -140,23 +140,23 @@ export default function NewGigPage() {
 
       {/* Step 3: Description & Skills */}
       {step === 3 && (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white">Description & Compétences</CardTitle>
-            <CardDescription className="text-neutral-400">Décrivez votre service en détail</CardDescription>
+            <CardTitle className="text-foreground">Description & Compétences</CardTitle>
+            <CardDescription className="text-muted-foreground">Décrivez votre service en détail</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-neutral-300">Description *</Label>
+              <Label className="text-foreground/80">Description *</Label>
               <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={6} placeholder="Décrivez votre service, ce que le client recevra, votre processus..." />
             </div>
             <div className="space-y-2">
-              <Label className="text-neutral-300">Compétences</Label>
+              <Label className="text-foreground/80">Compétences</Label>
               <div className="flex gap-2">
                 <Input value={skillInput} onChange={(e) => setSkillInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addSkill() } }}
-                  placeholder="Tapez et appuyez Entrée" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
-                <Button type="button" onClick={addSkill} variant="outline" className="border-neutral-700 text-neutral-300 hover:bg-neutral-800">+</Button>
+                  placeholder="Tapez et appuyez Entrée" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
+                <Button type="button" onClick={addSkill} variant="outline" className="border-border text-foreground/80 hover:bg-secondary">+</Button>
               </div>
               {skills.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -167,8 +167,8 @@ export default function NewGigPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label className="text-neutral-300">Délai de livraison (jours)</Label>
-              <Input type="number" value={deliveryDays} onChange={(e) => setDeliveryDays(e.target.value)} className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50" />
+              <Label className="text-foreground/80">Délai de livraison (jours)</Label>
+              <Input type="number" value={deliveryDays} onChange={(e) => setDeliveryDays(e.target.value)} className="bg-secondary border-border text-foreground focus:border-lime-400/50" />
             </div>
           </CardContent>
         </Card>
@@ -176,26 +176,26 @@ export default function NewGigPage() {
 
       {/* Step 4: Preview */}
       {step === 4 && (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2"><Package className="h-5 w-5 text-lime-400" />Aperçu du Gig</CardTitle>
+            <CardTitle className="text-foreground flex items-center gap-2"><Package className="h-5 w-5 text-lime-400" />Aperçu du Gig</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h3 className="text-white text-lg font-semibold">{title}</h3>
-              <p className="text-neutral-500 text-sm">{category}{subcategory ? ` > ${subcategory}` : ""}</p>
+              <h3 className="text-foreground text-lg font-semibold">{title}</h3>
+              <p className="text-muted-foreground text-sm">{category}{subcategory ? ` > ${subcategory}` : ""}</p>
             </div>
-            <p className="text-neutral-300 text-sm whitespace-pre-wrap">{description}</p>
+            <p className="text-foreground/80 text-sm whitespace-pre-wrap">{description}</p>
             <div className="grid grid-cols-3 gap-3">
               {[
                 { t: "Basic", p: basicPrice, d: basicDesc },
                 { t: "Standard", p: standardPrice, d: standardDesc },
                 { t: "Premium", p: premiumPrice, d: premiumDesc },
               ].filter((x) => x.p).map((tier) => (
-                <div key={tier.t} className="p-3 rounded-lg border border-neutral-800 text-center">
-                  <p className="text-neutral-400 text-xs">{tier.t}</p>
+                <div key={tier.t} className="p-3 rounded-lg border border-border text-center">
+                  <p className="text-muted-foreground text-xs">{tier.t}</p>
                   <p className="text-lime-400 font-bold text-lg">{tier.p} MAD</p>
-                  {tier.d && <p className="text-neutral-500 text-xs mt-1">{tier.d}</p>}
+                  {tier.d && <p className="text-muted-foreground text-xs mt-1">{tier.d}</p>}
                 </div>
               ))}
             </div>
@@ -204,14 +204,14 @@ export default function NewGigPage() {
                 {skills.map((s) => <Badge key={s} className="bg-lime-400/10 text-lime-400 border-0">{s}</Badge>)}
               </div>
             )}
-            <p className="text-neutral-400 text-sm">Livraison : {deliveryDays} jours</p>
+            <p className="text-muted-foreground text-sm">Livraison : {deliveryDays} jours</p>
           </CardContent>
         </Card>
       )}
 
       {/* Navigation */}
       <div className="flex justify-between">
-        <Button variant="ghost" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1} className="text-neutral-400 hover:text-white hover:bg-neutral-800">
+        <Button variant="ghost" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1} className="text-muted-foreground hover:text-foreground hover:bg-secondary">
           <ArrowLeft className="mr-2 h-4 w-4" />Précédent
         </Button>
         {step < 4 ? (

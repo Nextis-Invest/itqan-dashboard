@@ -95,20 +95,20 @@ export function CompanySearch({ onSelect, onManualMode, className }: CompanySear
   if (selected) {
     return (
       <div className={className}>
-        <div className="bg-neutral-800 border border-neutral-700 rounded-lg p-4">
+        <div className="bg-secondary border border-border rounded-lg p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
               <div className="h-10 w-10 rounded-lg bg-lime-400/10 flex items-center justify-center shrink-0 mt-0.5">
                 <Building2 className="h-5 w-5 text-lime-400" />
               </div>
               <div>
-                <p className="text-white font-medium">{selected.name}</p>
-                <p className="text-neutral-400 text-sm mt-0.5">
+                <p className="text-foreground font-medium">{selected.name}</p>
+                <p className="text-muted-foreground text-sm mt-0.5">
                   SIREN: {selected.siren}
                   {selected.legalForm && ` · ${selected.legalForm}`}
                 </p>
                 {selected.city && (
-                  <p className="text-neutral-500 text-xs mt-0.5">
+                  <p className="text-muted-foreground text-xs mt-0.5">
                     {selected.address ? `${selected.address}, ` : ""}{selected.postalCode} {selected.city}
                   </p>
                 )}
@@ -117,7 +117,7 @@ export function CompanySearch({ onSelect, onManualMode, className }: CompanySear
             <button
               type="button"
               onClick={handleClear}
-              className="text-neutral-400 hover:text-white transition-colors text-sm flex items-center gap-1 shrink-0"
+              className="text-muted-foreground hover:text-foreground transition-colors text-sm flex items-center gap-1 shrink-0"
             >
               <X className="h-3.5 w-3.5" />
               Modifier
@@ -131,24 +131,24 @@ export function CompanySearch({ onSelect, onManualMode, className }: CompanySear
   return (
     <div ref={containerRef} className={`relative ${className || ""}`}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => results.length > 0 && setIsOpen(true)}
           placeholder="Rechercher par nom ou SIREN..."
-          className="pl-10 pr-10 bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+          className="pl-10 pr-10 bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
         />
         {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 animate-spin" />
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
         )}
       </div>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-secondary border border-border rounded-lg shadow-xl max-h-60 overflow-y-auto">
           {results.length === 0 && !isLoading ? (
-            <div className="px-4 py-6 text-center text-neutral-500 text-sm">
+            <div className="px-4 py-6 text-center text-muted-foreground text-sm">
               Aucun résultat trouvé
             </div>
           ) : (
@@ -157,10 +157,10 @@ export function CompanySearch({ onSelect, onManualMode, className }: CompanySear
                 key={company.siren}
                 type="button"
                 onClick={() => handleSelect(company)}
-                className="w-full text-left px-4 py-3 hover:bg-neutral-700/50 transition-colors border-b border-neutral-700/50 last:border-0"
+                className="w-full text-left px-4 py-3 hover:bg-accent/50 transition-colors border-b border-border last:border-0"
               >
-                <p className="text-white text-sm font-medium">{company.name}</p>
-                <p className="text-neutral-400 text-xs mt-0.5">
+                <p className="text-foreground text-sm font-medium">{company.name}</p>
+                <p className="text-muted-foreground text-xs mt-0.5">
                   {company.siren}
                   {company.legalForm && ` · ${company.legalForm}`}
                   {company.city && ` · ${company.city}`}
@@ -176,7 +176,7 @@ export function CompanySearch({ onSelect, onManualMode, className }: CompanySear
         <button
           type="button"
           onClick={onManualMode}
-          className="mt-2 text-sm text-neutral-400 hover:text-lime-400 transition-colors flex items-center gap-1.5"
+          className="mt-2 text-sm text-muted-foreground hover:text-lime-400 transition-colors flex items-center gap-1.5"
         >
           <PenLine className="h-3.5 w-3.5" />
           Saisie manuelle

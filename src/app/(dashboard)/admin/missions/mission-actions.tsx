@@ -82,7 +82,7 @@ export function AdminMissionActions({
           variant="ghost"
           size="sm"
           disabled={loading}
-          className="text-neutral-400 hover:text-white h-8 w-8 p-0"
+          className="text-muted-foreground hover:text-foreground h-8 w-8 p-0"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -91,28 +91,28 @@ export function AdminMissionActions({
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-neutral-900 border-neutral-800 w-56">
-        <DropdownMenuItem asChild className="text-neutral-300 hover:text-white focus:text-white focus:bg-neutral-800">
+      <DropdownMenuContent align="end" className="bg-card border-border w-56">
+        <DropdownMenuItem asChild className="text-muted-foreground hover:text-foreground focus:text-foreground focus:bg-accent">
           <Link href={`/missions/${missionId}`}>
             <Eye className="mr-2 h-4 w-4" />
             Voir la mission
           </Link>
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator className="bg-neutral-800" />
+        <DropdownMenuSeparator className="bg-border" />
 
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="text-neutral-300 hover:text-white focus:text-white focus:bg-neutral-800">
+          <DropdownMenuSubTrigger className="text-muted-foreground hover:text-foreground focus:text-foreground focus:bg-accent">
             <ArrowRightLeft className="mr-2 h-4 w-4" />
             Changer le statut
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="bg-neutral-900 border-neutral-800">
+          <DropdownMenuSubContent className="bg-card border-border">
             {statusOptions.map((opt) => (
               <DropdownMenuItem
                 key={opt.value}
                 disabled={opt.value === status}
                 onClick={() => handleStatusChange(opt.value)}
-                className={`text-neutral-300 hover:text-white focus:text-white focus:bg-neutral-800 ${
+                className={`text-muted-foreground hover:text-foreground focus:text-foreground focus:bg-accent ${
                   opt.value === status ? "opacity-50" : ""
                 }`}
               >
@@ -125,7 +125,7 @@ export function AdminMissionActions({
 
         <DropdownMenuItem
           onClick={handleToggleFeatured}
-          className="text-neutral-300 hover:text-white focus:text-white focus:bg-neutral-800"
+          className="text-muted-foreground hover:text-foreground focus:text-foreground focus:bg-accent"
         >
           {featured ? (
             <>
@@ -142,7 +142,7 @@ export function AdminMissionActions({
 
         {canDelete && (
           <>
-            <DropdownMenuSeparator className="bg-neutral-800" />
+            <DropdownMenuSeparator className="bg-border" />
             <DropdownMenuItem
               onClick={handleDelete}
               className="text-red-400 hover:text-red-300 focus:text-red-300 focus:bg-red-500/10"

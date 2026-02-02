@@ -63,54 +63,54 @@ export function CreateUserDialog() {
           Créer un utilisateur
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-neutral-900 border-neutral-800 text-white">
+      <DialogContent className="bg-card border-border text-foreground">
         <DialogHeader>
           <DialogTitle>Créer un utilisateur</DialogTitle>
-          <DialogDescription className="text-neutral-400">
+          <DialogDescription className="text-muted-foreground">
             Ajouter un nouvel utilisateur à la plateforme
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-neutral-300">Nom</Label>
+            <Label htmlFor="name" className="text-foreground/80">Nom</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="bg-neutral-800 border-neutral-700 text-white"
+              className="bg-secondary border-border text-foreground"
               placeholder="Nom complet"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-neutral-300">Email</Label>
+            <Label htmlFor="email" className="text-foreground/80">Email</Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-neutral-800 border-neutral-700 text-white"
+              className="bg-secondary border-border text-foreground"
               placeholder="email@exemple.com"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-neutral-300">Téléphone (optionnel)</Label>
+            <Label htmlFor="phone" className="text-foreground/80">Téléphone (optionnel)</Label>
             <Input
               id="phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="bg-neutral-800 border-neutral-700 text-white"
+              className="bg-secondary border-border text-foreground"
               placeholder="+212 6XX XXX XXX"
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-neutral-300">Rôle</Label>
+            <Label className="text-foreground/80">Rôle</Label>
             <Select value={role} onValueChange={(v: any) => setRole(v)}>
-              <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+              <SelectTrigger className="bg-secondary border-border text-foreground">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-neutral-800 border-neutral-700">
+              <SelectContent className="bg-secondary border-border">
                 <SelectItem value="CLIENT">Client</SelectItem>
                 <SelectItem value="FREELANCER">Freelancer</SelectItem>
                 <SelectItem value="ADMIN">Admin</SelectItem>
@@ -118,7 +118,7 @@ export function CreateUserDialog() {
             </Select>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="text-neutral-400 hover:text-white">
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground">
               Annuler
             </Button>
             <Button type="submit" disabled={loading} className="bg-lime-400 text-black hover:bg-lime-300">

@@ -105,7 +105,7 @@ export function AdminUserActions({
           <Button
             size="sm"
             variant="ghost"
-            className="h-8 w-8 p-0 text-neutral-400 hover:text-white"
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
             disabled={loading}
           >
             {loading ? (
@@ -115,21 +115,21 @@ export function AdminUserActions({
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="bg-neutral-900 border-neutral-800">
+        <DropdownMenuContent align="end" className="bg-card border-border">
           <DropdownMenuItem
             onClick={() => setEditOpen(true)}
-            className="text-neutral-300 focus:text-white focus:bg-neutral-800 cursor-pointer"
+            className="text-foreground/80 focus:text-foreground focus:bg-accent cursor-pointer"
           >
             <Pencil className="h-4 w-4 mr-2" />
             Modifier
           </DropdownMenuItem>
 
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="text-neutral-300 focus:text-white focus:bg-neutral-800 cursor-pointer">
+            <DropdownMenuSubTrigger className="text-foreground/80 focus:text-foreground focus:bg-accent cursor-pointer">
               <UserCog className="h-4 w-4 mr-2" />
               Changer le rôle
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="bg-neutral-900 border-neutral-800">
+            <DropdownMenuSubContent className="bg-card border-border">
               {(["CLIENT", "FREELANCER", "ADMIN"] as const).map((r) => (
                 <DropdownMenuItem
                   key={r}
@@ -137,7 +137,7 @@ export function AdminUserActions({
                   className={`cursor-pointer ${
                     r === role
                       ? "text-lime-400 bg-lime-400/10"
-                      : "text-neutral-300 focus:text-white focus:bg-neutral-800"
+                      : "text-foreground/80 focus:text-foreground focus:bg-accent"
                   }`}
                 >
                   {r}
@@ -149,7 +149,7 @@ export function AdminUserActions({
 
           <DropdownMenuItem
             onClick={handleVerify}
-            className="text-neutral-300 focus:text-white focus:bg-neutral-800 cursor-pointer"
+            className="text-foreground/80 focus:text-foreground focus:bg-accent cursor-pointer"
           >
             {verified ? (
               <>
@@ -168,8 +168,8 @@ export function AdminUserActions({
             onClick={handleSuspend}
             className={`cursor-pointer ${
               suspended
-                ? "text-green-400 focus:text-green-300 focus:bg-neutral-800"
-                : "text-neutral-300 focus:text-white focus:bg-neutral-800"
+                ? "text-green-400 focus:text-green-300 focus:bg-accent"
+                : "text-foreground/80 focus:text-foreground focus:bg-accent"
             }`}
           >
             {suspended ? (
@@ -185,7 +185,7 @@ export function AdminUserActions({
             )}
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator className="bg-neutral-800" />
+          <DropdownMenuSeparator className="bg-border" />
 
           <DropdownMenuItem
             onClick={() => setDeleteOpen(true)}
@@ -204,11 +204,11 @@ export function AdminUserActions({
       />
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="bg-neutral-900 border-neutral-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle className="text-red-400">Supprimer l&apos;utilisateur</DialogTitle>
-            <DialogDescription className="text-neutral-400">
-              Êtes-vous sûr de vouloir supprimer <strong className="text-white">{name || email}</strong> ?
+            <DialogDescription className="text-muted-foreground">
+              Êtes-vous sûr de vouloir supprimer <strong className="text-foreground">{name || email}</strong> ?
               Cette action est irréversible.
             </DialogDescription>
           </DialogHeader>
@@ -216,7 +216,7 @@ export function AdminUserActions({
             <Button
               variant="ghost"
               onClick={() => setDeleteOpen(false)}
-              className="text-neutral-400 hover:text-white"
+              className="text-muted-foreground hover:text-foreground"
             >
               Annuler
             </Button>

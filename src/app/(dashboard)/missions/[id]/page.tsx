@@ -20,12 +20,12 @@ import { MissionActions } from "./mission-actions"
 
 export const dynamic = "force-dynamic"
 
-const statusLabels: Record<string, { label: string; color: string }> = {
-  DRAFT: { label: "Brouillon", color: "bg-neutral-500/10 text-neutral-400" },
-  OPEN: { label: "Ouverte", color: "bg-lime-400/10 text-lime-400" },
-  IN_PROGRESS: { label: "En cours", color: "bg-blue-400/10 text-blue-400" },
-  COMPLETED: { label: "Terminée", color: "bg-green-400/10 text-green-400" },
-  CANCELLED: { label: "Annulée", color: "bg-red-400/10 text-red-400" },
+const statusLabels: Record<string, { label: string; color: string; dot: string; bg: string }> = {
+  DRAFT: { label: "Brouillon", color: "bg-muted text-muted-foreground border border-border", dot: "bg-muted-foreground", bg: "from-muted/20" },
+  OPEN: { label: "Ouverte", color: "bg-lime-400/10 text-lime-400 border border-lime-400/20", dot: "bg-lime-400", bg: "from-lime-400/5" },
+  IN_PROGRESS: { label: "En cours", color: "bg-blue-400/10 text-blue-400 border border-blue-400/20", dot: "bg-blue-400", bg: "from-blue-400/5" },
+  COMPLETED: { label: "Terminée", color: "bg-green-400/10 text-green-400 border border-green-400/20", dot: "bg-green-400", bg: "from-green-400/5" },
+  CANCELLED: { label: "Annulée", color: "bg-red-400/10 text-red-400 border border-red-400/20", dot: "bg-red-400", bg: "from-red-400/5" },
 }
 
 const experienceLevelLabels: Record<string, string> = {
@@ -156,38 +156,68 @@ export default async function MissionDetailPage({
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center gap-4">
-        <Link href="/missions">
-          <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white hover:bg-neutral-800">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-white tracking-tight">
-              {mission.title}
-            </h2>
-            <Badge className={`${status.color} border-0`}>{status.label}</Badge>
-            {mission.featured && (
-              <Badge className="bg-yellow-400/10 text-yellow-400 border-0">⭐ En avant</Badge>
+      {/* Back button */}
+      <Link href="/missions" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <ArrowLeft className="h-4 w-4" />
+        Retour aux missions
+      </Link>
+
+      {/* Hero Section */}
+      <div className={`relative rounded-2xl border border-border bg-gradient-to-br ${status.bg} to-background/0 overflow-hidden`}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary/20 via-transparent to-transparent" />
+        <div className="relative p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <Badge className={`${status.color} text-xs px-3 py-1`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${status.dot} mr-1.5 inline-block`} />
+                  {status.label}
+                </Badge>
+                {mission.featured && (
+                  <Badge className="bg-yellow-400/10 text-yellow-400 border border-yellow-400/20 text-xs">⭐ En avant</Badge>
+                )}
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+                {mission.title}
+              </h1>
+
+              <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+                <span>
+                  Par{" "}
+                  <Link href={`/profile/${mission.client.id}`} className="text-lime-400 hover:underline font-medium">
+                    {mission.client.name || mission.client.email}
+                  </Link>
+                </span>
+                <span className="text-muted-foreground/60">·</span>
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {new Date(mission.createdAt).toLocaleDateString("fr-FR")}
+                </span>
+                {mission.viewCount > 0 && (
+                  <>
+                    <span className="text-muted-foreground/60">·</span>
+                    <span className="flex items-center gap-1">
+                      <Eye className="h-3.5 w-3.5" /> {mission.viewCount} vue(s)
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Budget Display - Big */}
+            {budgetDisplay && (
+              <div className="sm:text-right shrink-0">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Budget</p>
+                <p className="text-2xl sm:text-3xl font-bold text-lime-400">{budgetDisplay}</p>
+                {mission.budgetType && (
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {mission.budgetType === "HOURLY" ? "Taux horaire" : "Prix fixe"}
+                  </p>
+                )}
+              </div>
             )}
           </div>
-          <p className="text-neutral-400 mt-1">
-            Par{" "}
-            <Link
-              href={`/profile/${mission.client.id}`}
-              className="text-lime-400 hover:underline"
-            >
-              {mission.client.name || mission.client.email}
-            </Link>
-            {" · "}
-            {new Date(mission.createdAt).toLocaleDateString("fr-FR")}
-            {mission.viewCount > 0 && (
-              <span className="ml-2 inline-flex items-center gap-1">
-                <Eye className="h-3 w-3" /> {mission.viewCount} vue(s)
-              </span>
-            )}
-          </p>
         </div>
       </div>
 
@@ -196,131 +226,119 @@ export default async function MissionDetailPage({
         <MissionActions missionId={mission.id} status={mission.status} />
       )}
 
-      {/* Mission Details */}
-      <Card className="bg-neutral-900 border-neutral-800">
-        <CardContent className="pt-6 space-y-4">
-          {mission.description && (
-            <p className="text-neutral-300 whitespace-pre-wrap">
-              {mission.description}
+      {/* Info Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {mission.deadline && (
+          <div className="rounded-xl border border-border bg-card/80 p-4 space-y-1">
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              <Calendar className="h-3.5 w-3.5 text-lime-400" />
+              Date limite
+            </div>
+            <p className="text-foreground font-semibold">
+              {new Date(mission.deadline).toLocaleDateString("fr-FR")}
             </p>
-          )}
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-neutral-800">
-            {budgetDisplay && (
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-lime-400" />
-                <div>
-                  <p className="text-xs text-neutral-500">Budget</p>
-                  <p className="text-white font-medium">{budgetDisplay}</p>
-                  {mission.budgetType && (
-                    <p className="text-[10px] text-neutral-500">
-                      {mission.budgetType === "HOURLY" ? "Taux horaire" : "Prix fixe"}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-            {mission.deadline && (
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-lime-400" />
-                <div>
-                  <p className="text-xs text-neutral-500">Date limite</p>
-                  <p className="text-white font-medium">
-                    {new Date(mission.deadline).toLocaleDateString("fr-FR")}
-                  </p>
-                </div>
-              </div>
-            )}
-            {mission.category && (
-              <div className="flex items-center gap-2">
-                <Tag className="h-4 w-4 text-lime-400" />
-                <div>
-                  <p className="text-xs text-neutral-500">Catégorie</p>
-                  <p className="text-white font-medium">{mission.category}</p>
-                </div>
-              </div>
-            )}
-            {mission.freelancer && (
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-lime-400" />
-                <div>
-                  <p className="text-xs text-neutral-500">Freelance</p>
-                  <Link
-                    href={`/profile/${mission.freelancer.id}`}
-                    className="text-white font-medium hover:text-lime-400"
-                  >
-                    {mission.freelancer.name || mission.freelancer.email}
-                  </Link>
-                </div>
-              </div>
-            )}
-            {mission.duration && (
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-lime-400" />
-                <div>
-                  <p className="text-xs text-neutral-500">Durée</p>
-                  <p className="text-white font-medium">{mission.duration}</p>
-                </div>
-              </div>
-            )}
-            {mission.experienceLevel && (
-              <div className="flex items-center gap-2">
-                <Award className="h-4 w-4 text-lime-400" />
-                <div>
-                  <p className="text-xs text-neutral-500">Niveau</p>
-                  <p className="text-white font-medium">
-                    {experienceLevelLabels[mission.experienceLevel] || mission.experienceLevel}
-                  </p>
-                </div>
-              </div>
-            )}
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-lime-400" />
-              <div>
-                <p className="text-xs text-neutral-500">Localisation</p>
-                <p className="text-white font-medium">
-                  {mission.remote ? "Remote" : mission.location || "Sur site"}
-                </p>
-              </div>
-            </div>
           </div>
-
-          {mission.skills.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-2">
-              {mission.skills.map((skill) => (
-                <Badge
-                  key={skill}
-                  className="bg-lime-400/10 text-lime-400 border-0 text-xs"
-                >
-                  {skill}
-                </Badge>
-              ))}
+        )}
+        {mission.category && (
+          <div className="rounded-xl border border-border bg-card/80 p-4 space-y-1">
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              <Tag className="h-3.5 w-3.5 text-lime-400" />
+              Catégorie
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <p className="text-foreground font-semibold">{mission.category}</p>
+          </div>
+        )}
+        {mission.freelancer && (
+          <div className="rounded-xl border border-border bg-card/80 p-4 space-y-1">
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              <User className="h-3.5 w-3.5 text-lime-400" />
+              Freelance
+            </div>
+            <Link href={`/profile/${mission.freelancer.id}`} className="text-foreground font-semibold hover:text-lime-400 transition-colors block">
+              {mission.freelancer.name || mission.freelancer.email}
+            </Link>
+          </div>
+        )}
+        {mission.duration && (
+          <div className="rounded-xl border border-border bg-card/80 p-4 space-y-1">
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              <Clock className="h-3.5 w-3.5 text-lime-400" />
+              Durée
+            </div>
+            <p className="text-foreground font-semibold">{mission.duration}</p>
+          </div>
+        )}
+        {mission.experienceLevel && (
+          <div className="rounded-xl border border-border bg-card/80 p-4 space-y-1">
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              <Award className="h-3.5 w-3.5 text-lime-400" />
+              Niveau
+            </div>
+            <p className="text-foreground font-semibold">
+              {experienceLevelLabels[mission.experienceLevel] || mission.experienceLevel}
+            </p>
+          </div>
+        )}
+        <div className="rounded-xl border border-border bg-card/80 p-4 space-y-1">
+          <div className="flex items-center gap-2 text-muted-foreground text-xs">
+            <MapPin className="h-3.5 w-3.5 text-lime-400" />
+            Localisation
+          </div>
+          <p className="text-foreground font-semibold">
+            {mission.remote ? "Remote" : mission.location || "Sur site"}
+          </p>
+        </div>
+      </div>
+
+      {/* Skills */}
+      {mission.skills.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {mission.skills.map((skill) => (
+            <Badge
+              key={skill}
+              className="bg-lime-400/10 text-lime-400 border border-lime-400/20 text-xs px-3 py-1"
+            >
+              {skill}
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {/* Description Card */}
+      {mission.description && (
+        <div className="rounded-2xl border border-border bg-card/80 p-6 shadow-lg shadow-black/20">
+          <h3 className="text-foreground font-semibold text-base mb-3 flex items-center gap-2">
+            <div className="w-1 h-5 rounded-full bg-lime-400" />
+            Description
+          </h3>
+          <p className="text-foreground/80 whitespace-pre-wrap leading-relaxed">
+            {mission.description}
+          </p>
+        </div>
+      )}
 
       {/* Client Info Card */}
       {!isClient && mission.client.clientProfile && (
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardHeader>
-            <CardTitle className="text-white text-base flex items-center gap-2">
+        <div className="rounded-2xl border border-border bg-card/80 overflow-hidden">
+          <div className="p-6">
+            <h3 className="text-foreground font-semibold text-base mb-4 flex items-center gap-2">
               <Building2 className="h-4 w-4 text-lime-400" />
               À propos du client
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
             <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-secondary border border-border flex items-center justify-center text-lime-400 font-bold text-lg shrink-0">
+                {(mission.client.clientProfile.companyName || mission.client.name || "C")[0].toUpperCase()}
+              </div>
               <div className="flex-1 space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="text-white font-medium text-base">
+                  <span className="text-foreground font-semibold text-base">
                     {mission.client.clientProfile.companyName || mission.client.name || mission.client.email}
                   </span>
                   {mission.client.clientProfile.verified && (
                     <CheckCircle className="h-4 w-4 text-lime-400" />
                   )}
                 </div>
-                <div className="flex flex-wrap gap-4 text-neutral-400">
+                <div className="flex flex-wrap gap-3 text-muted-foreground">
                   {mission.client.clientProfile.city && (
                     <span className="flex items-center gap-1">
                       <MapPin className="h-3.5 w-3.5" />
@@ -333,9 +351,7 @@ export default async function MissionDetailPage({
                       {mission.client.clientProfile.avgRating.toFixed(1)}
                     </span>
                   )}
-                  <span className="flex items-center gap-1">
-                    {mission.client.clientProfile.totalMissions} mission(s) postée(s)
-                  </span>
+                  <span>{mission.client.clientProfile.totalMissions} mission(s) postée(s)</span>
                   {mission.client.clientProfile.industry && (
                     <span>{mission.client.clientProfile.industry}</span>
                   )}
@@ -343,59 +359,59 @@ export default async function MissionDetailPage({
 
                 {/* Admin sees everything */}
                 {isAdmin && (
-                  <div className="mt-4 pt-3 border-t border-neutral-800 space-y-2">
-                    <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wider">Infos admin</p>
+                  <div className="mt-4 pt-3 border-t border-border space-y-2">
+                    <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Infos admin</p>
                     {mission.client.clientProfile.personType && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">Type</span>
-                        <span className="text-neutral-300">{mission.client.clientProfile.personType === "MORAL" ? "Personne morale" : "Personne physique"}</span>
+                        <span className="text-muted-foreground">Type</span>
+                        <span className="text-foreground/80">{mission.client.clientProfile.personType === "MORAL" ? "Personne morale" : "Personne physique"}</span>
                       </div>
                     )}
                     {mission.client.clientProfile.formeJuridique && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">Forme juridique</span>
-                        <span className="text-neutral-300">{mission.client.clientProfile.formeJuridique}</span>
+                        <span className="text-muted-foreground">Forme juridique</span>
+                        <span className="text-foreground/80">{mission.client.clientProfile.formeJuridique}</span>
                       </div>
                     )}
                     {mission.client.clientProfile.companySize && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">Taille</span>
-                        <span className="text-neutral-300">{mission.client.clientProfile.companySize} employés</span>
+                        <span className="text-muted-foreground">Taille</span>
+                        <span className="text-foreground/80">{mission.client.clientProfile.companySize} employés</span>
                       </div>
                     )}
                     {mission.client.clientProfile.ice && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">ICE</span>
-                        <span className="text-neutral-300 font-mono text-xs">{mission.client.clientProfile.ice}</span>
+                        <span className="text-muted-foreground">ICE</span>
+                        <span className="text-foreground/80 font-mono text-xs">{mission.client.clientProfile.ice}</span>
                       </div>
                     )}
                     {mission.client.clientProfile.rc && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">RC</span>
-                        <span className="text-neutral-300 font-mono text-xs">{mission.client.clientProfile.rc}</span>
+                        <span className="text-muted-foreground">RC</span>
+                        <span className="text-foreground/80 font-mono text-xs">{mission.client.clientProfile.rc}</span>
                       </div>
                     )}
                     {mission.client.clientProfile.totalSpent > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">Total dépensé</span>
-                        <span className="text-neutral-300">{mission.client.clientProfile.totalSpent.toLocaleString("fr-FR")} MAD</span>
+                        <span className="text-muted-foreground">Total dépensé</span>
+                        <span className="text-foreground/80">{mission.client.clientProfile.totalSpent.toLocaleString("fr-FR")} MAD</span>
                       </div>
                     )}
                     {mission.client.clientProfile.phone && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">Téléphone</span>
-                        <span className="text-neutral-300">{mission.client.clientProfile.phone}</span>
+                        <span className="text-muted-foreground">Téléphone</span>
+                        <span className="text-foreground/80">{mission.client.clientProfile.phone}</span>
                       </div>
                     )}
                     {mission.client.clientProfile.contactEmail && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">Email contact</span>
-                        <span className="text-neutral-300">{mission.client.clientProfile.contactEmail}</span>
+                        <span className="text-muted-foreground">Email contact</span>
+                        <span className="text-foreground/80">{mission.client.clientProfile.contactEmail}</span>
                       </div>
                     )}
                     {mission.client.clientProfile.website && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">Site web</span>
+                        <span className="text-muted-foreground">Site web</span>
                         <a href={mission.client.clientProfile.website} target="_blank" rel="noopener noreferrer" className="text-lime-400 text-xs hover:underline">
                           {mission.client.clientProfile.website}
                         </a>
@@ -403,16 +419,16 @@ export default async function MissionDetailPage({
                     )}
                     {mission.client.clientProfile.address && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">Adresse</span>
-                        <span className="text-neutral-300 text-right text-xs">
+                        <span className="text-muted-foreground">Adresse</span>
+                        <span className="text-foreground/80 text-right text-xs">
                           {[mission.client.clientProfile.address, mission.client.clientProfile.city, mission.client.clientProfile.region].filter(Boolean).join(", ")}
                         </span>
                       </div>
                     )}
                     {mission.client.clientProfile.preferredPaymentMethod && (
                       <div className="flex justify-between">
-                        <span className="text-neutral-500">Paiement préféré</span>
-                        <span className="text-neutral-300">{mission.client.clientProfile.preferredPaymentMethod}</span>
+                        <span className="text-muted-foreground">Paiement préféré</span>
+                        <span className="text-foreground/80">{mission.client.clientProfile.preferredPaymentMethod}</span>
                       </div>
                     )}
                     <div className="pt-2">
@@ -424,8 +440,8 @@ export default async function MissionDetailPage({
                 )}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Proposal Form - for freelancers on open missions */}
@@ -436,30 +452,32 @@ export default async function MissionDetailPage({
         )}
 
       {userRole === "FREELANCER" && hasProposed && (
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="py-6">
-            <div className="flex items-center justify-between">
-              <p className="text-neutral-400">
-                ✅ Vous avez déjà soumis une proposition pour cette mission.
-                {userProposal && (
-                  <span className="ml-2">
-                    Statut : <Badge className={`${
-                      userProposal.status === "PENDING" ? "bg-yellow-400/10 text-yellow-400" :
-                      userProposal.status === "ACCEPTED" ? "bg-green-400/10 text-green-400" :
-                      "bg-red-400/10 text-red-400"
-                    } border-0 text-xs`}>{
-                      userProposal.status === "PENDING" ? "En attente" :
-                      userProposal.status === "ACCEPTED" ? "Acceptée" : "Refusée"
-                    }</Badge>
-                  </span>
-                )}
-              </p>
-              {userProposal?.status === "PENDING" && (
-                <WithdrawProposalButton proposalId={userProposal.id} missionId={mission.id} />
-              )}
+        <div className="rounded-2xl border border-border bg-card/80 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-lime-400/10 flex items-center justify-center">
+                <CheckCircle className="h-5 w-5 text-lime-400" />
+              </div>
+              <div>
+                <p className="text-foreground font-medium">Proposition soumise</p>
+                <p className="text-muted-foreground text-sm">
+                  Statut :{" "}
+                  <Badge className={`${
+                    userProposal?.status === "PENDING" ? "bg-yellow-400/10 text-yellow-400 border-yellow-400/20" :
+                    userProposal?.status === "ACCEPTED" ? "bg-green-400/10 text-green-400 border-green-400/20" :
+                    "bg-red-400/10 text-red-400 border-red-400/20"
+                  } border text-xs`}>{
+                    userProposal?.status === "PENDING" ? "En attente" :
+                    userProposal?.status === "ACCEPTED" ? "Acceptée" : "Refusée"
+                  }</Badge>
+                </p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+            {userProposal?.status === "PENDING" && (
+              <WithdrawProposalButton proposalId={userProposal.id} missionId={mission.id} />
+            )}
+          </div>
+        </div>
       )}
 
       {/* Proposals - for mission owner */}
@@ -477,30 +495,33 @@ export default async function MissionDetailPage({
 
       {/* Existing reviews */}
       {mission.reviews.length > 0 && (
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardHeader>
-            <CardTitle className="text-white text-base">Avis sur cette mission</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {mission.reviews.map((review) => (
-              <div key={review.id} className="border-b border-neutral-800 pb-4 last:border-0 last:pb-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-white text-sm font-medium">
-                    {review.author.name || review.author.email}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} className={`text-sm ${i < review.rating ? "text-yellow-400" : "text-neutral-600"}`}>★</span>
-                    ))}
+        <div className="rounded-2xl border border-border bg-card/80 overflow-hidden">
+          <div className="p-6">
+            <h3 className="text-foreground font-semibold text-base mb-4 flex items-center gap-2">
+              <div className="w-1 h-5 rounded-full bg-yellow-400" />
+              Avis sur cette mission
+            </h3>
+            <div className="space-y-4">
+              {mission.reviews.map((review) => (
+                <div key={review.id} className="rounded-xl border border-border bg-secondary/30 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-foreground text-sm font-medium">
+                      {review.author.name || review.author.email}
+                    </span>
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <StarIcon key={i} className={`h-3.5 w-3.5 ${i < review.rating ? "text-yellow-400 fill-yellow-400" : "text-border"}`} />
+                      ))}
+                    </div>
                   </div>
+                  {review.comment && (
+                    <p className="text-foreground/80 text-sm leading-relaxed">{review.comment}</p>
+                  )}
                 </div>
-                {review.comment && (
-                  <p className="text-neutral-300 text-sm mt-2">{review.comment}</p>
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

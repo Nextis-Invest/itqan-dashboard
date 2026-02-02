@@ -6,18 +6,18 @@ import { auth } from "@/lib/auth/config"
 import { getContracts } from "@/lib/actions/contract"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { FileCheck } from "lucide-react"
+import { FileCheck, ArrowRight, Calendar, Users, Coins } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
 
 const statusColors: Record<string, string> = {
-  PENDING: "bg-yellow-400/10 text-yellow-400",
-  ACTIVE: "bg-lime-400/10 text-lime-400",
-  COMPLETED: "bg-green-400/10 text-green-400",
-  CANCELLED: "bg-neutral-400/10 text-neutral-400",
-  DISPUTED: "bg-red-400/10 text-red-400",
+  PENDING: "bg-amber-400/10 text-amber-400 ring-1 ring-amber-400/20",
+  ACTIVE: "bg-lime-400/10 text-lime-400 ring-1 ring-lime-400/20",
+  COMPLETED: "bg-green-400/10 text-green-400 ring-1 ring-green-400/20",
+  CANCELLED: "bg-muted/50 text-muted-foreground ring-1 ring-border",
+  DISPUTED: "bg-red-400/10 text-red-400 ring-1 ring-red-400/20",
 }
 
 const statusLabels: Record<string, string> = {
@@ -28,13 +28,20 @@ const statusLabels: Record<string, string> = {
   DISPUTED: "Litige",
 }
 
+const statusDot: Record<string, string> = {
+  PENDING: "bg-amber-400",
+  ACTIVE: "bg-lime-400",
+  COMPLETED: "bg-green-400",
+  CANCELLED: "bg-muted-foreground",
+  DISPUTED: "bg-red-400",
+}
+
 export default async function ContractsPage() {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
 
   const contracts = await getContracts()
 
-  // Get user names for display
   const userIds = new Set<string>()
   for (const c of contracts) {
     userIds.add(c.clientId)
@@ -51,70 +58,80 @@ export default async function ContractsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Mes contrats</h2>
-        <p className="text-neutral-400 mt-1">Gérez vos contrats et suivez leur avancement</p>
+        <h2 className="text-2xl font-bold text-foreground tracking-tight">Mes contrats</h2>
+        <p className="text-muted-foreground mt-1">Gérez vos contrats et suivez leur avancement</p>
       </div>
 
       {contracts.length === 0 ? (
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="py-12">
-            <div className="text-neutral-500 text-sm text-center">
-              <FileCheck className="h-12 w-12 mx-auto mb-4 text-neutral-600" />
-              <p>Aucun contrat pour le moment.</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="mb-5 rounded-2xl bg-secondary/30 p-6 ring-1 ring-border">
+            <FileCheck className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-semibold text-muted-foreground">Aucun contrat</h3>
+          <p className="text-sm text-muted-foreground mt-1.5 max-w-xs">Vos contrats apparaîtront ici une fois qu&apos;une proposition sera acceptée</p>
+        </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid gap-4">
           {contracts.map((contract) => {
             const isClient = contract.clientId === session.user!.id
             const otherPartyName = isClient
               ? userMap.get(contract.freelancerId) || "Freelance"
               : userMap.get(contract.clientId) || "Client"
+            const completedMilestones = contract.milestones.filter(
+              (m: any) => m.status === "APPROVED" || m.status === "PAID"
+            ).length
+            const totalMilestones = contract.milestones.length
+            const progress = totalMilestones > 0 ? (completedMilestones / totalMilestones) * 100 : 0
 
             return (
               <Link key={contract.id} href={`/contracts/${contract.id}`}>
-                <Card className="bg-neutral-900 border-neutral-800 hover:border-neutral-700 transition-colors cursor-pointer">
+                <Card className="group bg-card/80 border-border/80 hover:border-border hover:bg-card transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md hover:shadow-black/10">
                   <CardContent className="pt-6">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <p className="text-white font-medium">
-                          {contract.mission?.title || "Mission"}
-                        </p>
-                        <p className="text-neutral-500 text-sm">
-                          {isClient ? "Freelance" : "Client"} : {otherPartyName}
-                        </p>
+                    {/* Status dot + title row */}
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <div className={`mt-1.5 h-2.5 w-2.5 rounded-full shrink-0 ${statusDot[contract.status]} ring-4 ring-background`} />
+                        <div className="min-w-0">
+                          <p className="text-foreground font-semibold group-hover:text-lime-400 transition-colors truncate">
+                            {contract.mission?.title || "Mission"}
+                          </p>
+                          <div className="flex items-center gap-1.5 mt-1 text-muted-foreground text-xs">
+                            <Users className="h-3 w-3" />
+                            <span>{isClient ? "Freelance" : "Client"} : {otherPartyName}</span>
+                          </div>
+                        </div>
                       </div>
-                      <Badge className={`${statusColors[contract.status]} border-0`}>
-                        {statusLabels[contract.status]}
-                      </Badge>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <Badge className={`${statusColors[contract.status]} border-0 text-xs`}>
+                          {statusLabels[contract.status]}
+                        </Badge>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all" />
+                      </div>
                     </div>
 
-                    <div className="flex gap-6 mt-3 text-sm">
-                      <div>
-                        <span className="text-neutral-500">Montant : </span>
-                        <span className="text-white font-medium">
-                          {contract.totalAmount} {contract.currency}
-                        </span>
+                    {/* Info row */}
+                    <div className="flex items-center gap-6 mt-4 pt-4 border-t border-border/60">
+                      <div className="flex items-center gap-1.5 text-sm">
+                        <Coins className="h-3.5 w-3.5 text-lime-400/70" />
+                        <span className="text-foreground font-semibold">{contract.totalAmount} {contract.currency}</span>
                       </div>
-                      <div>
-                        <span className="text-neutral-500">Jalons : </span>
-                        <span className="text-white">{contract.milestones.length}</span>
-                      </div>
-                      {contract.startDate && (
-                        <div>
-                          <span className="text-neutral-500">Début : </span>
-                          <span className="text-white">
-                            {new Date(contract.startDate).toLocaleDateString("fr-FR")}
-                          </span>
+                      {totalMilestones > 0 && (
+                        <div className="flex items-center gap-2 text-sm flex-1">
+                          <span className="text-muted-foreground text-xs">{completedMilestones}/{totalMilestones} jalons</span>
+                          <div className="flex-1 max-w-[120px] h-1.5 rounded-full bg-secondary overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-r from-lime-400 to-lime-500 transition-all duration-500"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
                         </div>
                       )}
-                      <div>
-                        <span className="text-neutral-500">Créé le : </span>
-                        <span className="text-white">
-                          {new Date(contract.createdAt).toLocaleDateString("fr-FR")}
-                        </span>
-                      </div>
+                      {contract.startDate && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>{new Date(contract.startDate).toLocaleDateString("fr-FR")}</span>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

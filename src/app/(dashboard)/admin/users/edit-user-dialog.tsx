@@ -62,52 +62,52 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-neutral-900 border-neutral-800 text-white">
+      <DialogContent className="bg-card border-border text-foreground">
         <DialogHeader>
           <DialogTitle>Modifier l&apos;utilisateur</DialogTitle>
-          <DialogDescription className="text-neutral-400">
+          <DialogDescription className="text-muted-foreground">
             Modifier les informations de {user.name || user.email}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="edit-name" className="text-neutral-300">Nom</Label>
+            <Label htmlFor="edit-name" className="text-foreground/80">Nom</Label>
             <Input
               id="edit-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="bg-neutral-800 border-neutral-700 text-white"
+              className="bg-secondary border-border text-foreground"
               placeholder="Nom complet"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="edit-email" className="text-neutral-300">Email</Label>
+            <Label htmlFor="edit-email" className="text-foreground/80">Email</Label>
             <Input
               id="edit-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-neutral-800 border-neutral-700 text-white"
+              className="bg-secondary border-border text-foreground"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="edit-phone" className="text-neutral-300">Téléphone</Label>
+            <Label htmlFor="edit-phone" className="text-foreground/80">Téléphone</Label>
             <Input
               id="edit-phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="bg-neutral-800 border-neutral-700 text-white"
+              className="bg-secondary border-border text-foreground"
               placeholder="+212 6XX XXX XXX"
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-neutral-300">Rôle</Label>
+            <Label className="text-foreground/80">Rôle</Label>
             <Select value={role} onValueChange={(v: any) => setRole(v)}>
-              <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+              <SelectTrigger className="bg-secondary border-border text-foreground">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-neutral-800 border-neutral-700">
+              <SelectContent className="bg-secondary border-border">
                 <SelectItem value="CLIENT">Client</SelectItem>
                 <SelectItem value="FREELANCER">Freelancer</SelectItem>
                 <SelectItem value="ADMIN">Admin</SelectItem>
@@ -115,7 +115,7 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
             </Select>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="text-neutral-400 hover:text-white">
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground hover:text-foreground">
               Annuler
             </Button>
             <Button type="submit" disabled={loading} className="bg-lime-400 text-black hover:bg-lime-300">

@@ -101,7 +101,7 @@ export default async function SubcategoryPage({
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-neutral-500">
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground">
         <Link href="/categories" className="hover:text-lime-400 transition-colors">
           Catégories
         </Link>
@@ -113,21 +113,21 @@ export default async function SubcategoryPage({
           {parentCat.name}
         </Link>
         <ChevronRight className="h-4 w-4" />
-        <span className="text-white">{subCat.name}</span>
+        <span className="text-foreground">{subCat.name}</span>
       </nav>
 
-      <h1 className="text-2xl md:text-3xl font-bold text-white">{subCat.name}</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-foreground">{subCat.name}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar: sibling subcategories */}
         <aside className="space-y-4">
-          <h3 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             Sous-catégories
           </h3>
           <div className="space-y-1">
             <Link
               href={`/categories/${slug}`}
-              className="block px-3 py-2 rounded-lg text-sm text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
+              className="block px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             >
               ← Toutes
             </Link>
@@ -138,7 +138,7 @@ export default async function SubcategoryPage({
                 className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
                   sibling.slug === sub
                     ? "bg-lime-400/10 text-lime-400 font-medium"
-                    : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
                 }`}
               >
                 {sibling.name}
@@ -151,11 +151,11 @@ export default async function SubcategoryPage({
         <div className="lg:col-span-3 space-y-6">
           {/* Sort bar */}
           <div className="flex items-center justify-between">
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-muted-foreground">
               {total} service{total !== 1 ? "s" : ""} trouvé{total !== 1 ? "s" : ""}
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-neutral-500">Trier par :</span>
+              <span className="text-sm text-muted-foreground">Trier par :</span>
               <div className="flex gap-1">
                 {sortOptions.map((opt) => (
                   <Link
@@ -164,7 +164,7 @@ export default async function SubcategoryPage({
                     className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                       sort === opt.value
                         ? "bg-lime-400/10 text-lime-400"
-                        : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     }`}
                   >
                     {opt.label}
@@ -177,7 +177,7 @@ export default async function SubcategoryPage({
           {/* Grid */}
           {gigs.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-neutral-500">
+              <p className="text-muted-foreground">
                 Aucun service dans cette sous-catégorie pour le moment.
               </p>
             </div>
@@ -195,18 +195,18 @@ export default async function SubcategoryPage({
               {page > 1 && (
                 <Link
                   href={buildUrl({ page: String(page - 1) })}
-                  className="px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-sm text-neutral-300 hover:border-lime-400/50 transition-colors"
+                  className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
                 >
                   Précédent
                 </Link>
               )}
-              <span className="px-4 py-2 text-sm text-neutral-400">
+              <span className="px-4 py-2 text-sm text-muted-foreground">
                 Page {page} sur {totalPages}
               </span>
               {page < totalPages && (
                 <Link
                   href={buildUrl({ page: String(page + 1) })}
-                  className="px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-sm text-neutral-300 hover:border-lime-400/50 transition-colors"
+                  className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
                 >
                   Suivant
                 </Link>

@@ -18,6 +18,12 @@ const badgeVariants = cva(
           "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         link: "text-primary underline-offset-4 [a&]:hover:underline",
+        success:
+          "bg-success/15 text-success border-success/20",
+        warning:
+          "bg-warning/15 text-warning border-warning/20",
+        info:
+          "bg-info/15 text-info border-info/20",
       },
     },
     defaultVariants: {
@@ -30,18 +36,51 @@ function Badge({
   className,
   variant = "default",
   asChild = false,
+  dot = false,
+  pulse = false,
+  children,
   ...props
 }: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+  VariantProps<typeof badgeVariants> & {
+    asChild?: boolean
+    dot?: boolean
+    pulse?: boolean
+  }) {
   const Comp = asChild ? Slot : "span"
+
+  const dotColorMap: Record<string, string> = {
+    default: "bg-primary-foreground",
+    secondary: "bg-secondary-foreground",
+    destructive: "bg-white",
+    outline: "bg-foreground",
+    ghost: "bg-foreground",
+    link: "bg-primary",
+    success: "bg-success",
+    warning: "bg-warning",
+    info: "bg-info",
+  }
+
+  const dotColor = dotColorMap[variant ?? "default"] ?? "bg-current"
 
   return (
     <Comp
       data-slot="badge"
       data-variant={variant}
-      className={cn(badgeVariants({ variant }), className)}
+      className={cn(
+        badgeVariants({ variant }),
+        pulse && "animate-pulse-glow",
+        className
+      )}
       {...props}
-    />
+    >
+      {dot && (
+        <span
+          className={cn("size-1.5 rounded-full shrink-0", dotColor, pulse && "animate-pulse")}
+          aria-hidden="true"
+        />
+      )}
+      {children}
+    </Comp>
   )
 }
 

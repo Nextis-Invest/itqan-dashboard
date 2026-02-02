@@ -17,9 +17,9 @@ export function AdminNotesForm({
   const [saved, setSaved] = useState(false)
 
   return (
-    <Card className="bg-neutral-900 border-neutral-800">
+    <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-white text-base flex items-center gap-2">
+        <CardTitle className="text-foreground text-base flex items-center gap-2">
           <Shield className="h-4 w-4 text-lime-400" />
           Notes admin (privées)
         </CardTitle>
@@ -50,7 +50,7 @@ export function AdminNotesForm({
             defaultValue={currentNotes || ""}
             placeholder="Notes internes sur ce client..."
             rows={4}
-            className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50 resize-y"
+            className="bg-secondary border-border text-foreground focus:border-lime-400/50 resize-y"
           />
           <div className="flex items-center gap-3">
             <Button

@@ -24,8 +24,8 @@ export default async function TjmPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">TJM & Disponibilité</h2>
-        <p className="text-neutral-400 mt-1">Gérez vos tarifs et votre disponibilité</p>
+        <h2 className="text-2xl font-bold text-foreground tracking-tight">TJM & Disponibilité</h2>
+        <p className="text-muted-foreground mt-1">Gérez vos tarifs et votre disponibilité</p>
       </div>
 
       <TjmForm profile={user.freelancerProfile} />

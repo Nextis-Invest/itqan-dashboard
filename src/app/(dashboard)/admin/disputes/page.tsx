@@ -5,18 +5,18 @@ import { prisma } from "@/lib/prisma"
 import { getAdminDisputes, getDisputeStats } from "@/lib/actions/dispute"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { AlertTriangle, MessageSquare, Clock, CheckCircle, Eye } from "lucide-react"
+import { AlertTriangle, MessageSquare, Clock, CheckCircle, Eye, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { AdminDisputeFilters } from "./dispute-filters"
 
 export const metadata: Metadata = { title: "Gestion des litiges" }
 export const dynamic = "force-dynamic"
 
-const statusMap: Record<string, { label: string; color: string }> = {
-  OPEN: { label: "Ouvert", color: "bg-red-400/10 text-red-400" },
-  UNDER_REVIEW: { label: "En examen", color: "bg-yellow-400/10 text-yellow-400" },
-  RESOLVED: { label: "Résolu", color: "bg-green-400/10 text-green-400" },
-  CLOSED: { label: "Fermé", color: "bg-neutral-500/10 text-neutral-400" },
+const statusMap: Record<string, { label: string; color: string; dot: string }> = {
+  OPEN: { label: "Ouvert", color: "bg-red-400/10 text-red-400", dot: "bg-red-400" },
+  UNDER_REVIEW: { label: "En examen", color: "bg-yellow-400/10 text-yellow-400", dot: "bg-yellow-400" },
+  RESOLVED: { label: "Résolu", color: "bg-green-400/10 text-green-400", dot: "bg-green-400" },
+  CLOSED: { label: "Fermé", color: "bg-muted/50 text-muted-foreground", dot: "bg-muted-foreground" },
 }
 
 const categoryMap: Record<string, { label: string; color: string }> = {
@@ -25,11 +25,11 @@ const categoryMap: Record<string, { label: string; color: string }> = {
   PAYMENT: { label: "Paiement", color: "bg-blue-400/10 text-blue-400" },
   SCOPE: { label: "Périmètre", color: "bg-orange-400/10 text-orange-400" },
   COMMUNICATION: { label: "Communication", color: "bg-cyan-400/10 text-cyan-400" },
-  OTHER: { label: "Autre", color: "bg-neutral-500/10 text-neutral-400" },
+  OTHER: { label: "Autre", color: "bg-muted/50 text-muted-foreground" },
 }
 
 const priorityMap: Record<string, { label: string; color: string }> = {
-  LOW: { label: "Faible", color: "bg-neutral-500/10 text-neutral-400" },
+  LOW: { label: "Faible", color: "bg-muted/50 text-muted-foreground" },
   MEDIUM: { label: "Moyen", color: "bg-blue-400/10 text-blue-400" },
   HIGH: { label: "Élevé", color: "bg-yellow-400/10 text-yellow-400" },
   CRITICAL: { label: "Critique", color: "bg-red-400/10 text-red-400" },
@@ -56,67 +56,38 @@ export default async function AdminDisputesPage({
     getDisputeStats(),
   ])
 
+  const statCards = [
+    { label: "Litiges ouverts", value: stats.openCount, icon: AlertTriangle, color: "text-red-400", bg: "bg-red-400/10" },
+    { label: "En examen", value: stats.underReviewCount, icon: Eye, color: "text-yellow-400", bg: "bg-yellow-400/10" },
+    { label: "Temps résolution", value: `${stats.avgResolutionDays}j`, icon: Clock, color: "text-blue-400", bg: "bg-blue-400/10" },
+    { label: "Résolus ce mois", value: stats.resolvedThisMonth, icon: CheckCircle, color: "text-green-400", bg: "bg-green-400/10" },
+  ]
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Litiges</h2>
-        <p className="text-neutral-400 mt-1">Gérer les litiges de la plateforme</p>
+        <h2 className="text-2xl font-bold text-foreground tracking-tight">Litiges</h2>
+        <p className="text-muted-foreground mt-1">Gérer les litiges de la plateforme</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-red-400/10">
-                <AlertTriangle className="h-5 w-5 text-red-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{stats.openCount}</p>
-                <p className="text-neutral-400 text-xs">Litiges ouverts</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-yellow-400/10">
-                <Eye className="h-5 w-5 text-yellow-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{stats.underReviewCount}</p>
-                <p className="text-neutral-400 text-xs">En examen</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {statCards.map((s) => {
+          const Icon = s.icon
+          return (
+            <div key={s.label} className="rounded-xl bg-card/80 border border-border p-5">
+              <div className="flex items-center gap-3">
+                <div className={`rounded-xl ${s.bg} p-2.5`}>
+                  <Icon className={`h-5 w-5 ${s.color}`} />
+                </div>
+                <div>
+                  <p className="text-2xl font-black text-foreground">{s.value}</p>
+                  <p className="text-muted-foreground text-xs">{s.label}</p>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-400/10">
-                <Clock className="h-5 w-5 text-blue-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{stats.avgResolutionDays}j</p>
-                <p className="text-neutral-400 text-xs">Temps résolution moy.</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-400/10">
-                <CheckCircle className="h-5 w-5 text-green-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{stats.resolvedThisMonth}</p>
-                <p className="text-neutral-400 text-xs">Résolus ce mois</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          )
+        })}
       </div>
 
       {/* Filters */}
@@ -126,29 +97,27 @@ export default async function AdminDisputesPage({
         currentPriority={sp.priority || ""}
       />
 
-      {/* Table */}
+      {/* Disputes list */}
       {disputes.length === 0 ? (
-        <Card className="bg-neutral-900 border-neutral-800">
-          <CardContent className="py-12">
-            <div className="text-neutral-500 text-sm text-center">
-              <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-neutral-600" />
-              <p>Aucun litige trouvé</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="mb-5 rounded-2xl bg-muted p-6 ring-1 ring-border">
+            <AlertTriangle className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-semibold text-muted-foreground">Aucun litige trouvé</h3>
+        </div>
       ) : (
-        <div className="rounded-lg border border-neutral-800 overflow-hidden">
+        <div className="rounded-xl border border-border overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-neutral-800 bg-neutral-900/50">
-                <th className="text-left text-xs font-medium text-neutral-400 px-4 py-3">Mission</th>
-                <th className="text-left text-xs font-medium text-neutral-400 px-4 py-3">Ouvert par</th>
-                <th className="text-left text-xs font-medium text-neutral-400 px-4 py-3">Catégorie</th>
-                <th className="text-left text-xs font-medium text-neutral-400 px-4 py-3">Priorité</th>
-                <th className="text-left text-xs font-medium text-neutral-400 px-4 py-3">Statut</th>
-                <th className="text-left text-xs font-medium text-neutral-400 px-4 py-3">Assigné</th>
-                <th className="text-left text-xs font-medium text-neutral-400 px-4 py-3">Date</th>
-                <th className="text-left text-xs font-medium text-neutral-400 px-4 py-3">Msgs</th>
+              <tr className="border-b border-border bg-muted">
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3">Mission</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3">Ouvert par</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3">Catégorie</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3">Priorité</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3">Statut</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3">Assigné</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3">Date</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3">Msgs</th>
               </tr>
             </thead>
             <tbody>
@@ -157,33 +126,36 @@ export default async function AdminDisputesPage({
                 const cat = categoryMap[d.category] || categoryMap.OTHER
                 const pri = priorityMap[d.priority] || priorityMap.MEDIUM
                 return (
-                  <tr key={d.id} className="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/50 transition-colors">
-                    <td className="px-4 py-3">
-                      <Link href={`/admin/disputes/${d.id}`} className="text-white font-medium hover:text-lime-400 transition-colors">
-                        {d.mission.title}
-                      </Link>
+                  <tr key={d.id} className="border-b border-border last:border-0 hover:bg-accent/20 transition-colors group">
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <div className={`h-2 w-2 rounded-full shrink-0 ${st.dot}`} />
+                        <Link href={`/admin/disputes/${d.id}`} className="text-foreground font-medium hover:text-lime-400 transition-colors text-sm">
+                          {d.mission.title}
+                        </Link>
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-neutral-300 text-sm">
+                    <td className="px-4 py-3.5 text-muted-foreground text-sm">
                       {d.openedBy.name || d.openedBy.email}
                     </td>
-                    <td className="px-4 py-3">
-                      <Badge className={`${cat.color} border-0 text-xs`}>{cat.label}</Badge>
+                    <td className="px-4 py-3.5">
+                      <Badge className={`${cat.color} border-0 text-[10px]`}>{cat.label}</Badge>
                     </td>
-                    <td className="px-4 py-3">
-                      <Badge className={`${pri.color} border-0 text-xs`}>{pri.label}</Badge>
+                    <td className="px-4 py-3.5">
+                      <Badge className={`${pri.color} border-0 text-[10px]`}>{pri.label}</Badge>
                     </td>
-                    <td className="px-4 py-3">
-                      <Badge className={`${st.color} border-0 text-xs`}>{st.label}</Badge>
+                    <td className="px-4 py-3.5">
+                      <Badge className={`${st.color} border-0 text-[10px]`}>{st.label}</Badge>
                     </td>
-                    <td className="px-4 py-3 text-neutral-400 text-sm">
+                    <td className="px-4 py-3.5 text-muted-foreground text-sm">
                       {d.assignedTo?.name || d.assignedTo?.email || "—"}
                     </td>
-                    <td className="px-4 py-3 text-neutral-400 text-sm">
-                      {new Date(d.createdAt).toLocaleDateString("fr-FR")}
+                    <td className="px-4 py-3.5 text-muted-foreground text-xs">
+                      {new Date(d.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="flex items-center gap-1 text-neutral-400 text-sm">
-                        <MessageSquare className="h-3.5 w-3.5" />
+                    <td className="px-4 py-3.5">
+                      <span className="flex items-center gap-1 text-muted-foreground text-sm">
+                        <MessageSquare className="h-3 w-3" />
                         {d._count.messages}
                       </span>
                     </td>

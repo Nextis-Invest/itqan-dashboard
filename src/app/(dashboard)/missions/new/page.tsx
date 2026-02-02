@@ -89,20 +89,20 @@ export default function NewMissionPage() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
         <Link href="/missions">
-          <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white hover:bg-neutral-800">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-accent">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Nouvelle mission</h2>
-          <p className="text-neutral-400 mt-1">Publiez un projet pour trouver le freelance idéal</p>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">Nouvelle mission</h2>
+          <p className="text-muted-foreground mt-1">Publiez un projet pour trouver le freelance idéal</p>
         </div>
       </div>
 
-      <Card className="bg-neutral-900 border-neutral-800">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-white">Détails de la mission</CardTitle>
-          <CardDescription className="text-neutral-400">Remplissez les informations ci-dessous</CardDescription>
+          <CardTitle className="text-foreground">Détails de la mission</CardTitle>
+          <CardDescription className="text-muted-foreground">Remplissez les informations ci-dessous</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -111,23 +111,23 @@ export default function NewMissionPage() {
             )}
 
             <div className="space-y-2">
-              <Label className="text-neutral-300">Titre *</Label>
-              <Input name="title" required placeholder="Ex: Développement d'une application mobile" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+              <Label className="text-foreground/80">Titre *</Label>
+              <Input name="title" required placeholder="Ex: Développement d'une application mobile" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-neutral-300">Description</Label>
+              <Label className="text-foreground/80">Description</Label>
               <Textarea name="description" rows={6} placeholder="Décrivez votre mission en détail : objectifs, livrables attendus, contexte..." />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">Catégorie</Label>
+                <Label className="text-foreground/80">Catégorie</Label>
                 <Select name="category" onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue placeholder="Choisir..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectContent className="bg-secondary border-border">
                     {categories.map((cat) => (
                       <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
                     ))}
@@ -135,12 +135,12 @@ export default function NewMissionPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Sous-catégorie</Label>
+                <Label className="text-foreground/80">Sous-catégorie</Label>
                 <Select name="subcategory" disabled={subcategories.length === 0}>
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue placeholder="Choisir..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectContent className="bg-secondary border-border">
                     {subcategories.map((sub) => (
                       <SelectItem key={sub.value} value={sub.value}>{sub.label}</SelectItem>
                     ))}
@@ -151,11 +151,11 @@ export default function NewMissionPage() {
 
             {/* Budget */}
             <div className="space-y-3">
-              <Label className="text-neutral-300">Type de budget</Label>
+              <Label className="text-foreground/80">Type de budget</Label>
               <div className="flex gap-2">
                 {[{ v: "FIXED", l: "Prix fixe" }, { v: "HOURLY", l: "Taux horaire" }].map((bt) => (
                   <button key={bt.v} type="button" onClick={() => setBudgetType(bt.v)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${budgetType === bt.v ? "bg-lime-400/10 text-lime-400 border border-lime-400/20" : "bg-neutral-800 text-neutral-400 border border-neutral-700"}`}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${budgetType === bt.v ? "bg-lime-400/10 text-lime-400 border border-lime-400/20" : "bg-secondary text-muted-foreground border border-border"}`}
                   >{bt.l}</button>
                 ))}
               </div>
@@ -163,25 +163,25 @@ export default function NewMissionPage() {
 
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">{budgetType === "FIXED" ? "Budget" : "Taux/heure"}</Label>
-                <Input name="budget" type="number" step="0.01" placeholder="5000" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+                <Label className="text-foreground/80">{budgetType === "FIXED" ? "Budget" : "Taux/heure"}</Label>
+                <Input name="budget" type="number" step="0.01" placeholder="5000" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Budget min</Label>
-                <Input name="budgetMin" type="number" step="0.01" placeholder="3000" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+                <Label className="text-foreground/80">Budget min</Label>
+                <Input name="budgetMin" type="number" step="0.01" placeholder="3000" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Budget max</Label>
-                <Input name="budgetMax" type="number" step="0.01" placeholder="8000" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+                <Label className="text-foreground/80">Budget max</Label>
+                <Input name="budgetMax" type="number" step="0.01" placeholder="8000" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">Devise</Label>
+                <Label className="text-foreground/80">Devise</Label>
                 <Select name="currency" defaultValue="MAD">
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white"><SelectValue /></SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectTrigger className="bg-secondary border-border text-foreground"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-secondary border-border">
                     <SelectItem value="MAD">MAD (د.م.)</SelectItem>
                     <SelectItem value="EUR">EUR (€)</SelectItem>
                     <SelectItem value="USD">USD ($)</SelectItem>
@@ -190,21 +190,21 @@ export default function NewMissionPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Date limite</Label>
-                <Input name="deadline" type="date" className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50" />
+                <Label className="text-foreground/80">Date limite</Label>
+                <Input name="deadline" type="date" className="bg-secondary border-border text-foreground focus:border-lime-400/50" />
               </div>
             </div>
 
             {/* Skills */}
             <div className="space-y-2">
-              <Label className="text-neutral-300">Compétences requises</Label>
+              <Label className="text-foreground/80">Compétences requises</Label>
               <div className="flex gap-2">
                 <Input value={skillInput} onChange={(e) => setSkillInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addSkill() } }}
                   placeholder="Tapez et appuyez Entrée"
-                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
                 />
-                <Button type="button" onClick={addSkill} variant="outline" className="border-neutral-700 text-neutral-300 hover:bg-neutral-800">Ajouter</Button>
+                <Button type="button" onClick={addSkill} variant="outline" className="border-border text-foreground/80 hover:bg-accent">Ajouter</Button>
               </div>
               {skills.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -219,10 +219,10 @@ export default function NewMissionPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">Durée estimée</Label>
+                <Label className="text-foreground/80">Durée estimée</Label>
                 <Select name="duration">
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white"><SelectValue placeholder="Choisir..." /></SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectTrigger className="bg-secondary border-border text-foreground"><SelectValue placeholder="Choisir..." /></SelectTrigger>
+                  <SelectContent className="bg-secondary border-border">
                     <SelectItem value="< 1 semaine">{"< 1 semaine"}</SelectItem>
                     <SelectItem value="1-2 semaines">1-2 semaines</SelectItem>
                     <SelectItem value="1 mois">1 mois</SelectItem>
@@ -233,10 +233,10 @@ export default function NewMissionPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Niveau d&apos;expérience</Label>
+                <Label className="text-foreground/80">Niveau d&apos;expérience</Label>
                 <Select name="experienceLevel">
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white"><SelectValue placeholder="Choisir..." /></SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectTrigger className="bg-secondary border-border text-foreground"><SelectValue placeholder="Choisir..." /></SelectTrigger>
+                  <SelectContent className="bg-secondary border-border">
                     <SelectItem value="JUNIOR">Junior</SelectItem>
                     <SelectItem value="INTERMEDIATE">Intermédiaire</SelectItem>
                     <SelectItem value="SENIOR">Senior</SelectItem>
@@ -248,14 +248,14 @@ export default function NewMissionPage() {
 
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
-                <button type="button" onClick={() => setIsRemote(!isRemote)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isRemote ? "bg-lime-400" : "bg-neutral-700"}`}>
+                <button type="button" onClick={() => setIsRemote(!isRemote)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isRemote ? "bg-lime-400" : "bg-muted"}`}>
                   <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isRemote ? "translate-x-6" : "translate-x-1"}`} />
                 </button>
-                <Label className="text-neutral-300">Remote</Label>
+                <Label className="text-foreground/80">Remote</Label>
               </div>
               {!isRemote && (
                 <div className="flex-1">
-                  <Input name="location" placeholder="Ville / lieu" className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50" />
+                  <Input name="location" placeholder="Ville / lieu" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
                 </div>
               )}
             </div>
@@ -265,7 +265,7 @@ export default function NewMissionPage() {
                 {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Création...</> : <><Save className="mr-2 h-4 w-4" />Publier la mission</>}
               </Button>
               <Link href="/missions">
-                <Button variant="ghost" className="text-neutral-400 hover:text-white hover:bg-neutral-800">Annuler</Button>
+                <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-accent">Annuler</Button>
               </Link>
             </div>
           </form>

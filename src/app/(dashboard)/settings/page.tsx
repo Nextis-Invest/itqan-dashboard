@@ -5,75 +5,165 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { User, Shield } from "lucide-react"
+import { User, Shield, Bell, Palette, Mail, Phone, Lock, Eye } from "lucide-react"
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-8 max-w-2xl">
       <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Paramètres</h2>
-        <p className="text-neutral-400 mt-1">Gérez votre compte et vos préférences</p>
+        <h2 className="text-2xl font-bold text-foreground tracking-tight">Paramètres</h2>
+        <p className="text-muted-foreground mt-1">Gérez votre compte et vos préférences</p>
       </div>
 
-      <Card className="bg-neutral-900 border-neutral-800">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <User className="h-5 w-5 text-lime-400" />
-            <CardTitle className="text-white">Informations personnelles</CardTitle>
+      {/* Profile Section */}
+      <Card className="bg-card/80 border-border/80 overflow-hidden">
+        <CardHeader className="border-b border-border/60 bg-card/50">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-lime-400/10 p-2.5">
+              <User className="h-5 w-5 text-lime-400" />
+            </div>
+            <div>
+              <CardTitle className="text-foreground">Informations personnelles</CardTitle>
+              <CardDescription className="text-muted-foreground text-xs mt-0.5">
+                Mettez à jour vos informations de profil
+              </CardDescription>
+            </div>
           </div>
-          <CardDescription className="text-neutral-400">
-            Mettez à jour vos informations de profil
-          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5 pt-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-neutral-300">Nom</Label>
+              <Label className="text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <User className="h-3 w-3" /> Nom
+              </Label>
               <Input
                 placeholder="Votre nom"
-                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/30 focus:ring-lime-400/20 rounded-xl h-11"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-neutral-300">Téléphone</Label>
+              <Label className="text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <Phone className="h-3 w-3" /> Téléphone
+              </Label>
               <Input
                 placeholder="+33 6 12 34 56 78"
-                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/30 focus:ring-lime-400/20 rounded-xl h-11"
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label className="text-neutral-300">Email</Label>
+            <Label className="text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
+              <Mail className="h-3 w-3" /> Email
+            </Label>
             <Input
               disabled
               placeholder="votre@email.com"
-              className="bg-neutral-800/50 border-neutral-700 text-neutral-500"
+              className="bg-secondary/30 border-border text-muted-foreground rounded-xl h-11"
             />
-            <p className="text-xs text-neutral-500">L&apos;email ne peut pas être modifié</p>
+            <p className="text-[11px] text-muted-foreground">L&apos;email ne peut pas être modifié</p>
           </div>
-          <Button className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold">
-            Sauvegarder
+          <Button className="bg-gradient-to-r from-lime-400 to-lime-500 text-neutral-900 hover:from-lime-300 hover:to-lime-400 font-bold rounded-xl shadow-lg shadow-lime-400/20">
+            Sauvegarder les modifications
           </Button>
         </CardContent>
       </Card>
 
-      <Separator className="bg-neutral-800" />
-
-      <Card className="bg-neutral-900 border-neutral-800">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-lime-400" />
-            <CardTitle className="text-white">Sécurité</CardTitle>
+      {/* Security Section */}
+      <Card className="bg-card/80 border-border/80 overflow-hidden">
+        <CardHeader className="border-b border-border/60 bg-card/50">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-blue-400/10 p-2.5">
+              <Shield className="h-5 w-5 text-blue-400" />
+            </div>
+            <div>
+              <CardTitle className="text-foreground">Sécurité</CardTitle>
+              <CardDescription className="text-muted-foreground text-xs mt-0.5">
+                Gérez la sécurité de votre compte
+              </CardDescription>
+            </div>
           </div>
-          <CardDescription className="text-neutral-400">
-            Gérez la sécurité de votre compte
-          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-neutral-500 text-sm">
-            Votre compte utilise l&apos;authentification par code de connexion (magic link).
-            Aucun mot de passe n&apos;est nécessaire.
-          </p>
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-4 p-4 rounded-xl bg-secondary/30 border border-border/60">
+            <div className="rounded-lg bg-green-400/10 p-2">
+              <Lock className="h-4 w-4 text-green-400" />
+            </div>
+            <div className="flex-1">
+              <p className="text-foreground text-sm font-medium">Authentification par magic link</p>
+              <p className="text-muted-foreground text-xs mt-0.5">
+                Votre compte utilise l&apos;authentification par code de connexion. Aucun mot de passe n&apos;est nécessaire.
+              </p>
+            </div>
+            <div className="shrink-0">
+              <span className="text-xs font-semibold text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full">Actif</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Notifications Section */}
+      <Card className="bg-card/80 border-border/80 overflow-hidden">
+        <CardHeader className="border-b border-border/60 bg-card/50">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-amber-400/10 p-2.5">
+              <Bell className="h-5 w-5 text-amber-400" />
+            </div>
+            <div>
+              <CardTitle className="text-foreground">Notifications</CardTitle>
+              <CardDescription className="text-muted-foreground text-xs mt-0.5">
+                Contrôlez les notifications que vous recevez
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6 space-y-4">
+          {[
+            { label: "Nouvelles propositions", desc: "Recevez une notification quand un freelance postule", defaultOn: true },
+            { label: "Messages", desc: "Notifications pour les nouveaux messages", defaultOn: true },
+            { label: "Mises à jour de contrat", desc: "Jalons soumis, approuvés, etc.", defaultOn: true },
+            { label: "Emails marketing", desc: "Offres et actualités de la plateforme", defaultOn: false },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/60">
+              <div>
+                <p className="text-foreground text-sm font-medium">{item.label}</p>
+                <p className="text-muted-foreground text-xs mt-0.5">{item.desc}</p>
+              </div>
+              <button
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${item.defaultOn ? "bg-lime-400" : "bg-secondary"}`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm ${item.defaultOn ? "translate-x-6" : "translate-x-1"}`} />
+              </button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Appearance */}
+      <Card className="bg-card/80 border-border/80 overflow-hidden">
+        <CardHeader className="border-b border-border/60 bg-card/50">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-purple-400/10 p-2.5">
+              <Palette className="h-5 w-5 text-purple-400" />
+            </div>
+            <div>
+              <CardTitle className="text-foreground">Apparence</CardTitle>
+              <CardDescription className="text-muted-foreground text-xs mt-0.5">
+                Personnalisez l&apos;interface
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/60">
+            <div className="flex items-center gap-3">
+              <Eye className="h-4 w-4 text-muted-foreground" />
+              <div>
+                <p className="text-foreground text-sm font-medium">Thème sombre</p>
+                <p className="text-muted-foreground text-xs mt-0.5">Le thème sombre est activé par défaut</p>
+              </div>
+            </div>
+            <span className="text-xs font-semibold text-lime-400 bg-lime-400/10 px-2.5 py-1 rounded-full">Actif</span>
+          </div>
         </CardContent>
       </Card>
     </div>

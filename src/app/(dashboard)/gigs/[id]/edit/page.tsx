@@ -23,8 +23,8 @@ export default async function EditGigPage({ params }: { params: Promise<{ id: st
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Modifier le gig</h2>
-        <p className="text-neutral-400 mt-1">Mettez à jour votre service</p>
+        <h2 className="text-2xl font-bold text-foreground tracking-tight">Modifier le gig</h2>
+        <p className="text-muted-foreground mt-1">Mettez à jour votre service</p>
       </div>
       <GigEditForm gig={gig} />
     </div>

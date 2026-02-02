@@ -201,16 +201,16 @@ export default function EditMissionPage() {
           <Button
             variant="ghost"
             size="icon"
-            className="text-neutral-400 hover:text-white hover:bg-neutral-800"
+            className="text-muted-foreground hover:text-foreground hover:bg-accent"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">
             Modifier la mission
           </h2>
-          <p className="text-neutral-400 mt-1">
+          <p className="text-muted-foreground mt-1">
             Modifiez les détails de votre mission
           </p>
         </div>
@@ -220,7 +220,7 @@ export default function EditMissionPage() {
       {(mission.status === "DRAFT" ||
         mission.status === "OPEN" ||
         mission.status === "IN_PROGRESS") && (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex flex-wrap gap-3">
               {mission.status === "DRAFT" && (
@@ -259,10 +259,10 @@ export default function EditMissionPage() {
         </Card>
       )}
 
-      <Card className="bg-neutral-900 border-neutral-800">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-white">Détails de la mission</CardTitle>
-          <CardDescription className="text-neutral-400">
+          <CardTitle className="text-foreground">Détails de la mission</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Modifiez les informations ci-dessous
           </CardDescription>
         </CardHeader>
@@ -275,17 +275,17 @@ export default function EditMissionPage() {
             )}
 
             <div className="space-y-2">
-              <Label className="text-neutral-300">Titre *</Label>
+              <Label className="text-foreground/80">Titre *</Label>
               <Input
                 name="title"
                 required
                 defaultValue={mission.title}
-                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-neutral-300">Description</Label>
+              <Label className="text-foreground/80">Description</Label>
               <Textarea
                 name="description"
                 rows={6}
@@ -295,16 +295,16 @@ export default function EditMissionPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">Catégorie</Label>
+                <Label className="text-foreground/80">Catégorie</Label>
                 <Select
                   name="category"
                   defaultValue={mission.category || undefined}
                   onValueChange={setSelectedCategory}
                 >
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue placeholder="Choisir..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectContent className="bg-secondary border-border">
                     {categories.map((cat) => (
                       <SelectItem key={cat.value} value={cat.value}>
                         {cat.label}
@@ -314,16 +314,16 @@ export default function EditMissionPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Sous-catégorie</Label>
+                <Label className="text-foreground/80">Sous-catégorie</Label>
                 <Select
                   name="subcategory"
                   defaultValue={mission.subcategory || undefined}
                   disabled={subcategories.length === 0}
                 >
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue placeholder="Choisir..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectContent className="bg-secondary border-border">
                     {subcategories.map((sub) => (
                       <SelectItem key={sub.value} value={sub.value}>
                         {sub.label}
@@ -336,7 +336,7 @@ export default function EditMissionPage() {
 
             {/* Budget */}
             <div className="space-y-3">
-              <Label className="text-neutral-300">Type de budget</Label>
+              <Label className="text-foreground/80">Type de budget</Label>
               <div className="flex gap-2">
                 {[
                   { v: "FIXED", l: "Prix fixe" },
@@ -349,7 +349,7 @@ export default function EditMissionPage() {
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       budgetType === bt.v
                         ? "bg-lime-400/10 text-lime-400 border border-lime-400/20"
-                        : "bg-neutral-800 text-neutral-400 border border-neutral-700"
+                        : "bg-secondary text-muted-foreground border border-border"
                     }`}
                   >
                     {bt.l}
@@ -360,7 +360,7 @@ export default function EditMissionPage() {
 
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">
+                <Label className="text-foreground/80">
                   {budgetType === "FIXED" ? "Budget" : "Taux/heure"}
                 </Label>
                 <Input
@@ -368,39 +368,39 @@ export default function EditMissionPage() {
                   type="number"
                   step="0.01"
                   defaultValue={mission.budget || ""}
-                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Budget min</Label>
+                <Label className="text-foreground/80">Budget min</Label>
                 <Input
                   name="budgetMin"
                   type="number"
                   step="0.01"
                   defaultValue={mission.budgetMin || ""}
-                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Budget max</Label>
+                <Label className="text-foreground/80">Budget max</Label>
                 <Input
                   name="budgetMax"
                   type="number"
                   step="0.01"
                   defaultValue={mission.budgetMax || ""}
-                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">Devise</Label>
+                <Label className="text-foreground/80">Devise</Label>
                 <Select name="currency" defaultValue={mission.currency}>
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectContent className="bg-secondary border-border">
                     <SelectItem value="MAD">MAD (د.م.)</SelectItem>
                     <SelectItem value="EUR">EUR (€)</SelectItem>
                     <SelectItem value="USD">USD ($)</SelectItem>
@@ -409,7 +409,7 @@ export default function EditMissionPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Date limite</Label>
+                <Label className="text-foreground/80">Date limite</Label>
                 <Input
                   name="deadline"
                   type="date"
@@ -418,14 +418,14 @@ export default function EditMissionPage() {
                       ? new Date(mission.deadline).toISOString().split("T")[0]
                       : ""
                   }
-                  className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50"
+                  className="bg-secondary border-border text-foreground focus:border-lime-400/50"
                 />
               </div>
             </div>
 
             {/* Skills */}
             <div className="space-y-2">
-              <Label className="text-neutral-300">Compétences requises</Label>
+              <Label className="text-foreground/80">Compétences requises</Label>
               <div className="flex gap-2">
                 <Input
                   value={skillInput}
@@ -437,13 +437,13 @@ export default function EditMissionPage() {
                     }
                   }}
                   placeholder="Tapez et appuyez Entrée"
-                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
                 />
                 <Button
                   type="button"
                   onClick={addSkill}
                   variant="outline"
-                  className="border-neutral-700 text-neutral-300 hover:bg-neutral-800"
+                  className="border-border text-foreground/80 hover:bg-accent"
                 >
                   Ajouter
                 </Button>
@@ -466,12 +466,12 @@ export default function EditMissionPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">Durée estimée</Label>
+                <Label className="text-foreground/80">Durée estimée</Label>
                 <Select name="duration" defaultValue={mission.duration || undefined}>
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue placeholder="Choisir..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectContent className="bg-secondary border-border">
                     <SelectItem value="< 1 semaine">{"< 1 semaine"}</SelectItem>
                     <SelectItem value="1-2 semaines">1-2 semaines</SelectItem>
                     <SelectItem value="1 mois">1 mois</SelectItem>
@@ -482,17 +482,17 @@ export default function EditMissionPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">
+                <Label className="text-foreground/80">
                   Niveau d&apos;expérience
                 </Label>
                 <Select
                   name="experienceLevel"
                   defaultValue={mission.experienceLevel || undefined}
                 >
-                  <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue placeholder="Choisir..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-800 border-neutral-700">
+                  <SelectContent className="bg-secondary border-border">
                     <SelectItem value="JUNIOR">Junior</SelectItem>
                     <SelectItem value="INTERMEDIATE">Intermédiaire</SelectItem>
                     <SelectItem value="SENIOR">Senior</SelectItem>
@@ -508,7 +508,7 @@ export default function EditMissionPage() {
                   type="button"
                   onClick={() => setIsRemote(!isRemote)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    isRemote ? "bg-lime-400" : "bg-neutral-700"
+                    isRemote ? "bg-lime-400" : "bg-secondary"
                   }`}
                 >
                   <span
@@ -517,7 +517,7 @@ export default function EditMissionPage() {
                     }`}
                   />
                 </button>
-                <Label className="text-neutral-300">Remote</Label>
+                <Label className="text-foreground/80">Remote</Label>
               </div>
               {!isRemote && (
                 <div className="flex-1">
@@ -525,7 +525,7 @@ export default function EditMissionPage() {
                     name="location"
                     defaultValue={mission.location || ""}
                     placeholder="Ville / lieu"
-                    className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                    className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
                   />
                 </div>
               )}
@@ -552,7 +552,7 @@ export default function EditMissionPage() {
               <Link href={`/missions/${missionId}`}>
                 <Button
                   variant="ghost"
-                  className="text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  className="text-muted-foreground hover:text-foreground hover:bg-accent"
                 >
                   Annuler
                 </Button>

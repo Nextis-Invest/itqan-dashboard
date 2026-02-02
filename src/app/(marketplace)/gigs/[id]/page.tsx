@@ -96,7 +96,7 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-neutral-500">
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground">
         <Link href="/categories" className="hover:text-lime-400 transition-colors">
           Catégories
         </Link>
@@ -124,33 +124,33 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
         {/* Left: Main content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Title */}
-          <h1 className="text-2xl md:text-3xl font-bold text-white">{gig.title}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">{gig.title}</h1>
 
           {/* Freelancer info bar */}
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage src={gig.freelancer.image || undefined} />
-                <AvatarFallback className="bg-neutral-800 text-neutral-400">
+                <AvatarFallback className="bg-muted text-muted-foreground">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-white font-medium">
+                  <span className="text-foreground font-medium">
                     {gig.freelancer.name || "Freelancer"}
                   </span>
                   {profile?.verified && (
                     <CheckCircle2 className="h-4 w-4 text-lime-400" />
                   )}
                 </div>
-                <p className="text-sm text-neutral-400">
+                <p className="text-sm text-muted-foreground">
                   {profile?.title || "Freelancer"}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 text-sm text-neutral-400">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-yellow-400 font-medium">{avgRating}</span>
@@ -194,18 +194,18 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
               )}
             </div>
           ) : (
-            <div className="aspect-video rounded-lg bg-gradient-to-br from-lime-400/10 via-neutral-800 to-neutral-900 flex items-center justify-center">
-              <span className="text-neutral-600">Pas d&apos;images disponibles</span>
+            <div className="aspect-video rounded-lg bg-gradient-to-br from-lime-400/10 via-muted to-card flex items-center justify-center">
+              <span className="text-muted-foreground">Pas d&apos;images disponibles</span>
             </div>
           )}
 
           {/* Description */}
-          <Card className="bg-neutral-900 border-neutral-800">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white">Description</CardTitle>
+              <CardTitle className="text-foreground">Description</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-neutral-300 whitespace-pre-wrap leading-relaxed">
+              <div className="text-foreground whitespace-pre-wrap leading-relaxed">
                 {gig.description}
               </div>
             </CardContent>
@@ -214,13 +214,13 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
           {/* Skills */}
           {gig.skills.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-white">Compétences</h3>
+              <h3 className="text-lg font-semibold text-foreground">Compétences</h3>
               <div className="flex flex-wrap gap-2">
                 {gig.skills.map((skill) => (
                   <Badge
                     key={skill}
                     variant="outline"
-                    className="border-neutral-700 text-neutral-300 hover:border-lime-400/50"
+                    className="border-border text-foreground hover:border-lime-400/50"
                   >
                     {skill}
                   </Badge>
@@ -230,28 +230,28 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
           )}
 
           {/* Reviews */}
-          <Card className="bg-neutral-900 border-neutral-800">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-foreground flex items-center gap-2">
                 <MessageSquare className="h-5 w-5 text-lime-400" />
                 Avis ({reviews.length})
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {reviews.length === 0 ? (
-                <p className="text-neutral-500 text-sm">Aucun avis pour le moment.</p>
+                <p className="text-muted-foreground text-sm">Aucun avis pour le moment.</p>
               ) : (
                 reviews.map((review) => (
-                  <div key={review.id} className="border-b border-neutral-800 pb-4 last:border-0 last:pb-0">
+                  <div key={review.id} className="border-b border-border pb-4 last:border-0 last:pb-0">
                     <div className="flex items-center gap-3 mb-2">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={review.author.image || undefined} />
-                        <AvatarFallback className="bg-neutral-800 text-xs text-neutral-400">
+                        <AvatarFallback className="bg-muted text-xs text-muted-foreground">
                           {(review.author.name || "U")[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <span className="text-sm font-medium text-white">
+                        <span className="text-sm font-medium text-foreground">
                           {review.author.name || "Utilisateur"}
                         </span>
                         <div className="flex items-center gap-1">
@@ -261,18 +261,18 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
                               className={`h-3 w-3 ${
                                 i < review.rating
                                   ? "fill-yellow-400 text-yellow-400"
-                                  : "text-neutral-700"
+                                  : "text-muted-foreground"
                               }`}
                             />
                           ))}
                         </div>
                       </div>
-                      <span className="text-xs text-neutral-500 ml-auto">
+                      <span className="text-xs text-muted-foreground ml-auto">
                         {new Date(review.createdAt).toLocaleDateString("fr-FR")}
                       </span>
                     </div>
                     {review.comment && (
-                      <p className="text-sm text-neutral-300">{review.comment}</p>
+                      <p className="text-sm text-foreground">{review.comment}</p>
                     )}
                   </div>
                 ))
@@ -283,16 +283,16 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
 
         {/* Right: Pricing sidebar */}
         <div className="space-y-6">
-          <Card className="bg-neutral-900 border-neutral-800 sticky top-24">
+          <Card className="bg-card border-border sticky top-24">
             <CardContent className="p-0">
               {packages.length > 1 ? (
                 <Tabs defaultValue="basic" className="w-full">
-                  <TabsList className="w-full bg-neutral-800 rounded-t-lg rounded-b-none">
+                  <TabsList className="w-full bg-muted rounded-t-lg rounded-b-none">
                     {packages.map((pkg) => (
                       <TabsTrigger
                         key={pkg.key}
                         value={pkg.key}
-                        className="flex-1 data-[state=active]:bg-neutral-900 data-[state=active]:text-lime-400"
+                        className="flex-1 data-[state=active]:bg-card data-[state=active]:text-lime-400"
                       >
                         {pkg.title}
                       </TabsTrigger>
@@ -301,15 +301,15 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
                   {packages.map((pkg) => (
                     <TabsContent key={pkg.key} value={pkg.key} className="p-6 space-y-4 mt-0">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-white">{pkg.title}</h3>
+                        <h3 className="text-lg font-semibold text-foreground">{pkg.title}</h3>
                         <span className="text-2xl font-bold text-lime-400">
                           {pkg.price!.toLocaleString("fr-FR")} {gig.currency}
                         </span>
                       </div>
                       {pkg.desc && (
-                        <p className="text-sm text-neutral-400">{pkg.desc}</p>
+                        <p className="text-sm text-muted-foreground">{pkg.desc}</p>
                       )}
-                      <div className="flex items-center gap-2 text-sm text-neutral-400">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock className="h-4 w-4" />
                         <span>Livraison en {gig.deliveryDays} jours</span>
                       </div>
@@ -319,7 +319,7 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
                       </Button>
                       <Button
                         variant="outline"
-                        className="w-full border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                        className="w-full border-border text-foreground hover:bg-accent hover:text-foreground"
                       >
                         <MessageSquare className="h-4 w-4 mr-2" />
                         Contacter
@@ -330,15 +330,15 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
               ) : (
                 <div className="p-6 space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">{packages[0]?.title}</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{packages[0]?.title}</h3>
                     <span className="text-2xl font-bold text-lime-400">
                       {packages[0]?.price?.toLocaleString("fr-FR")} {gig.currency}
                     </span>
                   </div>
                   {packages[0]?.desc && (
-                    <p className="text-sm text-neutral-400">{packages[0].desc}</p>
+                    <p className="text-sm text-muted-foreground">{packages[0].desc}</p>
                   )}
-                  <div className="flex items-center gap-2 text-sm text-neutral-400">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     <span>Livraison en {gig.deliveryDays} jours</span>
                   </div>
@@ -348,7 +348,7 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                    className="w-full border-border text-foreground hover:bg-accent hover:text-foreground"
                   >
                     <MessageSquare className="h-4 w-4 mr-2" />
                     Contacter
@@ -364,7 +364,7 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
       {relatedGigs.length > 0 && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Services similaires</h2>
+            <h2 className="text-xl font-bold text-foreground">Services similaires</h2>
             <Link
               href={`/categories/${gig.category}`}
               className="text-sm text-lime-400 hover:underline flex items-center gap-1"

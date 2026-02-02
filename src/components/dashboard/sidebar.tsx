@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import Image from "next/image"
+import { motion } from "framer-motion"
 import {
   LayoutDashboard,
   Settings,
@@ -39,6 +40,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
 
 interface NavItem {
   title: string
@@ -94,7 +96,6 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
     }
   }
 
-  // CLIENT (default)
   return {
     main: [
       { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
@@ -126,13 +127,27 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
   }
 
   return (
-    <Sidebar collapsible="icon" {...props} className="border-r border-neutral-800 overflow-x-hidden">
-      <SidebarHeader className="border-b border-neutral-800 pb-4">
+    <Sidebar collapsible="icon" {...props} className="border-r border-border/80 overflow-x-hidden">
+      {/* Logo header with subtle glow */}
+      <SidebarHeader className="border-b border-border/60 pb-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg" className="hover:bg-transparent">
-              <Link href={user?.role === "ADMIN" ? "/admin" : "/dashboard"} className="flex items-center gap-2">
-                <Image src="/icons/itqan-logo.svg" alt="Itqan" width={120} height={40} className="h-10 w-auto" />
+              <Link
+                href={user?.role === "ADMIN" ? "/admin" : "/dashboard"}
+                className="flex items-center gap-2 group"
+              >
+                <div className="relative">
+                  <Image
+                    src="/icons/itqan-logo.svg"
+                    alt="Itqan"
+                    width={120}
+                    height={40}
+                    className="h-10 w-auto transition-all duration-300 group-hover:brightness-125"
+                  />
+                  {/* Subtle glow behind logo */}
+                  <div className="absolute inset-0 -z-10 blur-xl bg-lime-400/[0.06] rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -140,11 +155,14 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-4 overflow-x-hidden">
-        <div className="mb-2 px-3">
-          <span className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 font-medium">
+        {/* Navigation section header */}
+        <div className="mb-2 px-3 flex items-center gap-2">
+          <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium">
             Navigation
           </span>
+          <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
         </div>
+
         <SidebarMenu>
           {navigationItems.map((item) => {
             const Icon = item.icon
@@ -155,14 +173,22 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
                   asChild
                   tooltip={item.title}
                   isActive={active}
-                  className={`transition-all duration-200 ${
+                  className={cn(
+                    "transition-all duration-200 relative group/item",
                     active
-                      ? "bg-lime-400/10 text-lime-400 border-l-2 border-lime-400"
-                      : "hover:bg-neutral-800 text-neutral-400 hover:text-white"
-                  }`}
+                      ? "bg-gradient-to-r from-lime-400/15 to-transparent text-lime-400 border-l-2 border-lime-400"
+                      : "hover:bg-secondary/70 text-muted-foreground hover:text-foreground border-l-2 border-transparent"
+                  )}
                 >
                   <Link href={item.url}>
-                    <Icon className="size-4" />
+                    <Icon
+                      className={cn(
+                        "size-4 transition-colors duration-200",
+                        active
+                          ? "text-lime-400"
+                          : "text-muted-foreground group-hover/item:text-lime-400"
+                      )}
+                    />
                     <span className="font-medium">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -171,13 +197,16 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
           })}
         </SidebarMenu>
 
-        <SidebarSeparator className="my-4 bg-neutral-800" />
+        <SidebarSeparator className="my-4 bg-secondary/60" />
 
-        <div className="mb-2 px-3">
-          <span className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 font-medium">
+        {/* System section header */}
+        <div className="mb-2 px-3 flex items-center gap-2">
+          <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium">
             Système
           </span>
+          <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
         </div>
+
         <SidebarMenu>
           {settingsItems.map((item) => {
             const Icon = item.icon
@@ -188,14 +217,22 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
                   asChild
                   tooltip={item.title}
                   isActive={active}
-                  className={`transition-all duration-200 ${
+                  className={cn(
+                    "transition-all duration-200 relative group/item",
                     active
-                      ? "bg-lime-400/10 text-lime-400 border-l-2 border-lime-400"
-                      : "hover:bg-neutral-800 text-neutral-400 hover:text-white"
-                  }`}
+                      ? "bg-gradient-to-r from-lime-400/15 to-transparent text-lime-400 border-l-2 border-lime-400"
+                      : "hover:bg-secondary/70 text-muted-foreground hover:text-foreground border-l-2 border-transparent"
+                  )}
                 >
                   <Link href={item.url}>
-                    <Icon className="size-4" />
+                    <Icon
+                      className={cn(
+                        "size-4 transition-colors duration-200",
+                        active
+                          ? "text-lime-400"
+                          : "text-muted-foreground group-hover/item:text-lime-400"
+                      )}
+                    />
                     <span className="font-medium">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -205,25 +242,31 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-neutral-800 pt-4">
+      <SidebarFooter className="border-t border-border/60 pt-4">
         {user ? (
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild size="lg" className="hover:bg-neutral-800 transition-colors">
+              <SidebarMenuButton asChild size="lg" className="hover:bg-secondary/70 transition-all duration-200 group/user">
                 <Link href="/profile" className="flex items-center gap-3">
-                  <Avatar className="size-8 border border-neutral-700">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="bg-lime-400/10 text-lime-400 text-xs font-medium">
-                      {user.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="relative">
+                    <Avatar className="size-8 border-2 border-border group-hover/user:border-lime-400/40 transition-colors duration-300">
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarFallback className="bg-gradient-to-br from-lime-400/20 to-emerald-400/20 text-lime-400 text-xs font-semibold">
+                        {user.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {/* Online status ring */}
+                    <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-400" />
+                  </div>
                   <div className="flex flex-col gap-0.5 leading-none">
-                    <span className="font-medium text-white text-sm">{user.name}</span>
-                    <span className="text-[11px] text-neutral-500 truncate max-w-[140px]">
+                    <span className="font-medium text-foreground text-sm group-hover/user:text-lime-400/90 transition-colors">
+                      {user.name}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground truncate max-w-[140px]">
                       {user.email}
                     </span>
                   </div>
@@ -233,7 +276,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
-                className="hover:bg-red-500/10 hover:text-red-400 transition-colors text-neutral-400"
+                className="hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 text-muted-foreground"
               >
                 <button
                   className="w-full"
@@ -248,7 +291,10 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
         ) : (
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild className="hover:bg-neutral-800 transition-colors text-neutral-400 hover:text-white">
+              <SidebarMenuButton
+                asChild
+                className="hover:bg-secondary/70 transition-all duration-200 text-muted-foreground hover:text-foreground"
+              >
                 <Link href="/login">
                   <User className="size-4" />
                   <span className="font-medium">Connexion</span>

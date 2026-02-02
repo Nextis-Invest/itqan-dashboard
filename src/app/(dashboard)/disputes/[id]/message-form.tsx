@@ -27,26 +27,24 @@ export function DisputeMessageForm({ disputeId }: { disputeId: string }) {
   }
 
   return (
-    <Card className="bg-neutral-900 border-neutral-800">
-      <CardContent className="pt-6">
-        <Textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows={3}
-          placeholder="Ajouter un message..."
-          className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 mb-3"
-        />
-        <div className="flex justify-end">
-          <Button
-            onClick={handleSubmit}
-            disabled={loading || !content.trim()}
-            className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold"
-          >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
-            Envoyer
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="rounded-xl bg-card/80 border border-border/80 p-5">
+      <Textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        rows={3}
+        placeholder="Ajouter un message..."
+        className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground mb-3 rounded-xl focus-visible:ring-lime-400/30 focus-visible:border-lime-400/30 resize-none"
+      />
+      <div className="flex justify-end">
+        <Button
+          onClick={handleSubmit}
+          disabled={loading || !content.trim()}
+          className="bg-gradient-to-r from-lime-400 to-lime-500 text-neutral-900 hover:from-lime-300 hover:to-lime-400 font-bold rounded-xl shadow-lg shadow-lime-400/20 disabled:shadow-none"
+        >
+          {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+          Envoyer
+        </Button>
+      </div>
+    </div>
   )
 }

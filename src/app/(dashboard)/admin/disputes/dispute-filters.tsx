@@ -64,7 +64,7 @@ export function AdminDisputeFilters({
             className={`text-sm ${
               currentStatus === tab.value
                 ? "bg-lime-400/10 text-lime-400 hover:bg-lime-400/20 hover:text-lime-400"
-                : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
             }`}
           >
             {tab.label}
@@ -77,7 +77,7 @@ export function AdminDisputeFilters({
         <select
           value={currentCategory}
           onChange={(e) => updateFilter("category", e.target.value)}
-          className="rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
+          className="rounded-md border border-border bg-secondary text-foreground px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
         >
           {categories.map((c) => (
             <option key={c.value} value={c.value}>{c.label}</option>
@@ -86,7 +86,7 @@ export function AdminDisputeFilters({
         <select
           value={currentPriority}
           onChange={(e) => updateFilter("priority", e.target.value)}
-          className="rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
+          className="rounded-md border border-border bg-secondary text-foreground px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
         >
           {priorities.map((p) => (
             <option key={p.value} value={p.value}>{p.label}</option>

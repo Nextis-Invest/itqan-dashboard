@@ -94,16 +94,16 @@ export function DisputeActions({
   return (
     <div className="space-y-4">
       {/* Quick actions */}
-      <Card className="bg-neutral-900 border-neutral-800">
-        <CardHeader><CardTitle className="text-white text-sm">Actions rapides</CardTitle></CardHeader>
+      <Card className="bg-card border-border">
+        <CardHeader><CardTitle className="text-foreground text-sm">Actions rapides</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label className="text-neutral-400 text-xs">Statut</Label>
+              <Label className="text-muted-foreground text-xs">Statut</Label>
               <select
                 value={currentStatus}
                 onChange={(e) => handleChange("status", e.target.value)}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
+                className="w-full rounded-md border border-border bg-secondary text-foreground px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               >
                 <option value="OPEN">Ouvert</option>
                 <option value="UNDER_REVIEW">En examen</option>
@@ -112,11 +112,11 @@ export function DisputeActions({
               </select>
             </div>
             <div className="space-y-1">
-              <Label className="text-neutral-400 text-xs">Catégorie</Label>
+              <Label className="text-muted-foreground text-xs">Catégorie</Label>
               <select
                 value={currentCategory}
                 onChange={(e) => handleChange("category", e.target.value)}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
+                className="w-full rounded-md border border-border bg-secondary text-foreground px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               >
                 <option value="QUALITY">Qualité</option>
                 <option value="DELAY">Retard</option>
@@ -127,11 +127,11 @@ export function DisputeActions({
               </select>
             </div>
             <div className="space-y-1">
-              <Label className="text-neutral-400 text-xs">Priorité</Label>
+              <Label className="text-muted-foreground text-xs">Priorité</Label>
               <select
                 value={currentPriority}
                 onChange={(e) => handleChange("priority", e.target.value)}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
+                className="w-full rounded-md border border-border bg-secondary text-foreground px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               >
                 <option value="LOW">Faible</option>
                 <option value="MEDIUM">Moyen</option>
@@ -140,11 +140,11 @@ export function DisputeActions({
               </select>
             </div>
             <div className="space-y-1">
-              <Label className="text-neutral-400 text-xs">Assigné à</Label>
+              <Label className="text-muted-foreground text-xs">Assigné à</Label>
               <select
                 value={assignedToId || ""}
                 onChange={(e) => handleChange("assign", e.target.value)}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
+                className="w-full rounded-md border border-border bg-secondary text-foreground px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               >
                 <option value="">Non assigné</option>
                 {adminUsers.map((u) => (
@@ -161,27 +161,27 @@ export function DisputeActions({
                 Résoudre le litige
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-neutral-900 border-neutral-800 text-white">
+            <DialogContent className="bg-card border-border text-foreground">
               <DialogHeader>
                 <DialogTitle>Résoudre le litige</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-neutral-300">Résolution</Label>
+                  <Label className="text-foreground/80">Résolution</Label>
                   <Textarea
                     value={resolution}
                     onChange={(e) => setResolution(e.target.value)}
                     rows={4}
                     placeholder="Décrivez la résolution..."
-                    className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500"
+                    className="bg-secondary border-border text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-neutral-300">Partie favorisée</Label>
+                  <Label className="text-foreground/80">Partie favorisée</Label>
                   <select
                     value={favoredParty}
                     onChange={(e) => setFavoredParty(e.target.value)}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
+                    className="w-full rounded-md border border-border bg-secondary text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400/50"
                   >
                     <option value="CLIENT">Client</option>
                     <option value="FREELANCER">Freelance</option>
@@ -189,13 +189,13 @@ export function DisputeActions({
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-neutral-300">Notes admin (optionnel)</Label>
+                  <Label className="text-foreground/80">Notes admin (optionnel)</Label>
                   <Textarea
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
                     rows={2}
                     placeholder="Notes internes..."
-                    className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500"
+                    className="bg-secondary border-border text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
                 <Button
@@ -213,7 +213,7 @@ export function DisputeActions({
       </Card>
 
       {/* Message input with tabs */}
-      <Card className="bg-neutral-900 border-neutral-800">
+      <Card className="bg-card border-border">
         <CardContent className="pt-6">
           <div className="flex gap-1 mb-3">
             <Button
@@ -223,7 +223,7 @@ export function DisputeActions({
               className={`text-sm ${
                 activeTab === "reply"
                   ? "bg-lime-400/10 text-lime-400 hover:bg-lime-400/20 hover:text-lime-400"
-                  : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
               }`}
             >
               Répondre
@@ -235,7 +235,7 @@ export function DisputeActions({
               className={`text-sm ${
                 activeTab === "internal"
                   ? "bg-yellow-400/10 text-yellow-400 hover:bg-yellow-400/20 hover:text-yellow-400"
-                  : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
               }`}
             >
               Note interne
@@ -253,7 +253,7 @@ export function DisputeActions({
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
               placeholder={activeTab === "reply" ? "Répondre au litige..." : "Ajouter une note interne..."}
-              className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 mb-3"
+              className="bg-secondary border-border text-foreground placeholder:text-muted-foreground mb-3"
             />
             <div className="flex justify-end">
               <Button

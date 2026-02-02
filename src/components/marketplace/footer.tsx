@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 
 export function MarketplaceFooter() {
   return (
-    <footer className="relative bg-black text-white py-16 overflow-hidden" id="footer">
+    <footer className="relative bg-background text-foreground py-16 overflow-hidden" id="footer">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-lime-500/5 rounded-full blur-3xl" />
@@ -45,7 +45,7 @@ export function MarketplaceFooter() {
                 <motion.a
                   key={social.name}
                   href={social.href}
-                  className="w-10 h-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                  className="w-10 h-10 bg-muted backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center hover:bg-accent hover:border-white/20 transition-all duration-300"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   initial={{ opacity: 0, y: 20 }}
@@ -66,7 +66,7 @@ export function MarketplaceFooter() {
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            <h3 className="font-semibold text-lg mb-4 text-white">Catégories</h3>
+            <h3 className="font-semibold text-lg mb-4 text-foreground">Catégories</h3>
             <ul className="space-y-3 text-gray-300">
               {[
                 { name: "Programmation & Tech", slug: "programming-tech" },
@@ -102,7 +102,7 @@ export function MarketplaceFooter() {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <h3 className="font-semibold text-lg mb-4 text-white">Navigation</h3>
+            <h3 className="font-semibold text-lg mb-4 text-foreground">Navigation</h3>
             <ul className="space-y-3 text-gray-300">
               {[
                 { name: "Explorer les catégories", href: "/categories" },
@@ -140,7 +140,7 @@ export function MarketplaceFooter() {
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <h3 className="font-semibold text-lg mb-4 text-white">Restez informé</h3>
+            <h3 className="font-semibold text-lg mb-4 text-foreground">Restez informé</h3>
             <p className="text-gray-300 mb-4 text-sm">
               Recevez les dernières opportunités et tendances du marché freelance.
             </p>
@@ -148,7 +148,7 @@ export function MarketplaceFooter() {
               <Input
                 type="email"
                 placeholder="Entrez votre email"
-                className="bg-white/5 backdrop-blur-xl border-white/10 text-white placeholder:text-gray-400 focus:border-lime-400 hover:bg-white/10 transition-all duration-300"
+                className="bg-muted backdrop-blur-xl border-white/10 text-foreground placeholder:text-gray-400 focus:border-lime-400 hover:bg-accent transition-all duration-300"
               />
               <motion.div
                 whileHover={{ scale: 1.02 }}

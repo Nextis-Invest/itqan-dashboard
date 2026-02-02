@@ -46,20 +46,20 @@ export function AdminReplyForm({ ticketId }: { ticketId: string }) {
   }
 
   return (
-    <Card className="bg-neutral-900 border-neutral-800">
+    <Card className="bg-card border-border">
       <CardContent className="pt-6">
         <Tabs defaultValue="reply">
-          <TabsList className="bg-neutral-950 border border-neutral-800 mb-4">
+          <TabsList className="bg-background border border-border mb-4">
             <TabsTrigger
               value="reply"
-              className="data-[state=active]:bg-lime-400/10 data-[state=active]:text-lime-400 text-neutral-400"
+              className="data-[state=active]:bg-lime-400/10 data-[state=active]:text-lime-400 text-muted-foreground"
             >
               <Send className="h-3.5 w-3.5 mr-1.5" />
               Répondre
             </TabsTrigger>
             <TabsTrigger
               value="note"
-              className="data-[state=active]:bg-yellow-400/10 data-[state=active]:text-yellow-400 text-neutral-400"
+              className="data-[state=active]:bg-yellow-400/10 data-[state=active]:text-yellow-400 text-muted-foreground"
             >
               <StickyNote className="h-3.5 w-3.5 mr-1.5" />
               Note interne
@@ -74,7 +74,7 @@ export function AdminReplyForm({ ticketId }: { ticketId: string }) {
                 rows={3}
                 required
                 placeholder="Votre réponse (visible par l'utilisateur)..."
-                className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-500 focus:border-lime-400/50 resize-none"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50 resize-none"
               />
               <Button
                 type="submit"
@@ -95,7 +95,7 @@ export function AdminReplyForm({ ticketId }: { ticketId: string }) {
                 rows={3}
                 required
                 placeholder="Note interne (visible uniquement par les admins)..."
-                className="bg-neutral-950 border-yellow-400/20 text-white placeholder:text-neutral-500 focus:border-yellow-400/50 resize-none"
+                className="bg-background border-yellow-400/20 text-foreground placeholder:text-muted-foreground focus:border-yellow-400/50 resize-none"
               />
               <Button
                 type="submit"

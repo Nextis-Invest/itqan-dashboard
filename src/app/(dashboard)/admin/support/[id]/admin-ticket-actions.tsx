@@ -56,13 +56,13 @@ export function AdminTicketActions({
           variant="outline"
           size="icon"
           disabled={loading}
-          className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-white"
+          className="border-border text-muted-foreground hover:bg-accent hover:text-foreground"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-neutral-900 border-neutral-800 w-56">
-        <DropdownMenuLabel className="text-neutral-400 text-xs">Statut</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="bg-card border-border w-56">
+        <DropdownMenuLabel className="text-muted-foreground text-xs">Statut</DropdownMenuLabel>
         {currentStatus !== "IN_PROGRESS" && (
           <DropdownMenuItem
             className="text-blue-400 focus:bg-blue-400/10 focus:text-blue-400"
@@ -81,7 +81,7 @@ export function AdminTicketActions({
         )}
         {currentStatus !== "CLOSED" && (
           <DropdownMenuItem
-            className="text-neutral-400 focus:bg-neutral-800 focus:text-neutral-300"
+            className="text-muted-foreground focus:bg-accent focus:text-foreground/80"
             onClick={() => handleAction(() => updateTicketStatus(ticketId, "CLOSED"))}
           >
             Fermer
@@ -96,18 +96,18 @@ export function AdminTicketActions({
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuSeparator className="bg-neutral-800" />
+        <DropdownMenuSeparator className="bg-border" />
 
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="text-neutral-300 focus:bg-neutral-800">
+          <DropdownMenuSubTrigger className="text-foreground/80 focus:bg-accent">
             Priorité
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="bg-neutral-900 border-neutral-800">
+          <DropdownMenuSubContent className="bg-card border-border">
             {["LOW", "MEDIUM", "HIGH", "URGENT"].map((p) => (
               <DropdownMenuItem
                 key={p}
                 disabled={p === currentPriority}
-                className="text-neutral-300 focus:bg-neutral-800"
+                className="text-foreground/80 focus:bg-accent"
                 onClick={() => handleAction(() => updateTicketPriority(ticketId, p))}
               >
                 {{ LOW: "Faible", MEDIUM: "Moyen", HIGH: "Élevé", URGENT: "Urgent" }[p]}
@@ -117,12 +117,12 @@ export function AdminTicketActions({
         </DropdownMenuSub>
 
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="text-neutral-300 focus:bg-neutral-800">
+          <DropdownMenuSubTrigger className="text-foreground/80 focus:bg-accent">
             Assigner
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="bg-neutral-900 border-neutral-800">
+          <DropdownMenuSubContent className="bg-card border-border">
             <DropdownMenuItem
-              className="text-neutral-400 focus:bg-neutral-800"
+              className="text-muted-foreground focus:bg-accent"
               disabled={!currentAssignedToId}
               onClick={() => handleAction(() => assignTicket(ticketId, null))}
             >
@@ -132,7 +132,7 @@ export function AdminTicketActions({
               <DropdownMenuItem
                 key={admin.id}
                 disabled={admin.id === currentAssignedToId}
-                className="text-neutral-300 focus:bg-neutral-800"
+                className="text-foreground/80 focus:bg-accent"
                 onClick={() => handleAction(() => assignTicket(ticketId, admin.id))}
               >
                 {admin.name || admin.email}

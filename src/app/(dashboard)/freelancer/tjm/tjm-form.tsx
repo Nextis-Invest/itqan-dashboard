@@ -16,9 +16,9 @@ export function TjmForm({ profile }: { profile: FreelancerProfile }) {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-neutral-900 border-neutral-800">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-white">Tarifs</CardTitle>
+          <CardTitle className="text-foreground">Tarifs</CardTitle>
         </CardHeader>
         <CardContent>
           <form
@@ -41,20 +41,20 @@ export function TjmForm({ profile }: { profile: FreelancerProfile }) {
           >
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">Tarif journalier (TJM)</Label>
-                <Input name="dailyRate" type="number" step="0.01" defaultValue={profile.dailyRate || ""} className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50" />
+                <Label className="text-foreground/80">Tarif journalier (TJM)</Label>
+                <Input name="dailyRate" type="number" step="0.01" defaultValue={profile.dailyRate || ""} className="bg-secondary border-border text-foreground focus:border-lime-400/50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-neutral-300">Tarif horaire</Label>
-                <Input name="hourlyRate" type="number" step="0.01" defaultValue={profile.hourlyRate || ""} className="bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50" />
+                <Label className="text-foreground/80">Tarif horaire</Label>
+                <Input name="hourlyRate" type="number" step="0.01" defaultValue={profile.hourlyRate || ""} className="bg-secondary border-border text-foreground focus:border-lime-400/50" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-neutral-300">Devise</Label>
+              <Label className="text-foreground/80">Devise</Label>
               <Select name="currency" defaultValue={profile.currency}>
-                <SelectTrigger className="bg-neutral-800 border-neutral-700 text-white"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-neutral-800 border-neutral-700">
+                <SelectTrigger className="bg-secondary border-border text-foreground"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-secondary border-border">
                   <SelectItem value="MAD">MAD (د.م.)</SelectItem>
                   <SelectItem value="EUR">EUR (€)</SelectItem>
                   <SelectItem value="USD">USD ($)</SelectItem>
@@ -62,14 +62,14 @@ export function TjmForm({ profile }: { profile: FreelancerProfile }) {
               </Select>
             </div>
 
-            <div className="pt-4 border-t border-neutral-800 space-y-4">
-              <h4 className="text-white font-medium">Disponibilité</h4>
+            <div className="pt-4 border-t border-border space-y-4">
+              <h4 className="text-foreground font-medium">Disponibilité</h4>
               <div className="flex items-center gap-3">
                 <button type="button" onClick={() => setIsAvailable(!isAvailable)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isAvailable ? "bg-lime-400" : "bg-neutral-700"}`}>
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isAvailable ? "bg-lime-400" : "bg-secondary"}`}>
                   <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isAvailable ? "translate-x-6" : "translate-x-1"}`} />
                 </button>
-                <Label className="text-neutral-300">{isAvailable ? "Disponible" : "Non disponible"}</Label>
+                <Label className="text-foreground/80">{isAvailable ? "Disponible" : "Non disponible"}</Label>
               </div>
             </div>
 
@@ -81,21 +81,21 @@ export function TjmForm({ profile }: { profile: FreelancerProfile }) {
       </Card>
 
       {/* Rate Preview */}
-      <Card className="bg-neutral-900 border-neutral-800">
-        <CardHeader><CardTitle className="text-white text-sm">Aperçu tarifs</CardTitle></CardHeader>
+      <Card className="bg-card border-border">
+        <CardHeader><CardTitle className="text-foreground text-sm">Aperçu tarifs</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="p-3 rounded-lg bg-neutral-800">
-              <p className="text-neutral-500 text-xs">Horaire</p>
-              <p className="text-white font-bold">{profile.hourlyRate || "—"} {profile.currency}</p>
+            <div className="p-3 rounded-lg bg-secondary">
+              <p className="text-muted-foreground text-xs">Horaire</p>
+              <p className="text-foreground font-bold">{profile.hourlyRate || "—"} {profile.currency}</p>
             </div>
-            <div className="p-3 rounded-lg bg-neutral-800">
-              <p className="text-neutral-500 text-xs">Journalier</p>
+            <div className="p-3 rounded-lg bg-secondary">
+              <p className="text-muted-foreground text-xs">Journalier</p>
               <p className="text-lime-400 font-bold">{profile.dailyRate || "—"} {profile.currency}</p>
             </div>
-            <div className="p-3 rounded-lg bg-neutral-800">
-              <p className="text-neutral-500 text-xs">Mensuel (est.)</p>
-              <p className="text-white font-bold">{profile.dailyRate ? `${(profile.dailyRate * 22).toLocaleString()} ${profile.currency}` : "—"}</p>
+            <div className="p-3 rounded-lg bg-secondary">
+              <p className="text-muted-foreground text-xs">Mensuel (est.)</p>
+              <p className="text-foreground font-bold">{profile.dailyRate ? `${(profile.dailyRate * 22).toLocaleString()} ${profile.currency}` : "—"}</p>
             </div>
           </div>
         </CardContent>

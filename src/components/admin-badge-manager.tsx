@@ -33,15 +33,15 @@ export function AdminBadgeManager({
       <Button
         size="sm"
         variant="ghost"
-        className="text-neutral-400 hover:text-yellow-400 h-8 w-8 p-0"
+        className="text-muted-foreground hover:text-yellow-400 h-8 w-8 p-0"
         title="Gérer les badges"
         onClick={() => setOpen(!open)}
       >
         <Award className="h-4 w-4" />
       </Button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 bg-neutral-900 border border-neutral-700 rounded-lg p-3 shadow-lg min-w-[200px]">
-          <p className="text-xs text-neutral-400 mb-2 font-medium">Badges</p>
+        <div className="absolute right-0 top-full mt-1 z-50 bg-card border border-border rounded-lg p-3 shadow-lg min-w-[200px]">
+          <p className="text-xs text-muted-foreground mb-2 font-medium">Badges</p>
           <div className="space-y-1">
             {BADGE_TYPES.map((bt) => {
               const has = hasBadge(bt.type)
@@ -52,7 +52,7 @@ export function AdminBadgeManager({
                   className={`flex items-center gap-2 w-full px-2 py-1.5 rounded text-sm transition-colors ${
                     has
                       ? "bg-lime-400/10 text-lime-400"
-                      : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
                   onClick={async () => {
                     setLoading(bt.type)

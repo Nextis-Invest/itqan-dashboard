@@ -2,12 +2,27 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+type CardVariant = "default" | "glass" | "elevated"
+
+const cardVariantStyles: Record<CardVariant, string> = {
+  default: "bg-card text-card-foreground border shadow-sm",
+  glass:
+    "glass text-card-foreground shadow-sm",
+  elevated:
+    "bg-card text-card-foreground border shadow-lg hover:shadow-xl hover:border-lime-400/20 transition-shadow transition-[border-color] duration-300",
+}
+
+function Card({
+  className,
+  variant = "default",
+  ...props
+}: React.ComponentProps<"div"> & { variant?: CardVariant }) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        "flex flex-col gap-6 rounded-xl py-6",
+        cardVariantStyles[variant],
         className
       )}
       {...props}

@@ -29,7 +29,7 @@ export function TicketReplyForm({ ticketId }: { ticketId: string }) {
   }
 
   return (
-    <Card className="bg-neutral-900 border-neutral-800">
+    <Card className="bg-card border-border">
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <Textarea
@@ -38,7 +38,7 @@ export function TicketReplyForm({ ticketId }: { ticketId: string }) {
             rows={3}
             required
             placeholder="Votre réponse..."
-            className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-500 focus:border-lime-400/50 resize-none"
+            className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50 resize-none"
           />
           <Button
             type="submit"

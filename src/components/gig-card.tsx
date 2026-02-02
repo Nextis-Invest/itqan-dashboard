@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Star, ShoppingCart } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
 
 interface GigCardProps {
   gig: {
@@ -38,9 +38,9 @@ export function GigCard({ gig }: GigCardProps) {
 
   return (
     <Link href={`/gigs/${gig.id}`}>
-      <Card className="group bg-neutral-900 border-neutral-800 hover:border-lime-400/50 transition-all duration-200 overflow-hidden hover:shadow-lg hover:shadow-lime-400/5">
+      <div className="group relative rounded-xl border border-border bg-card/80 overflow-hidden transition-all duration-200 hover:border-lime-400/30 hover:shadow-lg hover:shadow-lime-400/5 hover:scale-[1.02]">
         {/* Image */}
-        <div className="aspect-video w-full overflow-hidden">
+        <div className="relative aspect-video w-full overflow-hidden">
           {gig.images.length > 0 ? (
             <img
               src={gig.images[0]}
@@ -48,55 +48,102 @@ export function GigCard({ gig }: GigCardProps) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-lime-400/20 via-neutral-800 to-neutral-900 flex items-center justify-center">
-              <span className="text-neutral-600 text-sm">Pas d&apos;image</span>
+            <div className="w-full h-full bg-gradient-to-br from-lime-400/20 via-secondary to-card flex items-center justify-center">
+              <span className="text-muted-foreground text-sm">Pas d&apos;image</span>
             </div>
           )}
+          {/* Bottom gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-card/20 to-transparent" />
+
+          {/* Price badge - floating bottom right */}
+          <div className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-card/90 backdrop-blur-sm border border-border shadow-lg">
+            <span className="text-lime-400 font-bold text-sm">
+              {gig.basicPrice.toLocaleString("fr-FR")} {gig.currency}
+            </span>
+          </div>
         </div>
 
-        <CardContent className="p-4 space-y-3">
+        <div className="p-4 space-y-3">
           {/* Freelancer mini info */}
           <div className="flex items-center gap-2">
-            <Avatar className="h-6 w-6">
+            <Avatar className="h-6 w-6 border border-border">
               <AvatarImage src={gig.freelancer.image || undefined} />
-              <AvatarFallback className="bg-neutral-800 text-xs text-neutral-400">
+              <AvatarFallback className="bg-secondary text-[10px] text-muted-foreground font-medium">
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm text-neutral-400 truncate">
+            <span className="text-sm text-muted-foreground truncate">
               {gig.freelancer.name || "Freelancer"}
             </span>
             {profile?.verified && (
-              <span className="text-lime-400 text-xs font-medium">✓</span>
+              <span className="text-lime-400 text-xs">✓</span>
             )}
           </div>
 
           {/* Title */}
-          <h3 className="text-sm font-medium text-white line-clamp-2 leading-snug group-hover:text-lime-400 transition-colors">
+          <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-lime-400 transition-colors">
             {gig.title}
           </h3>
 
-          {/* Rating */}
-          <div className="flex items-center gap-1">
-            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm text-yellow-400 font-medium">
+          {/* Rating - more visible */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  className={cn(
+                    "h-3.5 w-3.5",
+                    profile?.avgRating && i < Math.round(profile.avgRating)
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-muted-foreground"
+                  )}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-yellow-400 font-semibold">
               {profile?.avgRating?.toFixed(1) || "—"}
             </span>
-            <span className="text-xs text-neutral-500 ml-1 flex items-center gap-1">
+            <span className="text-xs text-muted-foreground ml-auto flex items-center gap-1">
               <ShoppingCart className="h-3 w-3" />
-              {gig.orderCount}
+              {gig.orderCount} vente(s)
             </span>
           </div>
-
-          {/* Price */}
-          <div className="pt-2 border-t border-neutral-800">
-            <span className="text-xs text-neutral-500">À partir de</span>
-            <span className="text-base font-bold text-white ml-1">
-              {gig.basicPrice.toLocaleString("fr-FR")} {gig.currency}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </Link>
+  )
+}
+
+/* Skeleton loading variant */
+export function GigCardSkeleton() {
+  return (
+    <div className="rounded-xl border border-border bg-card/80 overflow-hidden animate-pulse">
+      {/* Image skeleton */}
+      <div className="aspect-video w-full bg-secondary" />
+
+      <div className="p-4 space-y-3">
+        {/* Avatar + name */}
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full bg-secondary" />
+          <div className="h-3 w-24 rounded bg-secondary" />
+        </div>
+
+        {/* Title lines */}
+        <div className="space-y-2">
+          <div className="h-4 w-full rounded bg-secondary" />
+          <div className="h-4 w-2/3 rounded bg-secondary" />
+        </div>
+
+        {/* Rating */}
+        <div className="flex items-center gap-2">
+          <div className="flex gap-0.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="w-3.5 h-3.5 rounded bg-secondary" />
+            ))}
+          </div>
+          <div className="h-3 w-8 rounded bg-secondary" />
+        </div>
+      </div>
+    </div>
   )
 }

@@ -45,14 +45,14 @@ export default function LoginPage() {
 
 function LoginSkeleton() {
   return (
-    <Card className="w-full max-w-md bg-neutral-900 border-neutral-800">
+    <Card className="w-full max-w-md backdrop-blur-xl bg-card/70 border-border/50 shadow-2xl shadow-black/20">
       <CardHeader className="space-y-1">
-        <div className="h-8 w-32 bg-neutral-800 animate-pulse rounded" />
-        <div className="h-4 w-48 bg-neutral-800 animate-pulse rounded" />
+        <div className="h-8 w-32 bg-muted/80 animate-pulse rounded" />
+        <div className="h-4 w-48 bg-muted/80 animate-pulse rounded" />
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="h-10 bg-neutral-800 animate-pulse rounded" />
-        <div className="h-10 bg-neutral-800 animate-pulse rounded" />
+        <div className="h-10 bg-muted/80 animate-pulse rounded" />
+        <div className="h-10 bg-muted/80 animate-pulse rounded" />
       </CardContent>
     </Card>
   )
@@ -71,7 +71,7 @@ function OAuthButtons({ callbackUrl }: { callbackUrl: string }) {
       <Button
         type="button"
         variant="outline"
-        className="w-full bg-neutral-800 border-neutral-700 text-white hover:bg-neutral-700 h-10 font-medium"
+        className="w-full bg-muted/50 border-border/50 text-foreground hover:bg-accent hover:border-border h-11 font-medium transition-all duration-200"
         disabled={googleLoading || linkedinLoading}
         onClick={() => {
           setGoogleLoading(true)
@@ -81,14 +81,14 @@ function OAuthButtons({ callbackUrl }: { callbackUrl: string }) {
         {googleLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : (
-          <GoogleIcon className="mr-2 h-4 w-4" />
+          <GoogleIcon className="mr-2 h-5 w-5" />
         )}
-        Se connecter avec Google
+        Continuer avec Google
       </Button>
       <Button
         type="button"
         variant="outline"
-        className="w-full bg-neutral-800 border-neutral-700 text-white hover:bg-neutral-700 h-10 font-medium"
+        className="w-full bg-muted/50 border-border/50 text-foreground hover:bg-[#0A66C2]/10 hover:border-[#0A66C2]/40 hover:text-[#0A66C2] h-11 font-medium transition-all duration-200"
         disabled={googleLoading || linkedinLoading}
         onClick={() => {
           setLinkedinLoading(true)
@@ -98,9 +98,9 @@ function OAuthButtons({ callbackUrl }: { callbackUrl: string }) {
         {linkedinLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : (
-          <LinkedInIcon className="mr-2 h-4 w-4" />
+          <LinkedInIcon className="mr-2 h-5 w-5" />
         )}
-        Se connecter avec LinkedIn
+        Continuer avec LinkedIn
       </Button>
     </div>
   )
@@ -108,13 +108,23 @@ function OAuthButtons({ callbackUrl }: { callbackUrl: string }) {
 
 function Divider() {
   return (
-    <div className="relative my-5">
+    <div className="relative my-6">
       <div className="absolute inset-0 flex items-center">
-        <span className="w-full border-t border-neutral-800" />
+        <span className="w-full border-t border-border/50" />
       </div>
       <div className="relative flex justify-center text-xs">
-        <span className="bg-neutral-900 px-3 text-neutral-500">ou</span>
+        <span className="backdrop-blur-xl bg-card/70 px-3 text-muted-foreground">ou</span>
       </div>
+    </div>
+  )
+}
+
+/* Spinner with gradient */
+function GradientSpinner({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <div className={`${className} relative`}>
+      <div className="absolute inset-0 rounded-full border-2 border-border/30" />
+      <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-lime-400 animate-spin" />
     </div>
   )
 }
@@ -267,18 +277,18 @@ function LoginContent() {
   // CODE VERIFICATION STEP
   if (step === "code") {
     return (
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex justify-center">
           <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
         </div>
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="backdrop-blur-xl bg-card/70 border-border shadow-2xl shadow-black/20">
           <CardHeader className="space-y-4 text-center pb-2">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-lime-400/10 border border-lime-400/20">
-              <Mail className="h-6 w-6 text-lime-400" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-lime-400/20 to-emerald-400/20 border border-lime-400/20 shadow-lg shadow-lime-400/5">
+              <Mail className="h-7 w-7 text-lime-400" />
             </div>
             <div className="space-y-2">
-              <CardTitle className="text-xl font-semibold text-white">Entrez le code</CardTitle>
-              <CardDescription className="text-neutral-400">
+              <CardTitle className="text-xl font-semibold text-foreground">Entrez le code</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Un code à 4 chiffres a été envoyé à
               </CardDescription>
               <p className="font-medium text-lime-400 text-sm">{email}</p>
@@ -286,7 +296,7 @@ function LoginContent() {
           </CardHeader>
           <CardContent className="space-y-6 pt-4">
             {error && (
-              <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-lg text-center border border-red-500/20">
+              <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-xl text-center border border-red-500/20 backdrop-blur-sm">
                 {error}
               </div>
             )}
@@ -303,7 +313,7 @@ function LoginContent() {
                   onChange={(e) => handleCodeChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   onPaste={handlePaste}
-                  className="w-14 h-14 text-center text-2xl font-semibold bg-neutral-800 border-neutral-700 text-white focus:border-lime-400/50 focus:ring-lime-400/20"
+                  className="w-16 h-16 text-center text-2xl font-bold bg-muted/60 border-border/50 text-foreground rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 focus:shadow-[0_0_20px_rgba(163,230,53,0.15)] transition-all duration-200"
                   disabled={isLoading}
                   autoFocus={index === 0}
                 />
@@ -312,14 +322,14 @@ function LoginContent() {
 
             {isLoading && (
               <div className="flex justify-center">
-                <Loader2 className="h-5 w-5 animate-spin text-lime-400" />
+                <GradientSpinner className="h-6 w-6" />
               </div>
             )}
 
             <div className="space-y-2 pt-2">
               <Button
                 variant="ghost"
-                className="w-full text-neutral-400 hover:text-white hover:bg-neutral-800"
+                className="w-full text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl"
                 onClick={handleReset}
                 disabled={isLoading}
               >
@@ -328,7 +338,7 @@ function LoginContent() {
               </Button>
               <Button
                 variant="link"
-                className="w-full text-neutral-500 text-sm"
+                className="w-full text-muted-foreground text-sm hover:text-lime-400"
                 onClick={handleSendCode}
                 disabled={isLoading}
               >
@@ -344,39 +354,42 @@ function LoginContent() {
   // INITIAL CHOICE: Login or Signup
   if (mode === "choice") {
     return (
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center gap-4 mb-4">
+      <div className="w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="flex flex-col items-center gap-3 mb-6">
           <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
-          <p className="text-neutral-500 text-sm">La plateforme freelance au Maroc</p>
+          <p className="text-muted-foreground text-sm">La plateforme freelance au Maroc</p>
         </div>
 
-        {/* OAuth buttons first */}
-        <OAuthButtons callbackUrl={callbackUrl} />
+        {/* Glass card wrapper */}
+        <div className="backdrop-blur-xl bg-card/70 border border-border/50 rounded-2xl p-6 shadow-2xl shadow-black/20">
+          {/* OAuth buttons first */}
+          <OAuthButtons callbackUrl={callbackUrl} />
 
-        <Divider />
+          <Divider />
 
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={() => setMode("login")}
-            className="group rounded-2xl bg-neutral-900 border border-neutral-800 p-6 text-center transition-all hover:border-lime-400/30 hover:bg-lime-400/5"
-          >
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-800 group-hover:bg-lime-400/10 transition-colors">
-              <Mail className="h-5 w-5 text-neutral-400 group-hover:text-lime-400 transition-colors" />
-            </div>
-            <h3 className="font-semibold text-white text-sm">Connexion</h3>
-            <p className="text-[11px] text-neutral-500 mt-1">Magic link par email</p>
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setMode("login")}
+              className="group rounded-2xl bg-muted/50 border border-border/50 p-6 text-center transition-all duration-300 hover:border-lime-400/40 hover:bg-lime-400/5 hover:shadow-lg hover:shadow-lime-400/5"
+            >
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/80 group-hover:bg-lime-400/15 group-hover:shadow-[0_0_20px_rgba(163,230,53,0.1)] transition-all duration-300">
+                <Mail className="h-5 w-5 text-muted-foreground group-hover:text-lime-400 transition-colors duration-300" />
+              </div>
+              <h3 className="font-semibold text-foreground text-sm">Connexion</h3>
+              <p className="text-[11px] text-muted-foreground mt-1">Magic link par email</p>
+            </button>
 
-          <button
-            onClick={() => setMode("signup")}
-            className="group rounded-2xl bg-neutral-900 border border-neutral-800 p-6 text-center transition-all hover:border-lime-400/30 hover:bg-lime-400/5"
-          >
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-800 group-hover:bg-lime-400/10 transition-colors">
-              <User className="h-5 w-5 text-neutral-400 group-hover:text-lime-400 transition-colors" />
-            </div>
-            <h3 className="font-semibold text-white text-sm">Inscription</h3>
-            <p className="text-[11px] text-neutral-500 mt-1">Créer un compte</p>
-          </button>
+            <button
+              onClick={() => setMode("signup")}
+              className="group rounded-2xl bg-muted/50 border border-border/50 p-6 text-center transition-all duration-300 hover:border-lime-400/40 hover:bg-lime-400/5 hover:shadow-lg hover:shadow-lime-400/5"
+            >
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/80 group-hover:bg-lime-400/15 group-hover:shadow-[0_0_20px_rgba(163,230,53,0.1)] transition-all duration-300">
+                <User className="h-5 w-5 text-muted-foreground group-hover:text-lime-400 transition-colors duration-300" />
+              </div>
+              <h3 className="font-semibold text-foreground text-sm">Inscription</h3>
+              <p className="text-[11px] text-muted-foreground mt-1">Créer un compte</p>
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -385,15 +398,15 @@ function LoginContent() {
   // SIGNUP MODE: role selection + name + email
   if (mode === "signup") {
     return (
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex justify-center">
           <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
         </div>
 
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="backdrop-blur-xl bg-card/70 border-border/50 shadow-2xl shadow-black/20">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold text-white">Créer un compte</CardTitle>
-            <CardDescription className="text-neutral-400">
+            <CardTitle className="text-xl font-semibold text-foreground">Créer un compte</CardTitle>
+            <CardDescription className="text-muted-foreground">
               Choisissez votre profil pour commencer
             </CardDescription>
           </CardHeader>
@@ -404,47 +417,51 @@ function LoginContent() {
 
             <form onSubmit={handleSendCode} className="space-y-5">
               {error && (
-                <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-lg border border-red-500/20">
+                <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-xl border border-red-500/20 backdrop-blur-sm">
                   {error}
                 </div>
               )}
 
               {/* Role selection */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-neutral-300">Je suis</Label>
+                <Label className="text-sm font-medium text-foreground">Je suis</Label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setRole("CLIENT")}
-                    className={`flex flex-col items-center gap-2 rounded-xl p-4 border transition-all ${
+                    className={`relative flex flex-col items-center gap-2 rounded-xl p-4 border transition-all duration-300 ${
                       role === "CLIENT"
-                        ? "border-lime-400/50 bg-lime-400/10 text-lime-400"
-                        : "border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600"
+                        ? "border-lime-400/50 bg-lime-400/10 text-lime-400 shadow-[0_0_25px_rgba(163,230,53,0.1)]"
+                        : "border-border/50 bg-muted/50 text-muted-foreground hover:border-border"
                     }`}
                   >
-                    <Building2 className="h-6 w-6" />
+                    <div className={`p-2 rounded-lg transition-all duration-300 ${role === "CLIENT" ? "bg-lime-400/15 shadow-[0_0_15px_rgba(163,230,53,0.15)]" : "bg-muted/30"}`}>
+                      <Building2 className="h-6 w-6" />
+                    </div>
                     <span className="text-sm font-medium">Donneur d&apos;ordre</span>
-                    <span className="text-[10px] text-neutral-500">Je cherche des freelances</span>
+                    <span className="text-[10px] text-muted-foreground">Je cherche des freelances</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setRole("FREELANCER")}
-                    className={`flex flex-col items-center gap-2 rounded-xl p-4 border transition-all ${
+                    className={`relative flex flex-col items-center gap-2 rounded-xl p-4 border transition-all duration-300 ${
                       role === "FREELANCER"
-                        ? "border-lime-400/50 bg-lime-400/10 text-lime-400"
-                        : "border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600"
+                        ? "border-lime-400/50 bg-lime-400/10 text-lime-400 shadow-[0_0_25px_rgba(163,230,53,0.1)]"
+                        : "border-border/50 bg-muted/50 text-muted-foreground hover:border-border"
                     }`}
                   >
-                    <Briefcase className="h-6 w-6" />
+                    <div className={`p-2 rounded-lg transition-all duration-300 ${role === "FREELANCER" ? "bg-lime-400/15 shadow-[0_0_15px_rgba(163,230,53,0.15)]" : "bg-muted/30"}`}>
+                      <Briefcase className="h-6 w-6" />
+                    </div>
                     <span className="text-sm font-medium">Freelance</span>
-                    <span className="text-[10px] text-neutral-500">Je cherche des missions</span>
+                    <span className="text-[10px] text-muted-foreground">Je cherche des missions</span>
                   </button>
                 </div>
               </div>
 
               {/* Name */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-medium text-neutral-300">
+                <Label htmlFor="name" className="text-sm font-medium text-foreground">
                   {role === "CLIENT" ? "Nom de l'entreprise" : "Nom complet"}
                 </Label>
                 <Input
@@ -455,13 +472,13 @@ function LoginContent() {
                   onChange={(e) => setName(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50 focus:ring-lime-400/20"
+                  className="bg-muted/60 border-border/50 text-foreground placeholder:text-muted-foreground focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 h-11 rounded-xl transition-all duration-200"
                 />
               </div>
 
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-neutral-300">Email</Label>
+                <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -471,13 +488,13 @@ function LoginContent() {
                   required
                   disabled={isLoading}
                   autoComplete="email"
-                  className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50 focus:ring-lime-400/20"
+                  className="bg-muted/60 border-border/50 text-foreground placeholder:text-muted-foreground focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 h-11 rounded-xl transition-all duration-200"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-lime-400 text-neutral-900 hover:bg-lime-300 h-10 font-semibold"
+                className="w-full bg-gradient-to-r from-lime-400 to-emerald-400 text-neutral-900 hover:from-lime-300 hover:to-emerald-300 h-11 font-semibold rounded-xl shadow-lg shadow-lime-400/20 transition-all duration-200"
                 disabled={isLoading || !name.trim()}
               >
                 {isLoading ? (
@@ -497,7 +514,7 @@ function LoginContent() {
             <div className="mt-4 text-center">
               <button
                 onClick={handleBackToChoice}
-                className="text-sm text-neutral-500 hover:text-neutral-300 inline-flex items-center gap-1"
+                className="text-sm text-muted-foreground hover:text-lime-400 inline-flex items-center gap-1 transition-colors duration-200"
               >
                 <ArrowLeft className="h-3 w-3" />
                 Déjà inscrit ? Se connecter
@@ -511,15 +528,15 @@ function LoginContent() {
 
   // LOGIN MODE: email only
   return (
-    <div className="w-full max-w-md space-y-6">
+    <div className="w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex justify-center">
         <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
       </div>
 
-      <Card className="bg-neutral-900 border-neutral-800">
+      <Card className="backdrop-blur-xl bg-card/70 border-border/50 shadow-2xl shadow-black/20">
         <CardHeader className="space-y-1 pb-4">
-          <CardTitle className="text-xl font-semibold text-white">Connexion</CardTitle>
-          <CardDescription className="text-neutral-400">
+          <CardTitle className="text-xl font-semibold text-foreground">Connexion</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Connectez-vous à votre compte
           </CardDescription>
         </CardHeader>
@@ -530,13 +547,13 @@ function LoginContent() {
 
           <form onSubmit={handleSendCode} className="space-y-4">
             {error && (
-              <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-lg border border-red-500/20">
+              <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-xl border border-red-500/20 backdrop-blur-sm">
                 {error}
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-neutral-300">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -547,13 +564,13 @@ function LoginContent() {
                 disabled={isLoading}
                 autoComplete="email"
                 autoFocus
-                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50 focus:ring-lime-400/20"
+                className="bg-muted/60 border-border/50 text-foreground placeholder:text-muted-foreground focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 h-11 rounded-xl transition-all duration-200"
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-lime-400 text-neutral-900 hover:bg-lime-300 h-10 font-semibold"
+              className="w-full bg-gradient-to-r from-lime-400 to-emerald-400 text-neutral-900 hover:from-lime-300 hover:to-emerald-300 h-11 font-semibold rounded-xl shadow-lg shadow-lime-400/20 transition-all duration-200"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -573,7 +590,7 @@ function LoginContent() {
           <div className="mt-4 text-center">
             <button
               onClick={handleBackToChoice}
-              className="text-sm text-neutral-500 hover:text-neutral-300 inline-flex items-center gap-1"
+              className="text-sm text-muted-foreground hover:text-lime-400 inline-flex items-center gap-1 transition-colors duration-200"
             >
               <ArrowLeft className="h-3 w-3" />
               Pas encore de compte ? S&apos;inscrire

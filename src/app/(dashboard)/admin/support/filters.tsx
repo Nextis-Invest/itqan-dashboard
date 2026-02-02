@@ -43,12 +43,12 @@ export function AdminSupportFilters({
   return (
     <div className="flex flex-wrap items-center gap-4">
       <Tabs value={currentStatus || "ALL"} onValueChange={(v) => updateParam("status", v)}>
-        <TabsList className="bg-neutral-900 border border-neutral-800">
+        <TabsList className="bg-card border border-border">
           {statusTabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="data-[state=active]:bg-lime-400/10 data-[state=active]:text-lime-400 text-neutral-400"
+              className="data-[state=active]:bg-lime-400/10 data-[state=active]:text-lime-400 text-muted-foreground"
             >
               {tab.label}
             </TabsTrigger>
@@ -57,10 +57,10 @@ export function AdminSupportFilters({
       </Tabs>
 
       <Select value={currentPriority || "ALL"} onValueChange={(v) => updateParam("priority", v)}>
-        <SelectTrigger className="w-[140px] bg-neutral-900 border-neutral-800 text-neutral-300">
+        <SelectTrigger className="w-[140px] bg-card border-border text-foreground/80">
           <SelectValue placeholder="Priorité" />
         </SelectTrigger>
-        <SelectContent className="bg-neutral-900 border-neutral-800">
+        <SelectContent className="bg-card border-border">
           <SelectItem value="ALL">Toutes priorités</SelectItem>
           <SelectItem value="LOW">Faible</SelectItem>
           <SelectItem value="MEDIUM">Moyen</SelectItem>
@@ -70,10 +70,10 @@ export function AdminSupportFilters({
       </Select>
 
       <Select value={currentCategory || "ALL"} onValueChange={(v) => updateParam("category", v)}>
-        <SelectTrigger className="w-[150px] bg-neutral-900 border-neutral-800 text-neutral-300">
+        <SelectTrigger className="w-[150px] bg-card border-border text-foreground/80">
           <SelectValue placeholder="Catégorie" />
         </SelectTrigger>
-        <SelectContent className="bg-neutral-900 border-neutral-800">
+        <SelectContent className="bg-card border-border">
           <SelectItem value="ALL">Toutes catégories</SelectItem>
           <SelectItem value="GENERAL">Général</SelectItem>
           <SelectItem value="PAYMENT">Paiement</SelectItem>

@@ -9,9 +9,10 @@ export function EditProfileButton({ role }: { role: string }) {
     <Link href="/profile/edit">
       <Button
         variant="outline"
-        className="border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+        size="sm"
+        className="border-border/50 bg-card/60 backdrop-blur-sm text-foreground/80 hover:bg-accent hover:text-foreground hover:border-border transition-all duration-200"
       >
-        <Pencil className="mr-2 h-4 w-4" />
+        <Pencil className="mr-2 h-3.5 w-3.5" />
         Modifier
       </Button>
     </Link>

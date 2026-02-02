@@ -14,7 +14,7 @@ export default async function MarketplaceLayout({
   })
 
   return (
-    <div className="min-h-screen bg-neutral-950 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <MarketplaceNavbar categories={categories} />
       <main className="flex-1 px-4 md:px-6 py-6">{children}</main>
       <MarketplaceFooter />

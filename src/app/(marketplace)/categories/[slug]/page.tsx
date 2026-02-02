@@ -94,20 +94,20 @@ export default async function CategoryPage({
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-neutral-500">
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground">
         <Link href="/categories" className="hover:text-lime-400 transition-colors">
           Catégories
         </Link>
         <ChevronRight className="h-4 w-4" />
-        <span className="text-white">{category.name}</span>
+        <span className="text-foreground">{category.name}</span>
       </nav>
 
-      <h1 className="text-2xl md:text-3xl font-bold text-white">{category.name}</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-foreground">{category.name}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar */}
         <aside className="space-y-4">
-          <h3 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
             <SlidersHorizontal className="h-4 w-4" />
             Sous-catégories
           </h3>
@@ -117,7 +117,7 @@ export default async function CategoryPage({
               className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
                 !subFilter
                   ? "bg-lime-400/10 text-lime-400 font-medium"
-                  : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
               }`}
             >
               Toutes
@@ -129,7 +129,7 @@ export default async function CategoryPage({
                 className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
                   subFilter === sub.slug
                     ? "bg-lime-400/10 text-lime-400 font-medium"
-                    : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
                 }`}
               >
                 {sub.name}
@@ -142,11 +142,11 @@ export default async function CategoryPage({
         <div className="lg:col-span-3 space-y-6">
           {/* Sort bar */}
           <div className="flex items-center justify-between">
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-muted-foreground">
               {total} service{total !== 1 ? "s" : ""} trouvé{total !== 1 ? "s" : ""}
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-neutral-500">Trier par :</span>
+              <span className="text-sm text-muted-foreground">Trier par :</span>
               <div className="flex gap-1">
                 {sortOptions.map((opt) => (
                   <Link
@@ -155,7 +155,7 @@ export default async function CategoryPage({
                     className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                       sort === opt.value
                         ? "bg-lime-400/10 text-lime-400"
-                        : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     }`}
                   >
                     {opt.label}
@@ -168,7 +168,7 @@ export default async function CategoryPage({
           {/* Grid */}
           {gigs.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-neutral-500">Aucun service dans cette catégorie pour le moment.</p>
+              <p className="text-muted-foreground">Aucun service dans cette catégorie pour le moment.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -184,18 +184,18 @@ export default async function CategoryPage({
               {page > 1 && (
                 <Link
                   href={buildUrl({ page: String(page - 1) })}
-                  className="px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-sm text-neutral-300 hover:border-lime-400/50 transition-colors"
+                  className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
                 >
                   Précédent
                 </Link>
               )}
-              <span className="px-4 py-2 text-sm text-neutral-400">
+              <span className="px-4 py-2 text-sm text-muted-foreground">
                 Page {page} sur {totalPages}
               </span>
               {page < totalPages && (
                 <Link
                   href={buildUrl({ page: String(page + 1) })}
-                  className="px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-sm text-neutral-300 hover:border-lime-400/50 transition-colors"
+                  className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
                 >
                   Suivant
                 </Link>

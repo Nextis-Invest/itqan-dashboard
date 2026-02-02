@@ -54,38 +54,38 @@ export default function NewTicketPage() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
         <Link href="/support">
-          <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white hover:bg-neutral-800">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-secondary">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Nouveau ticket</h2>
-          <p className="text-neutral-400 mt-1">Décrivez votre problème</p>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">Nouveau ticket</h2>
+          <p className="text-muted-foreground mt-1">Décrivez votre problème</p>
         </div>
       </div>
 
-      <Card className="bg-neutral-900 border-neutral-800">
+      <Card className="bg-card border-border">
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label className="text-neutral-300">Sujet</Label>
+              <Label className="text-foreground/80">Sujet</Label>
               <Input
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Résumé de votre demande"
-                className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
                 required
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-neutral-300">Catégorie</Label>
+                <Label className="text-foreground/80">Catégorie</Label>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="bg-neutral-950 border-neutral-800 text-white">
+                  <SelectTrigger className="bg-background border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-900 border-neutral-800">
+                  <SelectContent className="bg-card border-border">
                     <SelectItem value="GENERAL">Général</SelectItem>
                     <SelectItem value="PAYMENT">Paiement</SelectItem>
                     <SelectItem value="TECHNICAL">Technique</SelectItem>
@@ -97,12 +97,12 @@ export default function NewTicketPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-neutral-300">Priorité</Label>
+                <Label className="text-foreground/80">Priorité</Label>
                 <Select value={priority} onValueChange={setPriority}>
-                  <SelectTrigger className="bg-neutral-950 border-neutral-800 text-white">
+                  <SelectTrigger className="bg-background border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-900 border-neutral-800">
+                  <SelectContent className="bg-card border-border">
                     <SelectItem value="LOW">Faible</SelectItem>
                     <SelectItem value="MEDIUM">Moyen</SelectItem>
                     <SelectItem value="HIGH">Élevé</SelectItem>
@@ -112,16 +112,16 @@ export default function NewTicketPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-neutral-300">Message</Label>
+              <Label className="text-foreground/80">Message</Label>
               <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={6}
                 placeholder="Décrivez votre problème en détail (min. 20 caractères)"
-                className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-500 focus:border-lime-400/50 resize-none"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50 resize-none"
                 required
               />
-              <p className="text-neutral-500 text-xs">{message.length}/20 caractères minimum</p>
+              <p className="text-muted-foreground text-xs">{message.length}/20 caractères minimum</p>
             </div>
 
             {error && (

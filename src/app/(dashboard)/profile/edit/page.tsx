@@ -31,10 +31,12 @@ export default async function EditProfilePage() {
 
   if (user.role === "FREELANCER" && user.freelancerProfile) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto space-y-8">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Modifier mon profil</h2>
-          <p className="text-neutral-400 mt-1">Mettez à jour vos informations</p>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent tracking-tight">
+            Modifier mon profil
+          </h2>
+          <p className="text-muted-foreground mt-1">Mettez à jour vos informations</p>
         </div>
         <EditFreelancerForm profile={user.freelancerProfile} />
         <CertificationsEditor certifications={certifications} />
@@ -45,10 +47,12 @@ export default async function EditProfilePage() {
 
   if (user.role === "CLIENT" && user.clientProfile) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto space-y-8">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Modifier mon profil</h2>
-          <p className="text-neutral-400 mt-1">Mettez à jour vos informations</p>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent tracking-tight">
+            Modifier mon profil
+          </h2>
+          <p className="text-muted-foreground mt-1">Mettez à jour vos informations</p>
         </div>
         <EditClientForm profile={user.clientProfile} />
         <CertificationsEditor certifications={certifications} />

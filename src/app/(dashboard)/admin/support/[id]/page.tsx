@@ -17,23 +17,23 @@ const statusMap: Record<string, { label: string; color: string }> = {
   OPEN: { label: "Ouvert", color: "bg-lime-400/10 text-lime-400" },
   IN_PROGRESS: { label: "En cours", color: "bg-blue-400/10 text-blue-400" },
   RESOLVED: { label: "Résolu", color: "bg-green-400/10 text-green-400" },
-  CLOSED: { label: "Fermé", color: "bg-neutral-500/10 text-neutral-400" },
+  CLOSED: { label: "Fermé", color: "bg-muted/50 text-muted-foreground" },
 }
 
 const priorityMap: Record<string, { label: string; color: string }> = {
-  LOW: { label: "Faible", color: "bg-neutral-500/10 text-neutral-400" },
+  LOW: { label: "Faible", color: "bg-muted/50 text-muted-foreground" },
   MEDIUM: { label: "Moyen", color: "bg-blue-400/10 text-blue-400" },
   HIGH: { label: "Élevé", color: "bg-yellow-400/10 text-yellow-400" },
   URGENT: { label: "Urgent", color: "bg-red-400/10 text-red-400" },
 }
 
 const categoryMap: Record<string, { label: string; color: string }> = {
-  GENERAL: { label: "Général", color: "bg-neutral-500/10 text-neutral-400" },
+  GENERAL: { label: "Général", color: "bg-muted/50 text-muted-foreground" },
   PAYMENT: { label: "Paiement", color: "bg-blue-400/10 text-blue-400" },
   TECHNICAL: { label: "Technique", color: "bg-purple-400/10 text-purple-400" },
   ACCOUNT: { label: "Compte", color: "bg-yellow-400/10 text-yellow-400" },
   MISSION: { label: "Mission", color: "bg-lime-400/10 text-lime-400" },
-  OTHER: { label: "Autre", color: "bg-neutral-500/10 text-neutral-400" },
+  OTHER: { label: "Autre", color: "bg-muted/50 text-muted-foreground" },
 }
 
 export default async function AdminTicketDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -98,12 +98,12 @@ export default async function AdminTicketDetailPage({ params }: { params: Promis
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link href="/admin/support">
-          <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white hover:bg-neutral-800">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-accent">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-white tracking-tight">{ticket.subject}</h2>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">{ticket.subject}</h2>
           <div className="flex items-center gap-2 mt-1">
             <Badge className={`${st.color} border-0`}>{st.label}</Badge>
             <Badge className={`${cat.color} border-0`}>{cat.label}</Badge>
@@ -119,39 +119,39 @@ export default async function AdminTicketDetailPage({ params }: { params: Promis
       </div>
 
       {/* Info section */}
-      <Card className="bg-neutral-900 border-neutral-800">
+      <Card className="bg-card border-border">
         <CardContent className="pt-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <p className="text-neutral-500 text-xs mb-1">Utilisateur</p>
+              <p className="text-muted-foreground text-xs mb-1">Utilisateur</p>
               <div className="flex items-center gap-1.5">
-                <User className="h-3.5 w-3.5 text-neutral-400" />
-                <span className="text-white">{ticket.user.name || ticket.user.email}</span>
+                <User className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-foreground">{ticket.user.name || ticket.user.email}</span>
               </div>
             </div>
             <div>
-              <p className="text-neutral-500 text-xs mb-1">Priorité</p>
+              <p className="text-muted-foreground text-xs mb-1">Priorité</p>
               <Badge className={`${pr.color} border-0`}>{pr.label}</Badge>
             </div>
             <div>
-              <p className="text-neutral-500 text-xs mb-1">Assigné à</p>
-              <span className="text-white">{ticket.assignedTo?.name || "Non assigné"}</span>
+              <p className="text-muted-foreground text-xs mb-1">Assigné à</p>
+              <span className="text-foreground">{ticket.assignedTo?.name || "Non assigné"}</span>
             </div>
             <div>
-              <p className="text-neutral-500 text-xs mb-1">Créé le</p>
+              <p className="text-muted-foreground text-xs mb-1">Créé le</p>
               <div className="flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5 text-neutral-400" />
-                <span className="text-white">
+                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-foreground">
                   {new Date(ticket.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
                 </span>
               </div>
             </div>
             {ticket.firstReplyAt && (
               <div>
-                <p className="text-neutral-500 text-xs mb-1">Première réponse</p>
+                <p className="text-muted-foreground text-xs mb-1">Première réponse</p>
                 <div className="flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-neutral-400" />
-                  <span className="text-white">
+                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-foreground">
                     {new Date(ticket.firstReplyAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                   </span>
                 </div>
@@ -159,8 +159,8 @@ export default async function AdminTicketDetailPage({ params }: { params: Promis
             )}
             {ticket.closedAt && (
               <div>
-                <p className="text-neutral-500 text-xs mb-1">Fermé le</p>
-                <span className="text-white">
+                <p className="text-muted-foreground text-xs mb-1">Fermé le</p>
+                <span className="text-foreground">
                   {new Date(ticket.closedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
                 </span>
               </div>
@@ -180,8 +180,8 @@ export default async function AdminTicketDetailPage({ params }: { params: Promis
               >
                 <div className="flex items-center gap-2 mb-3">
                   <Badge className="bg-yellow-400/10 text-yellow-400 border-0 text-xs">Note interne</Badge>
-                  <span className="text-white font-medium text-sm">{item.admin.name || "Admin"}</span>
-                  <span className="text-neutral-500 text-xs">
+                  <span className="text-foreground font-medium text-sm">{item.admin.name || "Admin"}</span>
+                  <span className="text-muted-foreground text-xs">
                     {new Date(item.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                   </span>
                 </div>
@@ -197,19 +197,19 @@ export default async function AdminTicketDetailPage({ params }: { params: Promis
               className={`rounded-lg border p-6 ${
                 isAdmin
                   ? "bg-lime-400/5 border-lime-400/10"
-                  : "bg-neutral-900 border-neutral-800"
+                  : "bg-card border-border"
               }`}
             >
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-white font-medium text-sm">{item.user.name || item.user.email}</span>
+                <span className="text-foreground font-medium text-sm">{item.user.name || item.user.email}</span>
                 {isAdmin && (
                   <Badge className="bg-lime-400/10 text-lime-400 border-0 text-xs">Admin</Badge>
                 )}
-                <span className="text-neutral-500 text-xs">
+                <span className="text-muted-foreground text-xs">
                   {new Date(item.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                 </span>
               </div>
-              <p className="text-neutral-300 text-sm whitespace-pre-wrap">{item.content}</p>
+              <p className="text-foreground/80 text-sm whitespace-pre-wrap">{item.content}</p>
             </div>
           )
         })}

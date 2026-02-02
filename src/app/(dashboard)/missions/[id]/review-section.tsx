@@ -21,9 +21,9 @@ export function ReviewSection({
   const [error, setError] = useState("")
 
   return (
-    <Card className="bg-neutral-900 border-neutral-800">
+    <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-white text-base">Laisser un avis</CardTitle>
+        <CardTitle className="text-foreground text-base">Laisser un avis</CardTitle>
       </CardHeader>
       <CardContent>
         <form
@@ -54,7 +54,7 @@ export function ReviewSection({
           )}
 
           <div className="space-y-2">
-            <Label className="text-neutral-300">Note</Label>
+            <Label className="text-foreground/80">Note</Label>
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button
@@ -69,7 +69,7 @@ export function ReviewSection({
                     className={`h-6 w-6 ${
                       value <= (hoveredRating || rating)
                         ? "text-yellow-400 fill-yellow-400"
-                        : "text-neutral-600"
+                        : "text-muted-foreground/60"
                     }`}
                   />
                 </button>
@@ -78,7 +78,7 @@ export function ReviewSection({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-neutral-300">Commentaire</Label>
+            <Label className="text-foreground/80">Commentaire</Label>
             <Textarea
               name="comment"
               rows={3}

@@ -18,9 +18,9 @@ export function ExperienceList({
   if (experiences.length === 0) return null
 
   return (
-    <Card className="bg-neutral-900 border-neutral-800">
+    <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-white text-base flex items-center gap-2">
+        <CardTitle className="text-foreground text-base flex items-center gap-2">
           <Building2 className="h-4 w-4 text-lime-400" />
           Expérience professionnelle
         </CardTitle>
@@ -29,14 +29,14 @@ export function ExperienceList({
         {experiences.map((exp) => (
           <div
             key={exp.id}
-            className="border-b border-neutral-800 pb-4 last:border-0 last:pb-0"
+            className="border-b border-border pb-4 last:border-0 last:pb-0"
           >
             <div className="flex items-start justify-between">
               <div>
-                <h4 className="text-white font-medium text-sm">{exp.title}</h4>
-                <p className="text-neutral-400 text-sm">{exp.company}</p>
+                <h4 className="text-foreground font-medium text-sm">{exp.title}</h4>
+                <p className="text-muted-foreground text-sm">{exp.company}</p>
                 {exp.location && (
-                  <p className="text-neutral-500 text-xs mt-0.5">{exp.location}</p>
+                  <p className="text-muted-foreground text-xs mt-0.5">{exp.location}</p>
                 )}
               </div>
               <div className="flex items-center gap-2">
@@ -53,7 +53,7 @@ export function ExperienceList({
               </div>
             </div>
             {(exp.startDate || exp.endDate) && (
-              <div className="flex items-center gap-1 mt-1 text-neutral-500 text-xs">
+              <div className="flex items-center gap-1 mt-1 text-muted-foreground text-xs">
                 <Calendar className="h-3 w-3" />
                 {formatDate(exp.startDate)}
                 {exp.startDate && (exp.endDate || exp.current) && " — "}
@@ -61,7 +61,7 @@ export function ExperienceList({
               </div>
             )}
             {exp.description && (
-              <p className="text-neutral-400 text-sm mt-2">{exp.description}</p>
+              <p className="text-muted-foreground text-sm mt-2">{exp.description}</p>
             )}
           </div>
         ))}

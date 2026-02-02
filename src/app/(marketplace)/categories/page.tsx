@@ -56,8 +56,8 @@ export default async function CategoriesPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white">Catégories</h1>
-        <p className="text-neutral-400 mt-2">
+        <h1 className="text-3xl font-bold text-foreground">Catégories</h1>
+        <p className="text-muted-foreground mt-2">
           Explorez nos catégories de services pour trouver le freelancer idéal
         </p>
       </div>
@@ -71,10 +71,10 @@ export default async function CategoriesPage() {
               className="group flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
               <span className="text-3xl">{getIcon(cat.icon)}</span>
-              <h2 className="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">
+              <h2 className="text-xl font-bold text-foreground group-hover:text-lime-400 transition-colors">
                 {cat.name}
               </h2>
-              <ChevronRight className="h-5 w-5 text-neutral-600 group-hover:text-lime-400 transition-colors" />
+              <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-lime-400 transition-colors" />
             </Link>
 
             {/* Subcategories grid */}
@@ -84,13 +84,13 @@ export default async function CategoriesPage() {
                   <Link
                     key={sub.id}
                     href={`/categories/${cat.slug}/${sub.slug}`}
-                    className="group flex items-center gap-2 px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-lime-400/50 hover:bg-neutral-800/50 transition-all"
+                    className="group flex items-center gap-2 px-4 py-3 rounded-lg bg-card border border-border hover:border-lime-400/50 hover:bg-accent/50 transition-all"
                   >
-                    <span className="text-sm text-neutral-300 group-hover:text-lime-400 transition-colors">
+                    <span className="text-sm text-foreground group-hover:text-lime-400 transition-colors">
                       {sub.name}
                     </span>
                     {sub.children.length > 0 && (
-                      <span className="text-xs text-neutral-600 ml-auto">
+                      <span className="text-xs text-muted-foreground ml-auto">
                         {sub.children.length}
                       </span>
                     )}
@@ -99,7 +99,7 @@ export default async function CategoriesPage() {
               </div>
             )}
 
-            <div className="border-b border-neutral-800/50" />
+            <div className="border-b border-border/50" />
           </div>
         ))}
       </div>

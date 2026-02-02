@@ -111,7 +111,7 @@ export default async function AdminUserDetailPage({
   const fp = user.freelancerProfile
 
   const statusColors: Record<string, string> = {
-    DRAFT: "bg-neutral-500/10 text-neutral-400",
+    DRAFT: "bg-muted/50 text-muted-foreground",
     OPEN: "bg-lime-400/10 text-lime-400",
     IN_PROGRESS: "bg-blue-400/10 text-blue-400",
     COMPLETED: "bg-green-400/10 text-green-400",
@@ -134,14 +134,14 @@ export default async function AdminUserDetailPage({
           <Button
             variant="ghost"
             size="icon"
-            className="text-neutral-400 hover:text-white hover:bg-neutral-800"
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-white tracking-tight">
+            <h2 className="text-2xl font-bold text-foreground tracking-tight">
               {user.name || user.email}
             </h2>
             <Badge
@@ -164,7 +164,7 @@ export default async function AdminUserDetailPage({
               <CheckCircle className="h-5 w-5 text-lime-400" />
             )}
           </div>
-          <p className="text-neutral-400 mt-1">
+          <p className="text-muted-foreground mt-1">
             <Mail className="h-3.5 w-3.5 inline mr-1" />
             {user.email}
             {user.phone && (
@@ -186,9 +186,9 @@ export default async function AdminUserDetailPage({
         <>
           {/* Identity & Company */}
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-neutral-900 border-neutral-800">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white text-base flex items-center gap-2">
+                <CardTitle className="text-foreground text-base flex items-center gap-2">
                   <User className="h-4 w-4 text-lime-400" />
                   Identité
                 </CardTitle>
@@ -234,9 +234,9 @@ export default async function AdminUserDetailPage({
               </CardContent>
             </Card>
 
-            <Card className="bg-neutral-900 border-neutral-800">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white text-base flex items-center gap-2">
+                <CardTitle className="text-foreground text-base flex items-center gap-2">
                   <Building2 className="h-4 w-4 text-lime-400" />
                   Société
                 </CardTitle>
@@ -271,7 +271,7 @@ export default async function AdminUserDetailPage({
                 {cp.cnss && <InfoRow label="CNSS" value={cp.cnss} mono />}
                 {cp.website && (
                   <div className="flex justify-between items-center">
-                    <span className="text-neutral-400">Site web</span>
+                    <span className="text-muted-foreground">Site web</span>
                     <a
                       href={cp.website}
                       target="_blank"
@@ -287,7 +287,7 @@ export default async function AdminUserDetailPage({
                   !cp.rc &&
                   !cp.ice &&
                   !cp.formeJuridique && (
-                    <p className="text-neutral-500 italic">
+                    <p className="text-muted-foreground italic">
                       Aucune info société renseignée
                     </p>
                   )}
@@ -297,9 +297,9 @@ export default async function AdminUserDetailPage({
 
           {/* Contact & Address & Payment */}
           <div className="grid gap-4 md:grid-cols-3">
-            <Card className="bg-neutral-900 border-neutral-800">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white text-base flex items-center gap-2">
+                <CardTitle className="text-foreground text-base flex items-center gap-2">
                   <Phone className="h-4 w-4 text-lime-400" />
                   Contact
                 </CardTitle>
@@ -313,16 +313,16 @@ export default async function AdminUserDetailPage({
                   <InfoRow label="Email contact" value={cp.contactEmail} />
                 )}
                 {!cp.phone && !cp.phoneSecondary && !cp.contactEmail && (
-                  <p className="text-neutral-500 italic">
+                  <p className="text-muted-foreground italic">
                     Aucun contact renseigné
                   </p>
                 )}
               </CardContent>
             </Card>
 
-            <Card className="bg-neutral-900 border-neutral-800">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white text-base flex items-center gap-2">
+                <CardTitle className="text-foreground text-base flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-lime-400" />
                   Adresse
                 </CardTitle>
@@ -336,16 +336,16 @@ export default async function AdminUserDetailPage({
                 {cp.region && <InfoRow label="Région" value={cp.region} />}
                 <InfoRow label="Pays" value={cp.country} />
                 {!cp.address && !cp.city && (
-                  <p className="text-neutral-500 italic">
+                  <p className="text-muted-foreground italic">
                     Aucune adresse renseignée
                   </p>
                 )}
               </CardContent>
             </Card>
 
-            <Card className="bg-neutral-900 border-neutral-800">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white text-base flex items-center gap-2">
+                <CardTitle className="text-foreground text-base flex items-center gap-2">
                   <CreditCard className="h-4 w-4 text-lime-400" />
                   Paiement
                 </CardTitle>
@@ -369,7 +369,7 @@ export default async function AdminUserDetailPage({
                 {!cp.preferredPaymentMethod &&
                   !cp.bankName &&
                   !cp.bankIban && (
-                    <p className="text-neutral-500 italic">
+                    <p className="text-muted-foreground italic">
                       Aucune info bancaire
                     </p>
                   )}
@@ -384,9 +384,9 @@ export default async function AdminUserDetailPage({
 
       {/* Freelancer Profile Summary */}
       {fp && (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white text-base flex items-center gap-2">
+            <CardTitle className="text-foreground text-base flex items-center gap-2">
               <User className="h-4 w-4 text-lime-400" />
               Profil Freelancer
             </CardTitle>
@@ -434,9 +434,9 @@ export default async function AdminUserDetailPage({
 
       {/* Missions */}
       {user.clientMissions.length > 0 && (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white text-base flex items-center gap-2">
+            <CardTitle className="text-foreground text-base flex items-center gap-2">
               <FileText className="h-4 w-4 text-lime-400" />
               Missions créées ({user.clientMissions.length})
             </CardTitle>
@@ -447,17 +447,17 @@ export default async function AdminUserDetailPage({
                 <Link
                   key={m.id}
                   href={`/missions/${m.id}`}
-                  className="flex items-center justify-between p-3 rounded-lg bg-neutral-800/50 hover:bg-neutral-800 transition-colors"
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-secondary transition-colors"
                 >
                   <div>
-                    <p className="text-white text-sm font-medium">{m.title}</p>
-                    <p className="text-neutral-500 text-xs">
+                    <p className="text-foreground text-sm font-medium">{m.title}</p>
+                    <p className="text-muted-foreground text-xs">
                       {new Date(m.createdAt).toLocaleDateString("fr-FR")}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     {(m.budget || m.budgetMin) && (
-                      <span className="text-neutral-400 text-xs">
+                      <span className="text-muted-foreground text-xs">
                         {m.budget
                           ? `${m.budget} ${m.currency}`
                           : `${m.budgetMin}-${m.budgetMax} ${m.currency}`}
@@ -480,9 +480,9 @@ export default async function AdminUserDetailPage({
 
       {/* Payments */}
       {payments.length > 0 && (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white text-base flex items-center gap-2">
+            <CardTitle className="text-foreground text-base flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-lime-400" />
               Historique des paiements ({payments.length})
             </CardTitle>
@@ -492,14 +492,14 @@ export default async function AdminUserDetailPage({
               {payments.map((p) => (
                 <div
                   key={p.id}
-                  className="p-3 rounded-lg bg-neutral-800/50 space-y-1"
+                  className="p-3 rounded-lg bg-muted/50 space-y-1"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-white text-sm font-medium">
+                      <p className="text-foreground text-sm font-medium">
                         {p.amount.toLocaleString("fr-FR")} {p.currency}
                         {p.fee > 0 && (
-                          <span className="text-neutral-500 text-xs ml-2">
+                          <span className="text-muted-foreground text-xs ml-2">
                             (frais: {p.fee} {p.currency})
                           </span>
                         )}
@@ -522,7 +522,7 @@ export default async function AdminUserDetailPage({
                       {p.status}
                     </Badge>
                   </div>
-                  <div className="flex flex-wrap gap-3 text-xs text-neutral-500">
+                  <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
                     {p.transactionNumber && (
                       <span>Tx: {p.transactionNumber}</span>
                     )}
@@ -536,7 +536,7 @@ export default async function AdminUserDetailPage({
                     </span>
                   </div>
                   {p.notes && (
-                    <p className="text-neutral-400 text-xs italic">
+                    <p className="text-muted-foreground text-xs italic">
                       {p.notes}
                     </p>
                   )}
@@ -549,9 +549,9 @@ export default async function AdminUserDetailPage({
 
       {/* Reviews */}
       {user.reviewsReceived.length > 0 && (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white text-base flex items-center gap-2">
+            <CardTitle className="text-foreground text-base flex items-center gap-2">
               <Star className="h-4 w-4 text-lime-400" />
               Avis reçus ({user.reviewsReceived.length})
             </CardTitle>
@@ -560,10 +560,10 @@ export default async function AdminUserDetailPage({
             {user.reviewsReceived.map((review) => (
               <div
                 key={review.id}
-                className="border-b border-neutral-800 pb-3 last:border-0 last:pb-0"
+                className="border-b border-border pb-3 last:border-0 last:pb-0"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-white text-sm font-medium">
+                  <span className="text-foreground text-sm font-medium">
                     {review.author.name || review.author.email}
                   </span>
                   <div className="flex items-center gap-1">
@@ -573,7 +573,7 @@ export default async function AdminUserDetailPage({
                         className={`text-sm ${
                           i < review.rating
                             ? "text-yellow-400"
-                            : "text-neutral-600"
+                            : "text-muted-foreground"
                         }`}
                       >
                         ★
@@ -581,11 +581,11 @@ export default async function AdminUserDetailPage({
                     ))}
                   </div>
                 </div>
-                <p className="text-neutral-500 text-xs mt-1">
+                <p className="text-muted-foreground text-xs mt-1">
                   Mission: {review.mission.title}
                 </p>
                 {review.comment && (
-                  <p className="text-neutral-300 text-sm mt-1">
+                  <p className="text-foreground/80 text-sm mt-1">
                     {review.comment}
                   </p>
                 )}
@@ -609,9 +609,9 @@ function InfoRow({
 }) {
   return (
     <div className="flex justify-between items-center">
-      <span className="text-neutral-400">{label}</span>
+      <span className="text-muted-foreground">{label}</span>
       <span
-        className={`text-white text-right ${mono ? "font-mono text-xs" : ""}`}
+        className={`text-foreground text-right ${mono ? "font-mono text-xs" : ""}`}
       >
         {value}
       </span>

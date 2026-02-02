@@ -90,23 +90,23 @@ export function AddressSearch({ onSelect, defaultValue, className }: AddressSear
   return (
     <div ref={containerRef} className={`relative ${className || ""}`}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => results.length > 0 && setIsOpen(true)}
           placeholder="Tapez votre adresse..."
-          className="pl-10 pr-10 bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-lime-400/50"
+          className="pl-10 pr-10 bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50"
         />
         {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 animate-spin" />
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
         )}
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-secondary border border-border rounded-lg shadow-xl max-h-60 overflow-y-auto">
           {results.length === 0 && !isLoading ? (
-            <div className="px-4 py-6 text-center text-neutral-500 text-sm">
+            <div className="px-4 py-6 text-center text-muted-foreground text-sm">
               Aucune adresse trouvée
             </div>
           ) : (
@@ -115,12 +115,12 @@ export function AddressSearch({ onSelect, defaultValue, className }: AddressSear
                 key={`${item.label}-${i}`}
                 type="button"
                 onClick={() => handleSelect(item)}
-                className="w-full text-left px-4 py-3 hover:bg-neutral-700/50 transition-colors border-b border-neutral-700/50 last:border-0 flex items-start gap-2.5"
+                className="w-full text-left px-4 py-3 hover:bg-accent/50 transition-colors border-b border-border last:border-0 flex items-start gap-2.5"
               >
-                <MapPin className="h-4 w-4 text-neutral-400 mt-0.5 shrink-0" />
+                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-white text-sm">{item.label}</p>
-                  <p className="text-neutral-500 text-xs mt-0.5">{item.context}</p>
+                  <p className="text-foreground text-sm">{item.label}</p>
+                  <p className="text-muted-foreground text-xs mt-0.5">{item.context}</p>
                 </div>
               </button>
             ))
