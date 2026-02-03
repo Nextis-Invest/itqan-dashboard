@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/config"
+import { sendEmail, newMissionForReviewEmail } from "@/lib/email"
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,6 +42,24 @@ export async function POST(req: NextRequest) {
         clientId: session.user.id!,
       },
     })
+
+    // Email all admins about new mission to review
+    try {
+      const admins = await prisma.user.findMany({
+        where: { role: "ADMIN" },
+        select: { email: true },
+      })
+      const clientName = session.user.name || session.user.email || "Un client"
+      for (const admin of admins) {
+        await sendEmail({
+          to: admin.email,
+          subject: "Nouvelle mission à valider — Itqan",
+          html: newMissionForReviewEmail(clientName, title, mission.id),
+        })
+      }
+    } catch (e) {
+      console.error("Admin email error:", e)
+    }
 
     return NextResponse.json({ success: true, mission })
   } catch (error) {

@@ -154,6 +154,16 @@ export function disputeOpenedEmail(missionTitle: string, missionId: string) {
   )
 }
 
+export function newMissionForReviewEmail(clientName: string, missionTitle: string, missionId: string) {
+  return emailLayout(
+    "Nouvelle mission à valider",
+    `<p><strong style="color:#fff;">${clientName}</strong> a soumis une nouvelle mission : <strong style="color:#fff;">"${missionTitle}"</strong>.</p>
+     <p>Vérifiez les détails et validez ou rejetez cette mission.</p>`,
+    `${process.env.NEXTAUTH_URL}/admin/missions?status=PENDING_REVIEW`,
+    "Voir les missions en attente"
+  )
+}
+
 export function creditPurchaseEmail(amount: number, newBalance: number) {
   return emailLayout(
     "Achat de crédits confirmé",
