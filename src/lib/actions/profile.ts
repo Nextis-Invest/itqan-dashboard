@@ -39,6 +39,9 @@ export async function createClientProfile(formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) throw new Error("Non autorisé")
 
+  const phone = (formData.get("phone") as string) || null
+  if (!phone) throw new Error("Le numéro de téléphone est obligatoire")
+
   await prisma.clientProfile.create({
     data: {
       userId: session.user.id,
@@ -55,7 +58,7 @@ export async function createClientProfile(formData: FormData) {
       formeJuridique: (formData.get("formeJuridique") as string) || null,
       cin: (formData.get("cin") as string) || null,
       dateOfBirth: formData.get("dateOfBirth") ? new Date(formData.get("dateOfBirth") as string) : null,
-      phone: (formData.get("phone") as string) || null,
+      phone,
       phoneSecondary: (formData.get("phoneSecondary") as string) || null,
       contactEmail: (formData.get("contactEmail") as string) || null,
       address: (formData.get("address") as string) || null,

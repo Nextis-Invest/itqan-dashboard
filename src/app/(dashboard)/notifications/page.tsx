@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react"
 import { getNotifications, markAsRead, markAllAsRead } from "@/lib/actions/notification"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Bell, CheckCheck, ExternalLink, Inbox, FileText, ThumbsUp, ThumbsDown, Upload, Star, MessageSquare, CheckCircle, Award, AlertTriangle, Headphones, Clock, Briefcase } from "lucide-react"
+import { Bell, CheckCheck, ExternalLink, Inbox, FileText, ThumbsUp, ThumbsDown, Upload, Star, MessageSquare, CheckCircle, Award, AlertTriangle, Headphones, Clock, Briefcase, UserPlus, XCircle } from "lucide-react"
 import Link from "next/link"
 
 type Notification = {
@@ -37,6 +37,8 @@ const typeConfig: Record<string, { icon: React.ReactNode; color: string; bg: str
   SUPPORT_REPLY: { icon: <Headphones className="h-4 w-4" />, color: "text-blue-400", bg: "bg-blue-400/10" },
   TICKET_STATUS: { icon: <Clock className="h-4 w-4" />, color: "text-blue-400", bg: "bg-blue-400/10" },
   MISSION_STATUS: { icon: <Briefcase className="h-4 w-4" />, color: "text-lime-400", bg: "bg-lime-400/10" },
+  MISSION_ASSIGNED: { icon: <UserPlus className="h-4 w-4" />, color: "text-lime-400", bg: "bg-lime-400/10" },
+  MISSION_REJECTED: { icon: <XCircle className="h-4 w-4" />, color: "text-red-400", bg: "bg-red-400/10" },
 }
 
 const defaultTypeConfig = { icon: <Bell className="h-4 w-4" />, color: "text-muted-foreground", bg: "bg-muted/50" }

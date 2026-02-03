@@ -15,10 +15,12 @@ enum Role {
 
 enum MissionStatus {
   DRAFT
+  PENDING_REVIEW
   OPEN
   IN_PROGRESS
   COMPLETED
   CANCELLED
+  REJECTED
 }
 
 enum ProposalStatus {

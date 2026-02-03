@@ -12,19 +12,23 @@ export const dynamic = "force-dynamic"
 
 const statusLabels: Record<string, { label: string; color: string; dot: string }> = {
   DRAFT: { label: "Brouillon", color: "bg-muted text-muted-foreground", dot: "bg-muted-foreground" },
+  PENDING_REVIEW: { label: "En attente", color: "bg-yellow-400/10 text-yellow-400", dot: "bg-yellow-400" },
   OPEN: { label: "Ouverte", color: "bg-lime-400/10 text-lime-400", dot: "bg-lime-400" },
   IN_PROGRESS: { label: "En cours", color: "bg-blue-400/10 text-blue-400", dot: "bg-blue-400" },
   COMPLETED: { label: "Terminée", color: "bg-green-400/10 text-green-400", dot: "bg-green-400" },
   CANCELLED: { label: "Annulée", color: "bg-red-400/10 text-red-400", dot: "bg-red-400" },
+  REJECTED: { label: "Rejetée", color: "bg-red-400/10 text-red-400", dot: "bg-red-400" },
 }
 
 const statusTabs = [
   { key: "", label: "Toutes" },
   { key: "DRAFT", label: "Brouillon" },
+  { key: "PENDING_REVIEW", label: "En attente" },
   { key: "OPEN", label: "Ouvertes" },
   { key: "IN_PROGRESS", label: "En cours" },
   { key: "COMPLETED", label: "Terminées" },
   { key: "CANCELLED", label: "Annulées" },
+  { key: "REJECTED", label: "Rejetées" },
 ]
 
 export default async function MissionsPage({

@@ -7,19 +7,22 @@ import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Briefcase, Eye, Clock, CheckCircle, DollarSign, MessageSquare } from "lucide-react"
+import { Briefcase, Eye, Clock, CheckCircle, DollarSign, MessageSquare, AlertTriangle } from "lucide-react"
 import { AdminMissionActions } from "./mission-actions"
 import { AdminMissionsSearch } from "./search-input"
+import { AssignFreelancerDialog } from "./assign-freelancer-dialog"
 import Link from "next/link"
 
 export const dynamic = "force-dynamic"
 
 const statusMap: Record<string, { label: string; color: string; dot: string }> = {
   DRAFT: { label: "Brouillon", color: "bg-muted/50 text-muted-foreground", dot: "bg-muted-foreground" },
+  PENDING_REVIEW: { label: "En attente", color: "bg-yellow-400/10 text-yellow-400", dot: "bg-yellow-400" },
   OPEN: { label: "Ouverte", color: "bg-lime-400/10 text-lime-400", dot: "bg-lime-400" },
   IN_PROGRESS: { label: "En cours", color: "bg-blue-400/10 text-blue-400", dot: "bg-blue-400" },
   COMPLETED: { label: "Terminée", color: "bg-green-400/10 text-green-400", dot: "bg-green-400" },
   CANCELLED: { label: "Annulée", color: "bg-red-400/10 text-red-400", dot: "bg-red-400" },
+  REJECTED: { label: "Rejetée", color: "bg-red-400/10 text-red-400", dot: "bg-red-400" },
 }
 
 export default async function AdminMissionsPage({
@@ -34,8 +37,9 @@ export default async function AdminMissionsPage({
 
   const sp = await searchParams
 
-  const [totalCount, openCount, inProgressCount, completedCount, budgetAgg] = await Promise.all([
+  const [totalCount, pendingCount, openCount, inProgressCount, completedCount, budgetAgg] = await Promise.all([
     prisma.mission.count(),
+    prisma.mission.count({ where: { status: "PENDING_REVIEW" } }),
     prisma.mission.count({ where: { status: "OPEN" } }),
     prisma.mission.count({ where: { status: "IN_PROGRESS" } }),
     prisma.mission.count({ where: { status: "COMPLETED" } }),
@@ -56,12 +60,25 @@ export default async function AdminMissionsPage({
       client: { select: { name: true, email: true } },
       _count: { select: { proposals: true, reviews: true } },
     },
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      budget: true,
+      currency: true,
+      featured: true,
+      createdAt: true,
+      freelancerId: true,
+      client: { select: { name: true, email: true } },
+      _count: { select: { proposals: true, reviews: true } },
+    },
     orderBy: { createdAt: "desc" },
     take: 100,
   })
 
   const statCards = [
     { label: "Total", value: totalCount, icon: Briefcase, color: "text-lime-400", bg: "bg-lime-400/10" },
+    { label: "En attente", value: pendingCount, icon: AlertTriangle, color: "text-yellow-400", bg: "bg-yellow-400/10" },
     { label: "Ouvertes", value: openCount, icon: Eye, color: "text-lime-400", bg: "bg-lime-400/10" },
     { label: "En cours", value: inProgressCount, icon: Clock, color: "text-blue-400", bg: "bg-blue-400/10" },
     { label: "Terminées", value: completedCount, icon: CheckCircle, color: "text-green-400", bg: "bg-green-400/10" },
@@ -161,7 +178,10 @@ export default async function AdminMissionsPage({
                       {new Date(m.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                     </TableCell>
                     <TableCell>
-                      <div className="relative z-10">
+                      <div className="relative z-10 flex items-center gap-1">
+                        {!m.freelancerId && (m.status === "OPEN" || m.status === "PENDING_REVIEW") && (
+                          <AssignFreelancerDialog missionId={m.id} />
+                        )}
                         <AdminMissionActions missionId={m.id} status={m.status} featured={m.featured} />
                       </div>
                     </TableCell>

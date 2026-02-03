@@ -16,6 +16,8 @@ import { Loader2, Save, Search, PenLine, User, Building2, Rocket, MapPin, Phone 
 import { createClientProfile } from "@/lib/actions/profile"
 import { CompanySearch, type CompanyResult } from "@/components/company-search"
 import { AddressSearch } from "@/components/address-search"
+import { PhoneInput } from "@/components/ui/phone-input"
+import { isValidPhoneNumber } from "react-phone-number-input"
 
 const industries = [
   { value: "tech", label: "Technologie" },
@@ -88,6 +90,8 @@ export function ClientOnboardingForm() {
   const [city, setCity] = useState("")
   const [postalCode, setPostalCode] = useState("")
   const [siren, setSiren] = useState("")
+  const [phone, setPhone] = useState("")
+  const [phoneError, setPhoneError] = useState("")
   const formRef = useRef<HTMLFormElement>(null)
 
   const isFrance = country === "FR"
@@ -111,9 +115,15 @@ export function ClientOnboardingForm() {
   return (
     <form
       ref={formRef}
-      action={async (formData) => {
+      onSubmit={async (e) => {
+        e.preventDefault()
+        if (!phone || !isValidPhoneNumber(phone)) {
+          setPhoneError("Numéro de téléphone invalide")
+          return
+        }
         setIsPending(true)
         try {
+          const formData = new FormData(formRef.current!)
           await createClientProfile(formData)
         } catch {
           setIsPending(false)
@@ -123,6 +133,7 @@ export function ClientOnboardingForm() {
     >
       <input type="hidden" name="personType" value={personType} />
       <input type="hidden" name="country" value={country} />
+      <input type="hidden" name="phone" value={phone} />
 
       {/* Section: Profile Type */}
       <Card className="bg-card/80 border-border backdrop-blur-sm">
@@ -380,12 +391,18 @@ export function ClientOnboardingForm() {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-foreground/80 text-sm font-medium">Téléphone</Label>
-            <Input
-              name="phone"
-              placeholder={isFrance ? "+33 6 XX XX XX XX" : "+212 6XX XXX XXX"}
-              className={inputCls}
+            <Label className="text-foreground/80 text-sm font-medium">Téléphone *</Label>
+            <PhoneInput
+              value={phone}
+              onChange={(value) => {
+                setPhone(value || "")
+                setPhoneError("")
+              }}
+              defaultCountry="MA"
+              placeholder="Entrez votre numéro"
+              className="[&_input]:bg-secondary/60 [&_input]:border-border [&_input]:text-foreground [&_input]:placeholder:text-muted-foreground [&_input]:focus:border-lime-400 [&_input]:focus:ring-2 [&_input]:focus:ring-lime-400/20 [&_input]:h-11 [&_input]:rounded-xl [&_input]:transition-all [&_button]:bg-secondary/60 [&_button]:border-border [&_button]:h-11 [&_button]:rounded-xl"
             />
+            {phoneError && <p className="text-red-400 text-xs">{phoneError}</p>}
           </div>
         </CardContent>
       </Card>

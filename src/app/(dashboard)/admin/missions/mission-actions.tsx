@@ -14,14 +14,16 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Eye, ArrowRightLeft, Star, StarOff, Trash2, Loader2 } from "lucide-react"
-import { updateMissionStatusAdmin, toggleMissionFeatured, deleteMissionPermanent } from "@/lib/actions/admin"
+import { MoreHorizontal, Eye, ArrowRightLeft, Star, StarOff, Trash2, Loader2, CheckCircle, XCircle } from "lucide-react"
+import { updateMissionStatusAdmin, toggleMissionFeatured, deleteMissionPermanent, approveMission, rejectMission } from "@/lib/actions/admin"
 
 const statusOptions = [
+  { value: "PENDING_REVIEW", label: "En attente" },
   { value: "OPEN", label: "Ouverte" },
   { value: "IN_PROGRESS", label: "En cours" },
   { value: "COMPLETED", label: "Terminée" },
   { value: "CANCELLED", label: "Annulée" },
+  { value: "REJECTED", label: "Rejetée" },
 ] as const
 
 export function AdminMissionActions({
@@ -73,6 +75,31 @@ export function AdminMissionActions({
     }
   }
 
+  const handleApprove = async () => {
+    setLoading(true)
+    try {
+      await approveMission(missionId)
+      router.refresh()
+    } catch (err: any) {
+      alert(err.message || "Erreur")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleReject = async () => {
+    const reason = prompt("Raison du rejet (optionnel) :")
+    setLoading(true)
+    try {
+      await rejectMission(missionId, reason || undefined)
+      router.refresh()
+    } catch (err: any) {
+      alert(err.message || "Erreur")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const canDelete = status === "DRAFT" || status === "CANCELLED"
 
   return (
@@ -98,6 +125,26 @@ export function AdminMissionActions({
             Voir la mission
           </Link>
         </DropdownMenuItem>
+
+        {status === "PENDING_REVIEW" && (
+          <>
+            <DropdownMenuSeparator className="bg-border" />
+            <DropdownMenuItem
+              onClick={handleApprove}
+              className="text-lime-400 hover:text-lime-300 focus:text-lime-300 focus:bg-lime-500/10"
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              Valider la mission
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleReject}
+              className="text-red-400 hover:text-red-300 focus:text-red-300 focus:bg-red-500/10"
+            >
+              <XCircle className="mr-2 h-4 w-4" />
+              Rejeter la mission
+            </DropdownMenuItem>
+          </>
+        )}
 
         <DropdownMenuSeparator className="bg-border" />
 

@@ -274,3 +274,130 @@ export async function deleteMissionPermanent(missionId: string) {
   })
   revalidatePath("/admin/missions")
 }
+
+export async function approveMission(missionId: string) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Non autorisé")
+  
+  const admin = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } })
+  if (admin?.role !== "ADMIN") throw new Error("Non autorisé")
+  
+  const mission = await prisma.mission.update({
+    where: { id: missionId },
+    data: { status: "OPEN" },
+    include: { client: { select: { id: true, name: true, email: true } } },
+  })
+  
+  // Notify client
+  try {
+    const { notifyMissionStatus } = await import("./notification")
+    await notifyMissionStatus(mission.clientId, missionId, mission.title, "OPEN")
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
+  
+  revalidatePath("/admin/missions")
+}
+
+export async function rejectMission(missionId: string, reason?: string) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Non autorisé")
+  
+  const admin = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } })
+  if (admin?.role !== "ADMIN") throw new Error("Non autorisé")
+  
+  const mission = await prisma.mission.update({
+    where: { id: missionId },
+    data: { status: "REJECTED" },
+    include: { client: { select: { id: true } } },
+  })
+  
+  // Notify client
+  try {
+    const { createNotification } = await import("./notification")
+    await createNotification({
+      userId: mission.clientId,
+      type: "MISSION_REJECTED",
+      title: "Mission rejetée",
+      body: reason ? `Votre mission "${mission.title}" a été rejetée : ${reason}` : `Votre mission "${mission.title}" a été rejetée`,
+      entityType: "mission",
+      entityId: missionId,
+      actionUrl: `/missions/${missionId}`,
+    })
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
+  
+  revalidatePath("/admin/missions")
+}
+
+export async function assignFreelancerAdmin(missionId: string, freelancerId: string) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Non autorisé")
+  
+  const admin = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } })
+  if (admin?.role !== "ADMIN") throw new Error("Non autorisé")
+  
+  const mission = await prisma.mission.findUnique({ where: { id: missionId } })
+  if (!mission) throw new Error("Mission introuvable")
+  
+  const freelancer = await prisma.user.findUnique({ 
+    where: { id: freelancerId },
+    select: { id: true, name: true, role: true }
+  })
+  if (!freelancer || freelancer.role !== "FREELANCER") throw new Error("Freelancer introuvable")
+  
+  // Update mission
+  await prisma.mission.update({
+    where: { id: missionId },
+    data: { freelancerId, status: "IN_PROGRESS" },
+  })
+  
+  // Note: Contract creation skipped for manual assignments since proposalId is required
+  // Contracts should be created via the normal proposal flow
+  
+  // Notify both parties
+  try {
+    const { createNotification } = await import("./notification")
+    await createNotification({
+      userId: freelancerId,
+      type: "MISSION_ASSIGNED",
+      title: "Mission attribuée",
+      body: `Vous avez été assigné à la mission "${mission.title}"`,
+      entityType: "mission",
+      entityId: missionId,
+      actionUrl: `/missions/${missionId}`,
+    })
+    await createNotification({
+      userId: mission.clientId,
+      type: "MISSION_ASSIGNED",
+      title: "Freelancer assigné",
+      body: `${freelancer.name || "Un freelancer"} a été assigné à votre mission "${mission.title}"`,
+      entityType: "mission",
+      entityId: missionId,
+      actionUrl: `/missions/${missionId}`,
+    })
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
+  
+  revalidatePath("/admin/missions")
+  revalidatePath(`/missions/${missionId}`)
+}
+
+export async function searchFreelancers(query: string) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Non autorisé")
+  
+  return prisma.user.findMany({
+    where: {
+      role: "FREELANCER",
+      OR: [
+        { name: { contains: query, mode: "insensitive" } },
+        { email: { contains: query, mode: "insensitive" } },
+      ],
+    },
+    select: { id: true, name: true, email: true, image: true },
+    take: 10,
+  })
+}

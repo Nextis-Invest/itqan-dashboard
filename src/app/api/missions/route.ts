@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         remote: remote !== undefined ? remote : true,
         location: location || null,
         skills: Array.isArray(skills) ? skills : [],
-        status: "OPEN",
+        status: "PENDING_REVIEW",
         clientId: session.user.id!,
       },
     })
