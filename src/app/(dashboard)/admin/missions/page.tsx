@@ -56,10 +56,6 @@ export default async function AdminMissionsPage({
 
   const missions = await prisma.mission.findMany({
     where,
-    include: {
-      client: { select: { name: true, email: true } },
-      _count: { select: { proposals: true, reviews: true } },
-    },
     select: {
       id: true,
       title: true,
