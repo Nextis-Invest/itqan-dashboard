@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/config"
 import { revalidatePath } from "next/cache"
+import { notifyContractSigned, notifyContractCompleted } from "./notification"
 
 export async function getContracts() {
   const session = await auth()
@@ -100,6 +101,16 @@ export async function signContract(contractId: string) {
     data: update,
   })
 
+  // Send in-app notification to the other party
+  try {
+    const otherUserId = isClient ? contract.freelancerId : contract.clientId
+    const signerName = session.user.name || "L'autre partie"
+    const mission = await prisma.mission.findUnique({ where: { id: contract.missionId }, select: { title: true } })
+    await notifyContractSigned(otherUserId, mission?.title || "Mission", contractId, signerName)
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
+
   revalidatePath(`/contracts/${contractId}`)
 }
 
@@ -121,6 +132,14 @@ export async function completeContract(contractId: string) {
     where: { id: contract.missionId },
     data: { status: "COMPLETED" },
   })
+
+  // Send in-app notification to freelancer
+  try {
+    const mission = await prisma.mission.findUnique({ where: { id: contract.missionId }, select: { title: true } })
+    await notifyContractCompleted(contract.freelancerId, mission?.title || "Mission", contractId)
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
 
   revalidatePath(`/contracts/${contractId}`)
   revalidatePath("/contracts")

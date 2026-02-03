@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/config"
 import { revalidatePath } from "next/cache"
+import { notifySupportReply, notifyTicketStatus, notifyMissionStatus } from "./notification"
 
 async function requireAdmin() {
   const session = await auth()
@@ -55,6 +56,11 @@ export async function replyToTicket(formData: FormData) {
   const message = formData.get("message") as string
   if (!ticketId || !message) throw new Error("Données manquantes")
 
+  const ticket = await prisma.supportTicket.findUnique({
+    where: { id: ticketId },
+    select: { userId: true },
+  })
+
   await prisma.$transaction([
     prisma.ticketReply.create({
       data: { ticketId, userId: adminId, message },
@@ -64,13 +70,39 @@ export async function replyToTicket(formData: FormData) {
       data: { status: "IN_PROGRESS" },
     }),
   ])
+
+  // Notify the ticket owner
+  try {
+    if (ticket?.userId) {
+      await notifySupportReply(ticket.userId, ticketId)
+    }
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
+
   revalidatePath(`/admin/support/${ticketId}`)
   revalidatePath("/admin/support")
 }
 
 export async function updateTicketStatus(ticketId: string, status: "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED") {
   await requireAdmin()
+  
+  const ticket = await prisma.supportTicket.findUnique({
+    where: { id: ticketId },
+    select: { userId: true },
+  })
+
   await prisma.supportTicket.update({ where: { id: ticketId }, data: { status } })
+
+  // Notify the ticket owner
+  try {
+    if (ticket?.userId) {
+      await notifyTicketStatus(ticket.userId, ticketId, status)
+    }
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
+
   revalidatePath("/admin/support")
 }
 
@@ -193,10 +225,24 @@ export async function deleteMissionAdmin(missionId: string) {
 
 export async function updateMissionStatusAdmin(missionId: string, status: "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED") {
   await requireAdmin()
-  const mission = await prisma.mission.findUnique({ where: { id: missionId }, select: { status: true } })
+  const mission = await prisma.mission.findUnique({
+    where: { id: missionId },
+    select: { status: true, title: true, clientId: true, freelancerId: true },
+  })
   if (!mission) throw new Error("Mission introuvable")
 
   await prisma.mission.update({ where: { id: missionId }, data: { status } })
+
+  // Notify the client and freelancer (if assigned)
+  try {
+    await notifyMissionStatus(mission.clientId, missionId, mission.title, status)
+    if (mission.freelancerId) {
+      await notifyMissionStatus(mission.freelancerId, missionId, mission.title, status)
+    }
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
+
   revalidatePath("/admin/missions")
 }
 

@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react"
 import { getNotifications, markAsRead, markAllAsRead } from "@/lib/actions/notification"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Bell, CheckCheck, ExternalLink, Inbox, FileText, ThumbsUp, ThumbsDown, Upload, Star, MessageSquare } from "lucide-react"
+import { Bell, CheckCheck, ExternalLink, Inbox, FileText, ThumbsUp, ThumbsDown, Upload, Star, MessageSquare, CheckCircle, Award, AlertTriangle, Headphones, Clock, Briefcase } from "lucide-react"
 import Link from "next/link"
 
 type Notification = {
@@ -28,6 +28,15 @@ const typeConfig: Record<string, { icon: React.ReactNode; color: string; bg: str
   MILESTONE_APPROVED: { icon: <ThumbsUp className="h-4 w-4" />, color: "text-green-400", bg: "bg-green-400/10" },
   NEW_REVIEW: { icon: <Star className="h-4 w-4" />, color: "text-yellow-400", bg: "bg-yellow-400/10" },
   NEW_MESSAGE: { icon: <MessageSquare className="h-4 w-4" />, color: "text-cyan-400", bg: "bg-cyan-400/10" },
+  CONTRACT_CREATED: { icon: <FileText className="h-4 w-4" />, color: "text-lime-400", bg: "bg-lime-400/10" },
+  CONTRACT_SIGNED: { icon: <CheckCircle className="h-4 w-4" />, color: "text-green-400", bg: "bg-green-400/10" },
+  CONTRACT_COMPLETED: { icon: <Award className="h-4 w-4" />, color: "text-green-400", bg: "bg-green-400/10" },
+  DISPUTE_OPENED: { icon: <AlertTriangle className="h-4 w-4" />, color: "text-red-400", bg: "bg-red-400/10" },
+  DISPUTE_RESOLVED: { icon: <CheckCircle className="h-4 w-4" />, color: "text-green-400", bg: "bg-green-400/10" },
+  DISPUTE_MESSAGE: { icon: <MessageSquare className="h-4 w-4" />, color: "text-orange-400", bg: "bg-orange-400/10" },
+  SUPPORT_REPLY: { icon: <Headphones className="h-4 w-4" />, color: "text-blue-400", bg: "bg-blue-400/10" },
+  TICKET_STATUS: { icon: <Clock className="h-4 w-4" />, color: "text-blue-400", bg: "bg-blue-400/10" },
+  MISSION_STATUS: { icon: <Briefcase className="h-4 w-4" />, color: "text-lime-400", bg: "bg-lime-400/10" },
 }
 
 const defaultTypeConfig = { icon: <Bell className="h-4 w-4" />, color: "text-muted-foreground", bg: "bg-muted/50" }

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/config"
 import { revalidatePath } from "next/cache"
+import { notifyNewReview } from "./notification"
 
 export async function createReview(formData: FormData) {
   const session = await auth()
@@ -48,6 +49,13 @@ export async function createReview(formData: FormData) {
       comment: comment || null,
     },
   })
+
+  // Send in-app notification
+  try {
+    await notifyNewReview(targetUserId, session.user.name || "Quelqu'un", mission.title)
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
 
   // Update avg rating on target's profile
   const allReviews = await prisma.review.findMany({

@@ -131,3 +131,135 @@ export async function notifyNewReview(targetUserId: string, authorName: string, 
     actionUrl: "/profile",
   })
 }
+
+export async function notifyNewMessage(userId: string, senderName: string, conversationId: string) {
+  await createNotification({
+    userId,
+    type: "NEW_MESSAGE",
+    title: "Nouveau message",
+    body: `${senderName} vous a envoyé un message`,
+    entityType: "conversation",
+    entityId: conversationId,
+    actionUrl: `/messages?c=${conversationId}`,
+  })
+}
+
+export async function notifyContractCreated(userId: string, missionTitle: string, contractId: string) {
+  await createNotification({
+    userId,
+    type: "CONTRACT_CREATED",
+    title: "Nouveau contrat",
+    body: `Un contrat a été créé pour "${missionTitle}"`,
+    entityType: "contract",
+    entityId: contractId,
+    actionUrl: `/contracts/${contractId}`,
+  })
+}
+
+export async function notifyContractSigned(userId: string, missionTitle: string, contractId: string, signerName: string) {
+  await createNotification({
+    userId,
+    type: "CONTRACT_SIGNED",
+    title: "Contrat signé",
+    body: `${signerName} a signé le contrat pour "${missionTitle}"`,
+    entityType: "contract",
+    entityId: contractId,
+    actionUrl: `/contracts/${contractId}`,
+  })
+}
+
+export async function notifyContractCompleted(freelancerId: string, missionTitle: string, contractId: string) {
+  await createNotification({
+    userId: freelancerId,
+    type: "CONTRACT_COMPLETED",
+    title: "Contrat terminé",
+    body: `Le contrat pour "${missionTitle}" est terminé`,
+    entityType: "contract",
+    entityId: contractId,
+    actionUrl: `/contracts/${contractId}`,
+  })
+}
+
+export async function notifyDisputeOpened(userId: string, disputeId: string, reason: string) {
+  await createNotification({
+    userId,
+    type: "DISPUTE_OPENED",
+    title: "Litige ouvert",
+    body: `Un litige a été ouvert : ${reason}`,
+    entityType: "dispute",
+    entityId: disputeId,
+    actionUrl: `/disputes/${disputeId}`,
+  })
+}
+
+export async function notifyDisputeResolved(userId: string, disputeId: string, resolution: string) {
+  await createNotification({
+    userId,
+    type: "DISPUTE_RESOLVED",
+    title: "Litige résolu",
+    body: `Le litige a été résolu : ${resolution}`,
+    entityType: "dispute",
+    entityId: disputeId,
+    actionUrl: `/disputes/${disputeId}`,
+  })
+}
+
+export async function notifyDisputeMessage(userId: string, disputeId: string, senderName: string) {
+  await createNotification({
+    userId,
+    type: "DISPUTE_MESSAGE",
+    title: "Message sur le litige",
+    body: `${senderName} a envoyé un message sur le litige`,
+    entityType: "dispute",
+    entityId: disputeId,
+    actionUrl: `/disputes/${disputeId}`,
+  })
+}
+
+export async function notifySupportReply(userId: string, ticketId: string) {
+  await createNotification({
+    userId,
+    type: "SUPPORT_REPLY",
+    title: "Réponse du support",
+    body: "L'équipe support a répondu à votre ticket",
+    entityType: "ticket",
+    entityId: ticketId,
+    actionUrl: `/support/${ticketId}`,
+  })
+}
+
+export async function notifyTicketStatus(userId: string, ticketId: string, status: string) {
+  const statusLabels: Record<string, string> = {
+    OPEN: "ouvert",
+    IN_PROGRESS: "en cours de traitement",
+    RESOLVED: "résolu",
+    CLOSED: "fermé",
+  }
+  await createNotification({
+    userId,
+    type: "TICKET_STATUS",
+    title: "Mise à jour du ticket",
+    body: `Votre ticket est maintenant ${statusLabels[status] || status}`,
+    entityType: "ticket",
+    entityId: ticketId,
+    actionUrl: `/support/${ticketId}`,
+  })
+}
+
+export async function notifyMissionStatus(userId: string, missionId: string, missionTitle: string, status: string) {
+  const statusLabels: Record<string, string> = {
+    OPEN: "ouverte",
+    IN_PROGRESS: "en cours",
+    COMPLETED: "terminée",
+    CANCELLED: "annulée",
+  }
+  await createNotification({
+    userId,
+    type: "MISSION_STATUS",
+    title: "Statut de mission mis à jour",
+    body: `La mission "${missionTitle}" est maintenant ${statusLabels[status] || status}`,
+    entityType: "mission",
+    entityId: missionId,
+    actionUrl: `/missions/${missionId}`,
+  })
+}

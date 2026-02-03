@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/config"
 import { revalidatePath } from "next/cache"
+import { notifyDisputeOpened, notifyDisputeMessage, notifyDisputeResolved } from "./notification"
 
 // ============ HELPERS ============
 
@@ -131,6 +132,14 @@ export async function openDispute(data: {
     data: { status: "DISPUTED" },
   })
 
+  // Notify the other party
+  try {
+    const otherUserId = contract.clientId === session.user.id ? contract.freelancerId : contract.clientId
+    await notifyDisputeOpened(otherUserId, dispute.id, data.reason)
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
+
   revalidatePath("/disputes")
   revalidatePath("/contracts")
   return dispute
@@ -152,6 +161,16 @@ export async function addDisputeMessage(disputeId: string, content: string) {
       isInternal: false,
     },
   })
+
+  // Notify the other party
+  try {
+    const otherUserId = dispute.mission.clientId === session.user.id ? dispute.mission.freelancerId : dispute.mission.clientId
+    if (otherUserId && otherUserId !== session.user.id) {
+      await notifyDisputeMessage(otherUserId, disputeId, session.user.name || "Quelqu'un")
+    }
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
 
   revalidatePath(`/disputes/${disputeId}`)
   revalidatePath(`/admin/disputes/${disputeId}`)
@@ -291,6 +310,12 @@ export async function resolveDispute(
   favoredParty?: string
 ) {
   await requireAdmin()
+  
+  const dispute = await prisma.dispute.findUnique({
+    where: { id: disputeId },
+    include: { mission: { select: { clientId: true, freelancerId: true } } },
+  })
+  
   await prisma.dispute.update({
     where: { id: disputeId },
     data: {
@@ -301,6 +326,19 @@ export async function resolveDispute(
       resolvedAt: new Date(),
     },
   })
+
+  // Notify both parties
+  try {
+    if (dispute?.mission.clientId) {
+      await notifyDisputeResolved(dispute.mission.clientId, disputeId, resolution)
+    }
+    if (dispute?.mission.freelancerId) {
+      await notifyDisputeResolved(dispute.mission.freelancerId, disputeId, resolution)
+    }
+  } catch (e) {
+    console.error("Notification error:", e)
+  }
+
   revalidatePath(`/admin/disputes/${disputeId}`)
   revalidatePath("/admin/disputes")
   revalidatePath(`/disputes/${disputeId}`)

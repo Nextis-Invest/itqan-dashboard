@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth/config"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { sendEmail, newProposalEmail, proposalAcceptedEmail, proposalRejectedEmail } from "@/lib/email"
+import { notifyNewProposal, notifyProposalAccepted, notifyProposalRejected, notifyContractCreated } from "./notification"
 
 export async function createProposal(formData: FormData) {
   const session = await auth()
@@ -39,7 +40,7 @@ export async function createProposal(formData: FormData) {
   try {
     const mission = await prisma.mission.findUnique({
       where: { id: missionId },
-      include: { client: { select: { email: true } } },
+      include: { client: { select: { email: true, id: true } } },
     })
     if (mission?.client?.email) {
       await sendEmail({
@@ -47,6 +48,10 @@ export async function createProposal(formData: FormData) {
         subject: "Nouvelle proposition reçue — Itqan",
         html: newProposalEmail(session.user.name || "Un freelance", mission.title, missionId),
       })
+    }
+    // Send in-app notification
+    if (mission?.client?.id) {
+      await notifyNewProposal(missionId, session.user.name || "Un freelance", mission.client.id)
     }
   } catch (e) {
     console.error("Email error:", e)
@@ -91,7 +96,7 @@ export async function acceptProposal(proposalId: string) {
     })
 
     if (!existingContract) {
-      await prisma.contract.create({
+      const contract = await prisma.contract.create({
         data: {
           missionId: proposal.missionId,
           proposalId: proposal.id,
@@ -103,6 +108,13 @@ export async function acceptProposal(proposalId: string) {
           startDate: new Date(),
         },
       })
+      // Notify both parties about contract creation
+      try {
+        await notifyContractCreated(proposal.freelancerId, proposal.mission.title, contract.id)
+        await notifyContractCreated(proposal.mission.clientId, proposal.mission.title, contract.id)
+      } catch (e) {
+        console.error("Notification error:", e)
+      }
     }
   } catch (e) {
     console.error("Contract creation error:", e)
@@ -137,6 +149,21 @@ export async function acceptProposal(proposalId: string) {
     }
   } catch (e) {
     console.error("Email error:", e)
+  }
+
+  // Send in-app notifications
+  try {
+    await notifyProposalAccepted(proposalId, proposal.mission.title, proposal.freelancerId)
+    // Notify rejected freelancers
+    const rejectedProposals = await prisma.proposal.findMany({
+      where: { missionId: proposal.missionId, id: { not: proposalId }, status: "REJECTED" },
+      select: { id: true, freelancerId: true },
+    })
+    for (const rp of rejectedProposals) {
+      await notifyProposalRejected(rp.id, proposal.mission.title, rp.freelancerId)
+    }
+  } catch (e) {
+    console.error("Notification error:", e)
   }
 
   revalidatePath(`/missions/${proposal.missionId}`)
@@ -174,6 +201,13 @@ export async function rejectProposal(proposalId: string) {
     }
   } catch (e) {
     console.error("Email error:", e)
+  }
+
+  // Send in-app notification
+  try {
+    await notifyProposalRejected(proposalId, proposal.mission.title, proposal.freelancerId)
+  } catch (e) {
+    console.error("Notification error:", e)
   }
 
   revalidatePath(`/missions/${proposal.missionId}`)

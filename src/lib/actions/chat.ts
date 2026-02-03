@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/config"
 import { revalidatePath } from "next/cache"
 import { sendEmail, newMessageEmail } from "@/lib/email"
+import { notifyNewMessage } from "./notification"
 
 export async function sendMessage(formData: FormData) {
   const session = await auth()
@@ -51,6 +52,19 @@ export async function sendMessage(formData: FormData) {
     }
   } catch (e) {
     console.error("Email error:", e)
+  }
+
+  // Send in-app notifications
+  try {
+    const otherParticipants = await prisma.conversationParticipant.findMany({
+      where: { conversationId, userId: { not: session.user.id } },
+      select: { userId: true },
+    })
+    for (const p of otherParticipants) {
+      await notifyNewMessage(p.userId, session.user.name || "Quelqu'un", conversationId)
+    }
+  } catch (e) {
+    console.error("Notification error:", e)
   }
 
   revalidatePath("/messages")
