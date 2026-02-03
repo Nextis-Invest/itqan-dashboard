@@ -101,6 +101,7 @@ model User {
   disputesOpened    Dispute[]  @relation("DisputeOpener")
   assignedDisputes  Dispute[]  @relation("AssignedDisputes")
   disputeMessages   DisputeMessage[] @relation("DisputeMessages")
+  invoices          Invoice[] @relation("ClientInvoices")
 
   conversationParticipants ConversationParticipant[]
   chatMessages             ChatMessage[]
@@ -670,4 +671,76 @@ model Favorite {
 
   @@unique([userId, freelancerId])
   @@unique([userId, missionId])
+}
+
+// ========== Billing / Invoicing ==========
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  invoiceNumber   String        @unique
+  
+  clientId        String
+  client          User          @relation("ClientInvoices", fields: [clientId], references: [id])
+  
+  contractId      String?
+  missionId       String?
+  
+  status          InvoiceStatus @default(DRAFT)
+  
+  issueDate       DateTime      @default(now())
+  dueDate         DateTime
+  paidAt          DateTime?
+  sentAt          DateTime?
+  
+  subtotal        Float
+  taxRate         Float         @default(20)
+  taxAmount       Float
+  totalAmount     Float
+  
+  currency        String        @default("MAD")
+  
+  pdfUrl          String?
+  notes           String?       @db.Text
+  
+  issuerName      String        @default("Itqan")
+  issuerAddress   String?
+  issuerIce       String?
+  issuerRc        String?
+  issuerIf        String?
+  
+  clientName      String
+  clientEmail     String
+  clientCompany   String?
+  clientIce       String?
+  clientRc        String?
+  clientAddress   String?
+  clientCity      String?
+  
+  items           InvoiceItem[]
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  description String
+  quantity    Float    @default(1)
+  unitPrice   Float
+  amount      Float
+  
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
 }
