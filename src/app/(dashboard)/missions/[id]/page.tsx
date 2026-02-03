@@ -320,7 +320,6 @@ export default async function MissionDetailPage({
             }
             stats={[
               {
-                icon: Star,
                 value: mission.freelancer.freelancerProfile.avgRating?.toFixed(1) || "N/A",
                 label: "note",
               },

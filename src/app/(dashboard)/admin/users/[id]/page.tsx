@@ -206,7 +206,6 @@ export default async function AdminUserDetailPage({
             }
             stats={[
               {
-                icon: Star,
                 value: fp.avgRating?.toFixed(1) || "N/A",
                 label: "note",
               },
