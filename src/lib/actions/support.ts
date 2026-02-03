@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/config"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
+// redirect removed — callers handle navigation
 
 // ──────────────────────────────────────
 // Helpers
@@ -68,7 +68,7 @@ export async function createTicket(data: {
     throw new Error("Données manquantes ou message trop court")
   }
 
-  await prisma.supportTicket.create({
+  const ticket = await prisma.supportTicket.create({
     data: {
       userId: user.id,
       subject: data.subject,
@@ -79,7 +79,7 @@ export async function createTicket(data: {
   })
 
   revalidatePath("/support")
-  redirect("/support")
+  return { success: true, id: ticket.id, subject: ticket.subject }
 }
 
 export async function replyToTicket(ticketId: string, message: string) {

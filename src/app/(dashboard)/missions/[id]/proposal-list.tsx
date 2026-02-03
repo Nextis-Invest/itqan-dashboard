@@ -9,6 +9,7 @@ import { Check, X, Loader2, Star, MessageSquare } from "lucide-react"
 import { acceptProposal, rejectProposal } from "@/lib/actions/proposal"
 import { startConversation } from "@/lib/actions/chat"
 import { useRouter } from "next/navigation"
+import { ContractConfirmationCard } from "@/components/ui/order-confirmation-card"
 
 interface Proposal {
   id: string
@@ -52,6 +53,11 @@ export function ProposalList({
 }) {
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [chattingId, setChattingId] = useState<string | null>(null)
+  const [acceptedProposal, setAcceptedProposal] = useState<{
+    freelancerName: string
+    price: number
+    missionTitle: string
+  } | null>(null)
   const router = useRouter()
 
   const handleContact = async (freelancerId: string) => {
@@ -67,7 +73,15 @@ export function ProposalList({
   const handleAccept = async (id: string) => {
     setLoadingId(id)
     try {
-      await acceptProposal(id)
+      const result = await acceptProposal(id)
+      const p = proposals.find((pr) => pr.id === id)
+      if (p && result?.success) {
+        setAcceptedProposal({
+          freelancerName: p.freelancer.name || p.freelancer.email,
+          price: p.price,
+          missionTitle: result.missionTitle,
+        })
+      }
     } catch {
       setLoadingId(null)
     }
@@ -83,6 +97,25 @@ export function ProposalList({
   }
 
   return (
+    <>
+    {acceptedProposal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <ContractConfirmationCard
+          contractId=""
+          missionTitle={acceptedProposal.missionTitle}
+          freelancerName={acceptedProposal.freelancerName}
+          amount={`${acceptedProposal.price} MAD`}
+          onViewContract={() => {
+            setAcceptedProposal(null)
+            router.refresh()
+          }}
+          onViewMission={() => {
+            setAcceptedProposal(null)
+            router.refresh()
+          }}
+        />
+      </div>
+    )}
     <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-foreground text-base">
@@ -201,5 +234,6 @@ export function ProposalList({
         })}
       </CardContent>
     </Card>
+    </>
   )
 }

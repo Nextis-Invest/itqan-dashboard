@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,10 +9,32 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Loader2, Send } from "lucide-react"
 import { createProposal } from "@/lib/actions/proposal"
+import { ConfirmationCard } from "@/components/ui/order-confirmation-card"
 
 export function ProposalForm({ missionId }: { missionId: string }) {
+  const router = useRouter()
   const [isPending, setIsPending] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState<{ price: string; estimatedDays: string } | null>(null)
+
+  if (success) {
+    return (
+      <ConfirmationCard
+        variant="success"
+        title="Proposition envoyée !"
+        subtitle="Le client a été notifié. Vous recevrez une réponse prochainement."
+        details={[
+          { label: "Prix proposé", value: success.price, isBold: true },
+          { label: "Durée estimée", value: success.estimatedDays },
+        ]}
+        buttonText="Voir la mission"
+        onAction={() => {
+          router.refresh()
+          setSuccess(null)
+        }}
+      />
+    )
+  }
 
   return (
     <Card className="bg-card border-border">
@@ -24,7 +47,15 @@ export function ProposalForm({ missionId }: { missionId: string }) {
             setIsPending(true)
             setError("")
             try {
-              await createProposal(formData)
+              const result = await createProposal(formData)
+              if (result?.success) {
+                const price = formData.get("price") as string
+                const days = formData.get("estimatedDays") as string
+                setSuccess({
+                  price: `${price} MAD`,
+                  estimatedDays: days ? `${days} jours` : "Non spécifié",
+                })
+              }
             } catch (e: any) {
               setError(e.message || "Erreur lors de l'envoi")
               setIsPending(false)

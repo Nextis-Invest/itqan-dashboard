@@ -58,7 +58,7 @@ export async function createProposal(formData: FormData) {
   }
 
   revalidatePath(`/missions/${missionId}`)
-  redirect(`/missions/${missionId}`)
+  return { success: true, missionId }
 }
 
 export async function acceptProposal(proposalId: string) {
@@ -167,6 +167,7 @@ export async function acceptProposal(proposalId: string) {
   }
 
   revalidatePath(`/missions/${proposal.missionId}`)
+  return { success: true, missionId: proposal.missionId, missionTitle: proposal.mission.title }
 }
 
 export async function rejectProposal(proposalId: string) {

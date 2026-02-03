@@ -17,11 +17,28 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ArrowLeft, Loader2, Send } from "lucide-react"
+import { ConfirmationCard } from "@/components/ui/order-confirmation-card"
+
+const categoryLabels: Record<string, string> = {
+  GENERAL: "Général",
+  PAYMENT: "Paiement",
+  TECHNICAL: "Technique",
+  ACCOUNT: "Compte",
+  MISSION: "Mission",
+  OTHER: "Autre",
+}
+
+const priorityLabels: Record<string, string> = {
+  LOW: "Faible",
+  MEDIUM: "Moyen",
+  HIGH: "Élevé",
+}
 
 export default function NewTicketPage() {
   const router = useRouter()
   const [isPending, setIsPending] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState<{ subject: string; category: string; priority: string } | null>(null)
 
   const [subject, setSubject] = useState("")
   const [category, setCategory] = useState("GENERAL")
@@ -43,11 +60,40 @@ export default function NewTicketPage() {
 
     setIsPending(true)
     try {
-      await createTicket({ subject, category, priority, message })
+      const result = await createTicket({ subject, category, priority, message })
+      if (result?.success) {
+        setSuccess({
+          subject,
+          category: categoryLabels[category] || category,
+          priority: priorityLabels[priority] || priority,
+        })
+      }
     } catch (err: any) {
       setError(err?.message || "Une erreur est survenue")
       setIsPending(false)
     }
+  }
+
+  if (success) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <ConfirmationCard
+          variant="success"
+          title="Ticket envoyé !"
+          subtitle="Notre équipe de support va traiter votre demande dans les meilleurs délais."
+          details={[
+            { label: "Sujet", value: success.subject },
+            { label: "Catégorie", value: success.category },
+            { label: "Priorité", value: success.priority },
+            { label: "Statut", value: "Ouvert" },
+          ]}
+          buttonText="Voir mes tickets"
+          onAction={() => router.push("/support")}
+          secondaryButtonText="Retour au tableau de bord"
+          onSecondaryAction={() => router.push("/dashboard")}
+        />
+      </div>
+    )
   }
 
   return (

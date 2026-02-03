@@ -9,10 +9,17 @@ import { Label } from "@/components/ui/label"
 import { ArrowLeft, Loader2, AlertTriangle, FileText, Flag, MessageSquareWarning } from "lucide-react"
 import Link from "next/link"
 import { openDispute, getUserContracts } from "@/lib/actions/dispute"
+import { ConfirmationCard } from "@/components/ui/order-confirmation-card"
 
 type ContractItem = {
   id: string
   mission: { id: string; title: string }
+}
+
+interface DisputeSuccess {
+  contractTitle: string
+  category: string
+  priority: string
 }
 
 const categories = [
@@ -40,6 +47,7 @@ export default function NewDisputePage() {
   const [reason, setReason] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState<DisputeSuccess | null>(null)
 
   useEffect(() => {
     getUserContracts().then((c) => setContracts(c as ContractItem[]))
@@ -51,11 +59,40 @@ export default function NewDisputePage() {
     setError("")
     try {
       await openDispute({ contractId: selectedContract, category, priority, reason: reason.trim() })
-      router.push("/disputes")
+      const contractItem = contracts.find((c) => c.id === selectedContract)
+      const catLabel = categories.find((c) => c.value === category)?.label || category
+      const prioLabel = priorities.find((p) => p.value === priority)?.label || priority
+      setSuccess({
+        contractTitle: contractItem?.mission.title || "—",
+        category: catLabel,
+        priority: prioLabel,
+      })
     } catch (e: any) {
       setError(e.message || "Erreur lors de la création du litige")
       setLoading(false)
     }
+  }
+
+  if (success) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <ConfirmationCard
+          variant="pending"
+          title="Litige ouvert"
+          subtitle="Notre équipe va examiner votre demande sous 48h."
+          details={[
+            { label: "Contrat", value: success.contractTitle },
+            { label: "Catégorie", value: success.category },
+            { label: "Priorité", value: success.priority },
+            { label: "Statut", value: "En attente d'examen" },
+          ]}
+          buttonText="Voir mes litiges"
+          onAction={() => router.push("/disputes")}
+          secondaryButtonText="Retour au tableau de bord"
+          onSecondaryAction={() => router.push("/dashboard")}
+        />
+      </div>
+    )
   }
 
   return (

@@ -18,6 +18,14 @@ import {
 import { ArrowLeft, Loader2, Save, X } from "lucide-react"
 import Link from "next/link"
 import { categories } from "@/lib/categories"
+import { MissionConfirmationCard } from "@/components/ui/order-confirmation-card"
+
+interface SubmittedMission {
+  id: string
+  title: string
+  budget: string
+  deadline?: string
+}
 
 export default function NewMissionPage() {
   const router = useRouter()
@@ -28,6 +36,7 @@ export default function NewMissionPage() {
   const [skillInput, setSkillInput] = useState("")
   const [isRemote, setIsRemote] = useState(true)
   const [budgetType, setBudgetType] = useState("FIXED")
+  const [submitted, setSubmitted] = useState<SubmittedMission | null>(null)
 
   const addSkill = () => {
     const s = skillInput.trim()
@@ -76,13 +85,37 @@ export default function NewMissionPage() {
         return
       }
 
-      router.push("/missions")
-      router.refresh()
+      const result = await response.json()
+      const m = result.mission
+      const budgetStr = m.budget
+        ? `${m.budget} ${m.currency || "MAD"}`
+        : m.budgetMin && m.budgetMax
+          ? `${m.budgetMin} - ${m.budgetMax} ${m.currency || "MAD"}`
+          : "Non spécifié"
+      const deadlineStr = m.deadline
+        ? new Date(m.deadline).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+        : undefined
+      setSubmitted({ id: m.id, title: m.title, budget: budgetStr, deadline: deadlineStr })
     } catch {
       setError("Une erreur est survenue")
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (submitted) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <MissionConfirmationCard
+          missionTitle={submitted.title}
+          missionId={submitted.id}
+          budget={submitted.budget}
+          deadline={submitted.deadline}
+          onViewMission={() => router.push(`/missions/${submitted.id}`)}
+          onBackToDashboard={() => router.push("/missions")}
+        />
+      </div>
+    )
   }
 
   return (
