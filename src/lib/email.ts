@@ -7,10 +7,12 @@ export async function sendEmail({
   to,
   subject,
   html,
+  attachments,
 }: {
   to: string
   subject: string
   html: string
+  attachments?: { filename: string; content: Buffer }[]
 }) {
   try {
     const { data, error } = await resend.emails.send({
@@ -18,6 +20,10 @@ export async function sendEmail({
       to,
       subject,
       html,
+      attachments: attachments?.map((a) => ({
+        filename: a.filename,
+        content: a.content,
+      })),
     })
     if (error) {
       console.error("Email send error:", error)
@@ -171,5 +177,41 @@ export function creditPurchaseEmail(amount: number, newBalance: number) {
      <p>Solde actuel : <strong style="color:#fff;">${newBalance} crédits</strong></p>`,
     `${process.env.NEXTAUTH_URL}/credits`,
     "Voir mes crédits"
+  )
+}
+
+export function invoiceEmail(
+  invoiceNumber: string,
+  clientName: string,
+  totalAmount: number,
+  currency: string,
+  dueDate: string
+) {
+  return emailLayout(
+    `Facture ${invoiceNumber}`,
+    `<p>Bonjour <strong style="color:#fff;">${clientName}</strong>,</p>
+     <p>Veuillez trouver ci-joint votre facture <strong style="color:#a3e635;">${invoiceNumber}</strong>.</p>
+     <p>Montant total TTC : <strong style="color:#fff;">${totalAmount.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} ${currency}</strong></p>
+     <p>Date d'échéance : <strong style="color:#fff;">${new Date(dueDate).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</strong></p>
+     <p style="margin-top:16px;">Merci pour votre confiance.</p>`,
+    `${process.env.NEXTAUTH_URL}/invoices`,
+    "Voir mes factures"
+  )
+}
+
+export function invoiceReminderEmail(
+  invoiceNumber: string,
+  clientName: string,
+  totalAmount: number,
+  daysOverdue: number
+) {
+  return emailLayout(
+    `Relance — Facture ${invoiceNumber}`,
+    `<p>Bonjour <strong style="color:#fff;">${clientName}</strong>,</p>
+     <p>Nous vous rappelons que la facture <strong style="color:#a3e635;">${invoiceNumber}</strong> d'un montant de <strong style="color:#fff;">${totalAmount.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} MAD</strong> est en retard de <strong style="color:#ef4444;">${daysOverdue} jour(s)</strong>.</p>
+     <p>Nous vous prions de bien vouloir procéder au règlement dans les meilleurs délais.</p>
+     <p>Si le paiement a déjà été effectué, merci de ne pas tenir compte de ce message.</p>`,
+    `${process.env.NEXTAUTH_URL}/invoices`,
+    "Voir mes factures"
   )
 }
