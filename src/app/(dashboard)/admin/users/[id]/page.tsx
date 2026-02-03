@@ -88,25 +88,34 @@ export default async function AdminUserDetailPage({
 
   if (!user) notFound()
 
-  // Get payments if client
-  const payments = user.clientProfile
-    ? await prisma.payment.findMany({
-        where: {
-          contract: {
-            clientId: user.id,
+  // Get payments if client — find contracts first, then payments
+  let payments: any[] = []
+  if (user.clientProfile) {
+    try {
+      const clientContracts = await prisma.contract.findMany({
+        where: { clientId: user.id },
+        select: { id: true },
+      })
+      if (clientContracts.length > 0) {
+        payments = await prisma.payment.findMany({
+          where: {
+            contractId: { in: clientContracts.map((c) => c.id) },
           },
-        },
-        include: {
-          contract: {
-            select: {
-              mission: { select: { id: true, title: true } },
+          include: {
+            contract: {
+              select: {
+                mission: { select: { id: true, title: true } },
+              },
             },
           },
-        },
-        orderBy: { createdAt: "desc" },
-        take: 20,
-      })
-    : []
+          orderBy: { createdAt: "desc" },
+          take: 20,
+        })
+      }
+    } catch (e) {
+      console.error("Payment query error:", e)
+    }
+  }
 
   const cp = user.clientProfile
   const fp = user.freelancerProfile
