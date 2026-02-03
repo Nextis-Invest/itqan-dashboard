@@ -16,6 +16,14 @@ export interface StatConfig {
 }
 
 /**
+ * Configurable badge item.
+ */
+export interface BadgeConfig {
+  label: string;
+  className?: string;
+}
+
+/**
  * Props for the FreelancerProfileCard component.
  */
 interface FreelancerProfileCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -39,8 +47,8 @@ interface FreelancerProfileCardProps extends React.HTMLAttributes<HTMLDivElement
   tools?: React.ReactNode;
   /** Skills displayed in the card header. Alias for 'tools'. */
   skills?: React.ReactNode;
-  /** Badges shown as React nodes near the name (e.g., Badge components). */
-  badges?: React.ReactNode;
+  /** Badges shown near the name. Accepts BadgeConfig[] or React nodes. */
+  badges?: BadgeConfig[] | React.ReactNode;
   /** Optional click handler for the action button. */
   onGetInTouch?: () => void;
   /** Optional click handler for the bookmark icon. */
@@ -189,7 +197,23 @@ export const FreelancerProfileCard = React.forwardRef<
               <p className="text-sm text-muted-foreground">{title}</p>
               {badges && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  {badges}
+                  {Array.isArray(badges)
+                    ? badges.map((b, i) =>
+                        typeof b === "object" && b !== null && "label" in b
+                          ? (
+                            <span
+                              key={i}
+                              className={cn(
+                                "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+                                (b as BadgeConfig).className
+                              )}
+                            >
+                              {(b as BadgeConfig).label}
+                            </span>
+                          )
+                          : b
+                      )
+                    : badges}
                 </div>
               )}
             </div>
