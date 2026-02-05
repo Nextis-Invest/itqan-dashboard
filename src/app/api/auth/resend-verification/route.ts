@@ -7,7 +7,14 @@ export async function POST() {
   try {
     const session = await auth()
 
+    console.log('[Resend Verification] Session:', {
+      hasSession: !!session,
+      userId: session?.user?.id,
+      email: session?.user?.email
+    })
+
     if (!session?.user?.id) {
+      console.log('[Resend Verification] No session - returning 401')
       return NextResponse.json(
         { error: "Non authentifié" },
         { status: 401 }
@@ -24,7 +31,14 @@ export async function POST() {
       },
     })
 
+    console.log('[Resend Verification] User found:', {
+      email: user?.email,
+      emailVerified: user?.emailVerified,
+      hasToken: !!user?.verificationTokenExpiry
+    })
+
     if (!user) {
+      console.log('[Resend Verification] User not found - returning 404')
       return NextResponse.json(
         { error: "Utilisateur non trouvé" },
         { status: 404 }
@@ -32,6 +46,7 @@ export async function POST() {
     }
 
     if (user.emailVerified) {
+      console.log('[Resend Verification] Email already verified - returning 400')
       return NextResponse.json(
         { error: "Email déjà vérifié" },
         { status: 400 }
@@ -67,7 +82,9 @@ export async function POST() {
     // TODO: Send verification email
     // For now, we'll just log the verification URL
     const verificationUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`
-    console.log("Verification URL:", verificationUrl)
+    console.log('[Resend Verification] SUCCESS - Token generated')
+    console.log('[Resend Verification] Verification URL:', verificationUrl)
+    console.log('[Resend Verification] TODO: Send email to:', user.email)
 
     // In production, you would send an email here using a service like:
     // - Resend
