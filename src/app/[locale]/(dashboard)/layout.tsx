@@ -1,6 +1,7 @@
 import { DashboardSidebar } from "@/components/dashboard/sidebar"
 import { SiteHeader } from "@/components/dashboard/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { VerificationBanner } from "@/components/verification-banner"
 import { getCurrentUser } from "@/lib/auth/session"
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
@@ -58,6 +59,7 @@ export default async function DashboardLayout({
       />
       <SidebarInset>
         <SiteHeader />
+        <VerificationBanner />
         <div className="flex flex-1 flex-col p-4 md:p-6">{children}</div>
       </SidebarInset>
     </SidebarProvider>

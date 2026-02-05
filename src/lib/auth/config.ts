@@ -69,14 +69,23 @@ export const authOptions: NextAuthConfig = {
     })
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
       if (user) {
         // For OAuth providers, the role might not be set yet — load from DB
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id || (token.sub as string) },
-          select: { role: true },
+          select: { role: true, emailVerified: true },
         });
         token.role = dbUser?.role || (user as any).role || "CLIENT";
+        token.emailVerified = dbUser?.emailVerified;
+      }
+      // Refresh emailVerified on update trigger
+      if (trigger === "update") {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub as string },
+          select: { emailVerified: true },
+        });
+        token.emailVerified = dbUser?.emailVerified;
       }
       // Store the LinkedIn access token for profile import
       if (account?.provider === "linkedin" && account.access_token) {
@@ -88,6 +97,7 @@ export const authOptions: NextAuthConfig = {
       if (token) {
         session.user.id = token.sub as string;
         (session.user as any).role = token.role as string;
+        (session.user as any).emailVerified = token.emailVerified as Date | null | undefined;
         (session.user as any).linkedinAccessToken = token.linkedinAccessToken as string | undefined;
       }
       return session;
