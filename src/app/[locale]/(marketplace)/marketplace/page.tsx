@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ArrowRight, Sparkles, Users, Briefcase, Star, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { GradientBackground } from "@/components/gradient-background"
 
 export const dynamic = "force-dynamic"
 
@@ -35,19 +36,19 @@ export default async function MarketplacePage() {
   return (
     <div className="space-y-16 pb-20">
       {/* Hero */}
-      <section className="relative overflow-hidden -mx-4 md:-mx-6 px-4 md:px-6">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
+      <section className="relative isolate overflow-hidden -mx-4 md:-mx-6 px-4 md:px-6">
+        <GradientBackground />
         <div className="relative max-w-5xl mx-auto text-center px-4 pt-12 pb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-sm text-sm font-medium mb-6">
             <Sparkles className="h-4 w-4" />
             La marketplace freelance #1 au Maroc
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-white">
             Trouvez le service{" "}
-            <span className="text-primary">parfait</span>
+            <span className="text-lime-300 drop-shadow-[0_0_20px_rgba(163,230,53,0.35)]">parfait</span>
             <br />pour votre projet
           </h1>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-neutral-200 mb-8 max-w-2xl mx-auto">
             Des milliers de freelances qualifiés prêts à transformer vos idées en réalité.
           </p>
           
@@ -55,40 +56,40 @@ export default async function MarketplacePage() {
           <div className="max-w-xl mx-auto mb-10">
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Rechercher un service..." 
-                  className="pl-10 h-12"
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                <Input
+                  placeholder="Rechercher un service..."
+                  className="pl-10 h-12 bg-white/95 backdrop-blur-sm border-white/20 text-foreground placeholder:text-neutral-500"
                 />
               </div>
-              <Button size="lg" className="h-12 px-6">
+              <Button size="lg" className="h-12 px-6 bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold">
                 Rechercher
               </Button>
             </div>
           </div>
           
           {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold">
-                <Users className="h-5 w-5 text-primary" />
+          <div className="flex flex-wrap justify-center gap-6 md:gap-8">
+            <div className="text-center rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 px-6 py-4">
+              <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold text-white">
+                <Users className="h-5 w-5 text-lime-300" />
                 {stats.freelancers}
               </div>
-              <p className="text-muted-foreground text-sm mt-1">Freelances vérifiés</p>
+              <p className="text-neutral-300 text-sm mt-1">Freelances vérifiés</p>
             </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold">
-                <Briefcase className="h-5 w-5 text-primary" />
+            <div className="text-center rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 px-6 py-4">
+              <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold text-white">
+                <Briefcase className="h-5 w-5 text-lime-300" />
                 {stats.categories}
               </div>
-              <p className="text-muted-foreground text-sm mt-1">Catégories</p>
+              <p className="text-neutral-300 text-sm mt-1">Catégories</p>
             </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold">
-                <Star className="h-5 w-5 text-primary" />
+            <div className="text-center rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 px-6 py-4">
+              <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold text-white">
+                <Star className="h-5 w-5 text-lime-300" />
                 {stats.satisfaction}
               </div>
-              <p className="text-muted-foreground text-sm mt-1">Satisfaction</p>
+              <p className="text-neutral-300 text-sm mt-1">Satisfaction</p>
             </div>
           </div>
         </div>

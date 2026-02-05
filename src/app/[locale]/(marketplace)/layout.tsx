@@ -10,7 +10,15 @@ export default async function MarketplaceLayout({
   const categories = await prisma.category.findMany({
     where: { level: 0 },
     orderBy: { order: "asc" },
-    select: { slug: true, name: true, icon: true },
+    select: { 
+      slug: true, 
+      name: true, 
+      icon: true,
+      children: {
+        orderBy: { order: "asc" },
+        select: { slug: true, name: true }
+      }
+    },
   })
 
   return (
