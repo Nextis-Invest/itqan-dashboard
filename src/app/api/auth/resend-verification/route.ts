@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma"
 import { randomBytes } from "crypto"
@@ -6,7 +6,7 @@ import { resend, FROM_EMAIL } from "@/lib/email/resend"
 import { VerificationEmail, verificationEmailText } from "@/lib/email/templates/verification-email"
 import { render } from "@react-email/render"
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const session = await auth()
 
@@ -82,9 +82,15 @@ export async function POST() {
       },
     })
 
-    // Generate verification URL
-    const verificationUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`
+    // Generate verification URL using the request origin (works in all environments)
+    const origin = request.headers.get("origin") ||
+                   request.headers.get("referer")?.split("/").slice(0, 3).join("/") ||
+                   process.env.NEXTAUTH_URL ||
+                   "https://app.itqan.ma"
+
+    const verificationUrl = `${origin}/api/auth/verify-email?token=${token}`
     console.log('[Resend Verification] SUCCESS - Token generated')
+    console.log('[Resend Verification] Origin:', origin)
     console.log('[Resend Verification] Verification URL:', verificationUrl)
 
     try {
