@@ -157,7 +157,7 @@ export default async function SearchPage({
                   {results.skills.map((skill) => (
                     <Link
                       key={skill.id}
-                      href={`/marketplace/search?q=${encodeURIComponent(skill.name)}`}
+                      href={`/marketplace/skills/${skill.slug}`}
                       className="px-4 py-2 rounded-full bg-lime-400/10 border border-lime-400/30 text-lime-400 text-sm hover:bg-lime-400/20 transition-colors"
                     >
                       {skill.name}
