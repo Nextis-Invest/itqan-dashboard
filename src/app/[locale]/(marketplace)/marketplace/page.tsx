@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
-import { ArrowRight, Sparkles, Users, Briefcase, Star, Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { ArrowRight, Sparkles, Users, Briefcase, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { GradientBackground } from "@/components/gradient-background"
+import { MarketplaceSearchBar } from "@/components/marketplace/search-bar"
 
 export const dynamic = "force-dynamic"
 
@@ -53,19 +53,8 @@ export default async function MarketplacePage() {
           </p>
           
           {/* Search */}
-          <div className="max-w-xl mx-auto mb-10">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
-                <Input
-                  placeholder="Rechercher un service..."
-                  className="pl-10 h-12 bg-white/95 backdrop-blur-sm border-white/20 text-foreground placeholder:text-neutral-500"
-                />
-              </div>
-              <Button size="lg" className="h-12 px-6 bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold">
-                Rechercher
-              </Button>
-            </div>
+          <div className="flex justify-center mb-10">
+            <MarketplaceSearchBar variant="hero" placeholder="Rechercher un service..." />
           </div>
           
           {/* Stats */}

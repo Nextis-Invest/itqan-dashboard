@@ -1,13 +1,84 @@
 "use client"
 
+import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { User, Shield, Bell, Palette, Mail, Phone, Lock, Eye } from "lucide-react"
+import { User, Shield, Bell, Palette, Mail, Phone, Lock, Eye, Loader2 } from "lucide-react"
 
 export default function SettingsPage() {
+  const { data: session, status } = useSession()
+  const [name, setName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!session?.user) return
+
+      try {
+        const response = await fetch("/api/user/profile")
+        if (response.ok) {
+          const data = await response.json()
+          setName(data.user.name || "")
+          setPhone(data.user.phone || "")
+          setEmail(data.user.email || "")
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (status === "authenticated") {
+      fetchUserData()
+    } else if (status === "unauthenticated") {
+      setIsLoading(false)
+    }
+  }, [session, status])
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSaving(true)
+    setMessage(null)
+
+    try {
+      const response = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || "Erreur lors de la sauvegarde")
+      }
+
+      setMessage({ type: "success", text: "Modifications enregistrées avec succès" })
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error instanceof Error ? error.message : "Une erreur est survenue",
+      })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (status === "loading" || isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-lime-400" />
+      </div>
+    )
+  }
   return (
     <div className="space-y-8 max-w-2xl">
       <div>
@@ -31,40 +102,69 @@ export default function SettingsPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-5 pt-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
-                <User className="h-3 w-3" /> Nom
-              </Label>
-              <Input
-                placeholder="Votre nom"
-                className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/30 focus:ring-lime-400/20 rounded-xl h-11"
-              />
+          <form onSubmit={handleSave} className="space-y-5">
+            {message && (
+              <div
+                className={`p-3 rounded-lg text-sm ${
+                  message.type === "success"
+                    ? "bg-lime-400/10 text-lime-400 border border-lime-400/20"
+                    : "bg-red-400/10 text-red-400 border border-red-400/20"
+                }`}
+              >
+                {message.text}
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <User className="h-3 w-3" /> Nom
+                </Label>
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Votre nom"
+                  className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/30 focus:ring-lime-400/20 rounded-xl h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <Phone className="h-3 w-3" /> Téléphone
+                </Label>
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+212 6 12 34 56 78"
+                  className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/30 focus:ring-lime-400/20 rounded-xl h-11"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <Label className="text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
-                <Phone className="h-3 w-3" /> Téléphone
+                <Mail className="h-3 w-3" /> Email
               </Label>
               <Input
-                placeholder="+33 6 12 34 56 78"
-                className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/30 focus:ring-lime-400/20 rounded-xl h-11"
+                disabled
+                value={email}
+                placeholder="votre@email.com"
+                className="bg-secondary/30 border-border text-muted-foreground rounded-xl h-11"
               />
+              <p className="text-[11px] text-muted-foreground">L&apos;email ne peut pas être modifié</p>
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label className="text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
-              <Mail className="h-3 w-3" /> Email
-            </Label>
-            <Input
-              disabled
-              placeholder="votre@email.com"
-              className="bg-secondary/30 border-border text-muted-foreground rounded-xl h-11"
-            />
-            <p className="text-[11px] text-muted-foreground">L&apos;email ne peut pas être modifié</p>
-          </div>
-          <Button className="bg-gradient-to-r from-lime-400 to-lime-500 text-neutral-900 hover:from-lime-300 hover:to-lime-400 font-bold rounded-xl shadow-lg shadow-lime-400/20">
-            Sauvegarder les modifications
-          </Button>
+            <Button
+              type="submit"
+              disabled={isSaving}
+              className="bg-gradient-to-r from-lime-400 to-lime-500 text-neutral-900 hover:from-lime-300 hover:to-lime-400 font-bold rounded-xl shadow-lg shadow-lime-400/20"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sauvegarde...
+                </>
+              ) : (
+                "Sauvegarder les modifications"
+              )}
+            </Button>
+          </form>
         </CardContent>
       </Card>
 
