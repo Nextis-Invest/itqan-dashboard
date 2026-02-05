@@ -3,8 +3,8 @@
 import { useState, Suspense, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { Logo } from "@/components/ui/logo"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -279,7 +279,7 @@ function LoginContent() {
     return (
       <div className="w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex justify-center">
-          <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
+          <Logo width={200} height={64} className="h-16 w-auto" />
         </div>
         <Card className="backdrop-blur-xl bg-card/70 border-border shadow-2xl shadow-black/20">
           <CardHeader className="space-y-4 text-center pb-2">
@@ -356,7 +356,7 @@ function LoginContent() {
     return (
       <div className="w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex flex-col items-center gap-3 mb-6">
-          <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
+          <Logo width={200} height={64} className="h-16 w-auto" />
           <p className="text-muted-foreground text-sm">La plateforme freelance au Maroc</p>
         </div>
 
@@ -400,7 +400,7 @@ function LoginContent() {
     return (
       <div className="w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex justify-center">
-          <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
+          <Logo width={200} height={64} className="h-16 w-auto" />
         </div>
 
         <Card className="backdrop-blur-xl bg-card/70 border-border/50 shadow-2xl shadow-black/20">
@@ -530,7 +530,7 @@ function LoginContent() {
   return (
     <div className="w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex justify-center">
-        <Image src="/icons/itqan-logo.svg" alt="Itqan" width={200} height={64} className="h-16 w-auto" />
+        <Logo width={200} height={64} className="h-16 w-auto" />
       </div>
 
       <Card className="backdrop-blur-xl bg-card/70 border-border/50 shadow-2xl shadow-black/20">

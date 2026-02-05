@@ -3,10 +3,10 @@
 import React from "react"
 import type { ComponentProps, ReactNode } from "react"
 import { motion, useReducedMotion } from "framer-motion"
-import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Logo } from "@/components/ui/logo"
 
 interface FooterLink {
   title: string
@@ -34,11 +34,11 @@ export function MarketplaceFooter() {
     {
       label: "Missions",
       links: [
-        { title: "Toutes les missions", href: "/categories" },
-        { title: "Développement Web", href: "/categories/programming-tech" },
-        { title: "Design & Créatif", href: "/categories/graphics-design" },
-        { title: "Marketing Digital", href: "/categories/online-marketing" },
-        { title: "Data & IT", href: "/categories/data" },
+        { title: "Toutes les missions", href: "/marketplace/categories" },
+        { title: "Développement Web", href: "/marketplace/categories/programming-tech" },
+        { title: "Design & Créatif", href: "/marketplace/categories/graphics-design" },
+        { title: "Marketing Digital", href: "/marketplace/categories/online-marketing" },
+        { title: "Data & IT", href: "/marketplace/categories/data" },
       ],
     },
     {
@@ -53,7 +53,7 @@ export function MarketplaceFooter() {
     },
     {
       label: "Villes",
-      links: [{ title: "Maroc", href: "/categories" }],
+      links: [{ title: "Maroc", href: "/marketplace/categories" }],
     },
   ]
 
@@ -122,9 +122,7 @@ export function MarketplaceFooter() {
         <div className="container mx-auto px-4 py-12 lg:py-16 pb-28 md:pb-12">
           <div className="grid w-full gap-8 xl:grid-cols-3 xl:gap-8">
             <AnimatedContainer className="space-y-4">
-              <Image
-                src="/icons/itqan-logo.svg"
-                alt="Itqan logo"
+              <Logo
                 width={150}
                 height={75}
                 className="h-10 w-auto"

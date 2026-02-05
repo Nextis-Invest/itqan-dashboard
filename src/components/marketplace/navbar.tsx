@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Search, Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { Logo } from "@/components/ui/logo"
 
 interface Category {
   slug: string
@@ -39,7 +39,7 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      window.location.href = `/categories?q=${encodeURIComponent(searchQuery.trim())}`
+      window.location.href = `/marketplace/categories?q=${encodeURIComponent(searchQuery.trim())}`
     }
   }
 
@@ -61,10 +61,8 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
             }`}
           >
             {/* Logo */}
-            <Link href="/categories" className="shrink-0">
-              <Image
-                src="/icons/itqan-logo.svg"
-                alt="Itqan"
+            <Link href="/marketplace/categories" className="shrink-0">
+              <Logo
                 width={100}
                 height={34}
                 className="h-8 w-auto"
@@ -125,11 +123,11 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
 
             <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2">
               {categories.map((cat) => {
-                const isActive = pathname?.startsWith(`/categories/${cat.slug}`)
+                const isActive = pathname?.startsWith(`/marketplace/categories/${cat.slug}`)
                 return (
                   <Link
                     key={cat.slug}
-                    href={`/categories/${cat.slug}`}
+                    href={`/marketplace/categories/${cat.slug}`}
                     className={`whitespace-nowrap px-3 py-2 text-[13px] font-medium transition-colors border-b-2 ${
                       isActive
                         ? "text-lime-400 border-lime-400"
@@ -175,11 +173,11 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
                   Catégories
                 </p>
                 {categories.map((cat) => {
-                  const isActive = pathname?.startsWith(`/categories/${cat.slug}`)
+                  const isActive = pathname?.startsWith(`/marketplace/categories/${cat.slug}`)
                   return (
                     <Link
                       key={cat.slug}
-                      href={`/categories/${cat.slug}`}
+                      href={`/marketplace/categories/${cat.slug}`}
                       className={`block px-4 py-3 rounded-lg text-sm transition-colors ${
                         isActive
                           ? "bg-lime-400/10 text-lime-400 font-medium"
