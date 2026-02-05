@@ -142,8 +142,8 @@ export default async function SubcategoryPage({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar: sibling subcategories */}
-        <aside className="space-y-4">
+        {/* Sidebar: sibling subcategories - hidden on mobile */}
+        <aside className="hidden lg:block space-y-4">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             {t("subcategories")}
           </h3>

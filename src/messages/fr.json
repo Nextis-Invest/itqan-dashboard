@@ -4,6 +4,8 @@
     "subcategories": "Sous-catégories",
     "all": "Toutes",
     "back_to_all": "← Toutes",
+    "related_skills": "Compétences similaires",
+    "back_to_category": "Retour à la catégorie",
     "services_found": "{count, plural, =0 {Aucun service trouvé} =1 {1 service trouvé} other {# services trouvés}}",
     "sort_by": "Trier par",
     "popular": "Populaire",

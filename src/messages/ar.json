@@ -4,6 +4,8 @@
     "subcategories": "Subcategories",
     "all": "All",
     "back_to_all": "← All",
+    "related_skills": "مهارات مشابهة",
+    "back_to_category": "العودة للفئة",
     "services_found": "{count, plural, =0 {No services found} =1 {1 service found} other {# services found}}",
     "sort_by": "Sort by",
     "popular": "Popular",

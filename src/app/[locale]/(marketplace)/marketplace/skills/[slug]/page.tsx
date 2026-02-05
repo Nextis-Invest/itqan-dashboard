@@ -251,8 +251,8 @@ export default async function SkillPage({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar: related skills */}
-        <aside className="space-y-4">
+        {/* Sidebar: related skills - hidden on mobile */}
+        <aside className="hidden lg:block space-y-4">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             {t("related_skills") || "Compétences similaires"}
           </h3>
