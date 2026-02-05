@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { Search, Users, Package, FolderOpen } from "lucide-react"
+import { Search, Users, Package, FolderOpen, Tag } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { config } from "@/lib/config"
@@ -57,6 +57,12 @@ type SearchResult = {
     slug: string
     icon: string | null
     parentSlug: string | null
+  }>
+  skills: Array<{
+    id: string
+    name: string
+    slug: string
+    categorySlug: string | null
   }>
   total: number
 }
@@ -137,6 +143,30 @@ export default async function SearchPage({
 
         {results && results.total > 0 && (
           <div className="space-y-10">
+            {/* Skills/Technologies */}
+            {results.skills && results.skills.length > 0 && (
+              <section>
+                <div className="flex items-center gap-2 mb-4">
+                  <Tag className="h-5 w-5 text-lime-400" />
+                  <h2 className="text-lg font-semibold text-white">Technologies & Services</h2>
+                  <span className="text-sm text-neutral-500">
+                    ({results.skills.length})
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {results.skills.map((skill) => (
+                    <Link
+                      key={skill.id}
+                      href={`/marketplace/search?q=${encodeURIComponent(skill.name)}`}
+                      className="px-4 py-2 rounded-full bg-lime-400/10 border border-lime-400/30 text-lime-400 text-sm hover:bg-lime-400/20 transition-colors"
+                    >
+                      {skill.name}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* Categories */}
             {results.categories.length > 0 && (
               <section>

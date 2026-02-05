@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
       freelancers: [],
       gigs: [],
       categories: [],
+      skills: [],
     })
   }
 
@@ -85,7 +86,10 @@ export async function GET(request: NextRequest) {
 
     // Search categories from catalog
     let categories: Array<{ id: string; name: string; slug: string; icon: string | null; parentSlug: string | null }> = []
+    let skills: Array<{ id: string; name: string; slug: string; categorySlug: string | null }> = []
+    
     try {
+      // Search categories
       const catResults = await prismaCatalog.category.findMany({
         where: {
           isActive: true,
@@ -123,9 +127,60 @@ export async function GET(request: NextRequest) {
         icon: cat.icon,
         parentSlug: cat.parent?.translations[0]?.slug || null,
       }))
+
+      // Search skills/technologies
+      const skillResults = await prismaCatalog.skill.findMany({
+        where: {
+          isActive: true,
+          translations: {
+            some: {
+              locale: "fr",
+              OR: [
+                { name: { contains: query, mode: "insensitive" } },
+                { slug: { contains: query, mode: "insensitive" } },
+              ],
+            },
+          },
+        },
+        include: {
+          translations: {
+            where: { locale: "fr" },
+            select: { name: true, slug: true },
+          },
+        },
+        take: 15,
+      })
+
+      // Get category slugs for skills
+      const categoryIds = skillResults
+        .map((s) => s.categoryId)
+        .filter((id): id is string => id !== null)
+      
+      const skillCategories = categoryIds.length > 0
+        ? await prismaCatalog.category.findMany({
+            where: { id: { in: categoryIds } },
+            include: {
+              translations: {
+                where: { locale: "fr" },
+                select: { slug: true },
+              },
+            },
+          })
+        : []
+      
+      const catSlugMap = new Map(
+        skillCategories.map((c) => [c.id, c.translations[0]?.slug || null])
+      )
+
+      skills = skillResults.map((skill) => ({
+        id: skill.id,
+        name: skill.translations[0]?.name || "",
+        slug: skill.translations[0]?.slug || "",
+        categorySlug: skill.categoryId ? catSlugMap.get(skill.categoryId) || null : null,
+      }))
     } catch {
       // Catalog DB might not be available
-      console.warn("Catalog search failed, skipping categories")
+      console.warn("Catalog search failed, skipping categories/skills")
     }
 
     // Serialize results
@@ -167,7 +222,8 @@ export async function GET(request: NextRequest) {
       freelancers: serializedFreelancers,
       gigs: serializedGigs,
       categories,
-      total: serializedFreelancers.length + serializedGigs.length + categories.length,
+      skills,
+      total: serializedFreelancers.length + serializedGigs.length + categories.length + skills.length,
     })
   } catch (error) {
     console.error("Search error:", error)
