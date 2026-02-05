@@ -1,18 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { useSession } from "next-auth/react"
 import { AlertCircle, X, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export function VerificationBanner() {
-  const { data: session, update } = useSession()
+interface VerificationBannerProps {
+  isVerified: boolean
+}
+
+export function VerificationBanner({ isVerified }: VerificationBannerProps) {
   const [isVisible, setIsVisible] = useState(true)
   const [isSending, setIsSending] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
   // Don't show banner if email is verified or banner was dismissed
-  if (!session?.user || session.user.emailVerified || !isVisible) {
+  if (isVerified || !isVisible) {
     return null
   }
 

@@ -20,6 +20,9 @@ export default async function DashboardLayout({
     redirect("/login?callbackUrl=/dashboard")
   }
 
+  // Check email verification status
+  const isEmailVerified = !!(user as any).emailVerified
+
   // Check if user needs to complete account type selection
   const headersList = await headers()
   const pathname = headersList.get("x-pathname") || ""
@@ -59,7 +62,7 @@ export default async function DashboardLayout({
       />
       <SidebarInset>
         <SiteHeader />
-        <VerificationBanner />
+        <VerificationBanner isVerified={isEmailVerified} />
         <div className="flex flex-1 flex-col p-4 md:p-6">{children}</div>
       </SidebarInset>
     </SidebarProvider>
