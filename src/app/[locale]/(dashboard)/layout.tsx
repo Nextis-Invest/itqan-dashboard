@@ -20,26 +20,40 @@ export default async function DashboardLayout({
     redirect("/login?callbackUrl=/dashboard")
   }
 
-  // Check email verification status
-  const isEmailVerified = !!(user as any).emailVerified
-
   // Check if user needs to complete account type selection
   const headersList = await headers()
   const pathname = headersList.get("x-pathname") || ""
-  
+
   // Skip onboarding check if already on onboarding pages
   const isOnboardingPage = pathname.includes("/onboarding")
 
+  // Fetch user data once (optimized)
+  let isEmailVerified = false
   if (!isOnboardingPage && user.id) {
     const dbUser = await prisma.user.findUnique({
       where: { id: user.id },
-      select: { freelancerProfile: { select: { id: true } }, clientProfile: { select: { id: true } } },
+      select: {
+        emailVerified: true,
+        freelancerProfile: { select: { id: true } },
+        clientProfile: { select: { id: true } }
+      },
     })
 
-    // If user has no profile, redirect to account type selection
-    if (dbUser && !dbUser.freelancerProfile && !dbUser.clientProfile) {
-      redirect("/onboarding/account-type")
+    if (dbUser) {
+      isEmailVerified = !!dbUser.emailVerified
+
+      // If user has no profile, redirect to account type selection
+      if (!dbUser.freelancerProfile && !dbUser.clientProfile) {
+        redirect("/onboarding/account-type")
+      }
     }
+  } else if (user.id) {
+    // For onboarding pages, just check email verification
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { emailVerified: true }
+    })
+    isEmailVerified = !!dbUser?.emailVerified
   }
 
   return (
