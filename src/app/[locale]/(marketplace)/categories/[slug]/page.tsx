@@ -4,10 +4,12 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { GigCard } from "@/components/gig-card"
 import { ChevronRight, SlidersHorizontal } from "lucide-react"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { buildSubcategoryUrl, buildCategoriesUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
 
 export const dynamic = "force-dynamic"
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const cat = await prisma.category.findUnique({ where: { slug }, select: { name: true } })
   return { title: cat?.name || "Catégorie" }
@@ -17,11 +19,14 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ locale: string; slug: string }>
   searchParams: Promise<{ page?: string; sort?: string; sub?: string }>
 }) {
-  const { slug } = await params
+  const { locale, slug } = await params
   const sp = await searchParams
+  setRequestLocale(locale)
+
+  const t = await getTranslations("common")
 
   const category = await prisma.category.findUnique({
     where: { slug },
@@ -75,10 +80,10 @@ export default async function CategoryPage({
   const totalPages = Math.ceil(total / limit)
 
   const sortOptions = [
-    { value: "popular", label: "Populaire" },
-    { value: "newest", label: "Récent" },
-    { value: "price_asc", label: "Prix ↑" },
-    { value: "price_desc", label: "Prix ↓" },
+    { value: "popular", label: t("popular") },
+    { value: "newest", label: t("newest") },
+    { value: "price_asc", label: t("price_asc") },
+    { value: "price_desc", label: t("price_desc") },
   ]
 
   function buildUrl(overrides: Record<string, string | null>) {
@@ -88,15 +93,15 @@ export default async function CategoryPage({
     Object.entries(merged).forEach(([k, v]) => {
       if (v) p.set(k, v)
     })
-    return `/categories/${slug}?${p.toString()}`
+    return `${buildCategoryUrl(slug)}?${p.toString()}`
   }
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/categories" className="hover:text-lime-400 transition-colors">
-          Catégories
+        <Link href={buildCategoriesUrl()} className="hover:text-lime-400 transition-colors">
+          {t("categories")}
         </Link>
         <ChevronRight className="h-4 w-4" />
         <span className="text-foreground">{category.name}</span>
@@ -109,7 +114,7 @@ export default async function CategoryPage({
         <aside className="space-y-4">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
             <SlidersHorizontal className="h-4 w-4" />
-            Sous-catégories
+            {t("subcategories")}
           </h3>
           <div className="space-y-1">
             <Link
@@ -120,12 +125,12 @@ export default async function CategoryPage({
                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
               }`}
             >
-              Toutes
+              {t("all")}
             </Link>
             {category.children.map((sub) => (
               <Link
                 key={sub.id}
-                href={buildUrl({ sub: sub.slug, page: "1" })}
+                href={buildSubcategoryUrl(slug, sub.slug, locale)}
                 className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
                   subFilter === sub.slug
                     ? "bg-lime-400/10 text-lime-400 font-medium"
@@ -146,7 +151,7 @@ export default async function CategoryPage({
               {total} service{total !== 1 ? "s" : ""} trouvé{total !== 1 ? "s" : ""}
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Trier par :</span>
+              <span className="text-sm text-muted-foreground">{t("sort_by")} :</span>
               <div className="flex gap-1">
                 {sortOptions.map((opt) => (
                   <Link
@@ -168,7 +173,7 @@ export default async function CategoryPage({
           {/* Grid */}
           {gigs.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-muted-foreground">Aucun service dans cette catégorie pour le moment.</p>
+              <p className="text-muted-foreground">{t("no_services")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -186,18 +191,18 @@ export default async function CategoryPage({
                   href={buildUrl({ page: String(page - 1) })}
                   className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
                 >
-                  Précédent
+                  {t("previous")}
                 </Link>
               )}
               <span className="px-4 py-2 text-sm text-muted-foreground">
-                Page {page} sur {totalPages}
+                Page {page} / {totalPages}
               </span>
               {page < totalPages && (
                 <Link
                   href={buildUrl({ page: String(page + 1) })}
                   className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
                 >
-                  Suivant
+                  {t("next")}
                 </Link>
               )}
             </div>

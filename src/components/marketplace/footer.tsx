@@ -89,15 +89,23 @@ export function MarketplaceFooter() {
             </div>
 
             {/* Right mockup */}
-            <div className="mx-auto w-full max-w-[320px]">
-              <div className="relative rounded-[28px] bg-white/10 backdrop-blur-xl border border-white/10 p-2 shadow-2xl">
-                <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black flex items-center justify-center">
-                  <div className="relative p-4 text-center">
-                    <div className="mx-auto mb-3 h-1.5 w-16 rounded-full bg-white/20" />
+            <div className="mx-auto w-full max-w-[260px]">
+              <div className="relative rounded-[28px] bg-neutral-800 p-2 shadow-2xl">
+                <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black">
+                  <Image
+                    src="https://d8j0ntlcm91z4.cloudfront.net/user_37DhuNyRmxE2Dt9Cj4761sckNmX/hf_20260205_020108_f230042f-a6f4-4401-a86a-109563090f8d.png"
+                    alt="Freelance marocain"
+                    fill
+                    className="object-cover"
+                  />
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                  {/* Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
                     <div className="space-y-2">
-                      <div className="text-4xl font-extrabold text-lime-400">2 500+</div>
-                      <p className="text-sm text-white/80">Freelances disponibles</p>
-                      <div className="mt-4 inline-flex items-center rounded-full bg-lime-400/20 px-3 py-1 text-[10px] uppercase tracking-wider text-lime-400">
+                      <div className="text-3xl font-extrabold text-lime-400">2 500+</div>
+                      <p className="text-sm text-white/90">Freelances disponibles</p>
+                      <div className="mt-2 inline-flex items-center rounded-full bg-lime-400 px-3 py-1 text-[10px] uppercase tracking-wider text-black font-medium">
                         Matching en 24h
                       </div>
                     </div>

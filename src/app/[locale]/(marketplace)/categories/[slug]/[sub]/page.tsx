@@ -4,21 +4,24 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { GigCard } from "@/components/gig-card"
 import { ChevronRight } from "lucide-react"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { parseSubSlug, buildSubcategoryUrl, buildCategoriesUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
 
 export const dynamic = "force-dynamic"
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string; sub: string }>
+  params: Promise<{ locale: string; slug: string; sub: string }>
 }): Promise<Metadata> {
   const { slug, sub } = await params
+  const realSub = parseSubSlug(sub)
   const [parent, child] = await Promise.all([
     prisma.category.findUnique({ where: { slug }, select: { name: true } }),
-    prisma.category.findUnique({ where: { slug: sub }, select: { name: true } }),
+    prisma.category.findUnique({ where: { slug: realSub }, select: { name: true } }),
   ])
   return {
-    title: `${child?.name || sub} — ${parent?.name || slug}`,
+    title: `${child?.name || realSub} — ${parent?.name || slug}`,
   }
 }
 
@@ -26,11 +29,15 @@ export default async function SubcategoryPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ slug: string; sub: string }>
+  params: Promise<{ locale: string; slug: string; sub: string }>
   searchParams: Promise<{ page?: string; sort?: string }>
 }) {
-  const { slug, sub } = await params
+  const { locale, slug, sub } = await params
   const sp = await searchParams
+  const realSub = parseSubSlug(sub)
+  setRequestLocale(locale)
+
+  const t = await getTranslations("common")
 
   const [parentCat, subCat] = await Promise.all([
     prisma.category.findUnique({
@@ -39,7 +46,7 @@ export default async function SubcategoryPage({
         children: { orderBy: { order: "asc" } },
       },
     }),
-    prisma.category.findUnique({ where: { slug: sub } }),
+    prisma.category.findUnique({ where: { slug: realSub } }),
   ])
 
   if (!parentCat || !subCat) notFound()
@@ -48,7 +55,7 @@ export default async function SubcategoryPage({
   const sort = sp.sort || "popular"
   const limit = 12
 
-  const where = { status: "ACTIVE" as const, category: slug, subcategory: sub }
+  const where = { status: "ACTIVE" as const, category: slug, subcategory: realSub }
 
   const orderByMap: Record<string, any> = {
     popular: { orderCount: "desc" },
@@ -82,32 +89,32 @@ export default async function SubcategoryPage({
   const totalPages = Math.ceil(total / limit)
 
   const sortOptions = [
-    { value: "popular", label: "Populaire" },
-    { value: "newest", label: "Récent" },
-    { value: "price_asc", label: "Prix ↑" },
-    { value: "price_desc", label: "Prix ↓" },
+    { value: "popular", label: t("popular") },
+    { value: "newest", label: t("newest") },
+    { value: "price_asc", label: t("price_asc") },
+    { value: "price_desc", label: t("price_desc") },
   ]
 
-  function buildUrl(overrides: Record<string, string>) {
+  function buildPageUrl(overrides: Record<string, string>) {
     const p = new URLSearchParams()
     const current = { page: sp.page || "1", sort }
     const merged = { ...current, ...overrides }
     Object.entries(merged).forEach(([k, v]) => {
       if (v) p.set(k, v)
     })
-    return `/categories/${slug}/${sub}?${p.toString()}`
+    return `${buildSubcategoryUrl(slug, realSub, locale)}?${p.toString()}`
   }
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/categories" className="hover:text-lime-400 transition-colors">
-          Catégories
+        <Link href={buildCategoriesUrl()} className="hover:text-lime-400 transition-colors">
+          {t("categories")}
         </Link>
         <ChevronRight className="h-4 w-4" />
         <Link
-          href={`/categories/${slug}`}
+          href={buildCategoryUrl(slug)}
           className="hover:text-lime-400 transition-colors"
         >
           {parentCat.name}
@@ -122,21 +129,21 @@ export default async function SubcategoryPage({
         {/* Sidebar: sibling subcategories */}
         <aside className="space-y-4">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Sous-catégories
+            {t("subcategories")}
           </h3>
           <div className="space-y-1">
             <Link
-              href={`/categories/${slug}`}
+              href={buildCategoryUrl(slug)}
               className="block px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             >
-              ← Toutes
+              {t("back_to_all")}
             </Link>
             {parentCat.children.map((sibling) => (
               <Link
                 key={sibling.id}
-                href={`/categories/${slug}/${sibling.slug}`}
+                href={buildSubcategoryUrl(slug, sibling.slug, locale)}
                 className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
-                  sibling.slug === sub
+                  sibling.slug === realSub
                     ? "bg-lime-400/10 text-lime-400 font-medium"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent"
                 }`}
@@ -155,12 +162,12 @@ export default async function SubcategoryPage({
               {total} service{total !== 1 ? "s" : ""} trouvé{total !== 1 ? "s" : ""}
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Trier par :</span>
+              <span className="text-sm text-muted-foreground">{t("sort_by")} :</span>
               <div className="flex gap-1">
                 {sortOptions.map((opt) => (
                   <Link
                     key={opt.value}
-                    href={buildUrl({ sort: opt.value, page: "1" })}
+                    href={buildPageUrl({ sort: opt.value, page: "1" })}
                     className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                       sort === opt.value
                         ? "bg-lime-400/10 text-lime-400"
@@ -178,7 +185,7 @@ export default async function SubcategoryPage({
           {gigs.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted-foreground">
-                Aucun service dans cette sous-catégorie pour le moment.
+                {t("no_services_sub")}
               </p>
             </div>
           ) : (
@@ -194,21 +201,21 @@ export default async function SubcategoryPage({
             <div className="flex items-center justify-center gap-2">
               {page > 1 && (
                 <Link
-                  href={buildUrl({ page: String(page - 1) })}
+                  href={buildPageUrl({ page: String(page - 1) })}
                   className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
                 >
-                  Précédent
+                  {t("previous")}
                 </Link>
               )}
               <span className="px-4 py-2 text-sm text-muted-foreground">
-                Page {page} sur {totalPages}
+                Page {page} / {totalPages}
               </span>
               {page < totalPages && (
                 <Link
-                  href={buildUrl({ page: String(page + 1) })}
+                  href={buildPageUrl({ page: String(page + 1) })}
                   className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
                 >
-                  Suivant
+                  {t("next")}
                 </Link>
               )}
             </div>

@@ -1,0 +1,26 @@
+{
+  "common": {
+    "categories": "Catégories",
+    "subcategories": "Sous-catégories",
+    "all": "Toutes",
+    "back_to_all": "← Toutes",
+    "services_found": "{count, plural, =0 {Aucun service trouvé} =1 {1 service trouvé} other {# services trouvés}}",
+    "sort_by": "Trier par",
+    "popular": "Populaire",
+    "newest": "Récent",
+    "price_asc": "Prix ↑",
+    "price_desc": "Prix ↓",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page_of": "Page {page} sur {total}",
+    "no_services": "Aucun service dans cette catégorie pour le moment.",
+    "no_services_sub": "Aucun service dans cette sous-catégorie pour le moment.",
+    "login": "Se connecter",
+    "signup": "S'inscrire",
+    "search_placeholder": "Rechercher un service..."
+  },
+  "categories": {
+    "title": "Catégories",
+    "description": "Explorez nos catégories de services pour trouver le freelancer idéal"
+  }
+}

@@ -1,28 +1,14 @@
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-
-  // Always allow static assets and API routes
-  if (
-    pathname.startsWith("/_next") ||
-    pathname === "/favicon.ico" ||
-    pathname === "/robots.txt" ||
-    pathname.startsWith("/api/")
-  ) {
-    return NextResponse.next()
-  }
-
-  // Allow auth pages
-  if (pathname.startsWith("/login")) {
-    return NextResponse.next()
-  }
-
-  // All other routes pass through (auth checked in layouts)
-  return NextResponse.next()
-}
+export default createMiddleware(routing);
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
-}
+  matcher: [
+    // Match all pathnames except for
+    // - api routes
+    // - _next (Next.js internals)
+    // - static files (icons, images, etc.)
+    '/((?!api|_next|icons|.*\\..*).*)',
+  ],
+};

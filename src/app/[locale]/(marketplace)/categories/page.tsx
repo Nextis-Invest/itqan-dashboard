@@ -2,10 +2,16 @@ import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { buildSubcategoryUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
 
-export const metadata: Metadata = {
-  title: "Catégories",
-  description: "Parcourir toutes les catégories de services",
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "categories" })
+  return {
+    title: t("title"),
+    description: t("description"),
+  }
 }
 
 export const dynamic = "force-dynamic"
@@ -39,7 +45,16 @@ function getIcon(icon: string | null): string {
   return iconMap[icon] || icon
 }
 
-export default async function CategoriesPage() {
+export default async function CategoriesPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  
+  const t = await getTranslations("categories")
+
   const categories = await prisma.category.findMany({
     where: { level: 0 },
     orderBy: { order: "asc" },
@@ -56,9 +71,9 @@ export default async function CategoriesPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Catégories</h1>
+        <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
         <p className="text-muted-foreground mt-2">
-          Explorez nos catégories de services pour trouver le freelancer idéal
+          {t("description")}
         </p>
       </div>
 
@@ -67,7 +82,7 @@ export default async function CategoriesPage() {
           <div key={cat.id} className="space-y-4">
             {/* Root category header */}
             <Link
-              href={`/categories/${cat.slug}`}
+              href={buildCategoryUrl(cat.slug)}
               className="group flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
               <span className="text-3xl">{getIcon(cat.icon)}</span>
@@ -83,7 +98,7 @@ export default async function CategoriesPage() {
                 {cat.children.map((sub) => (
                   <Link
                     key={sub.id}
-                    href={`/categories/${cat.slug}/${sub.slug}`}
+                    href={buildSubcategoryUrl(cat.slug, sub.slug, locale)}
                     className="group flex items-center gap-2 px-4 py-3 rounded-lg bg-card border border-border hover:border-lime-400/50 hover:bg-accent/50 transition-all"
                   >
                     <span className="text-sm text-foreground group-hover:text-lime-400 transition-colors">
