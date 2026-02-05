@@ -177,7 +177,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
                   className={cn(
                     "transition-all duration-200 relative group/item",
                     active
-                      ? "bg-gradient-to-r from-lime-400/15 to-transparent text-lime-400 border-l-2 border-lime-400"
+                      ? "bg-gradient-to-r from-[color-mix(in_oklch,var(--brand),transparent_85%)] to-transparent text-[var(--brand)] border-l-2 border-[var(--brand)]"
                       : "hover:bg-secondary/70 text-muted-foreground hover:text-foreground border-l-2 border-transparent"
                   )}
                 >
@@ -221,7 +221,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
                   className={cn(
                     "transition-all duration-200 relative group/item",
                     active
-                      ? "bg-gradient-to-r from-lime-400/15 to-transparent text-lime-400 border-l-2 border-lime-400"
+                      ? "bg-gradient-to-r from-[color-mix(in_oklch,var(--brand),transparent_85%)] to-transparent text-[var(--brand)] border-l-2 border-[var(--brand)]"
                       : "hover:bg-secondary/70 text-muted-foreground hover:text-foreground border-l-2 border-transparent"
                   )}
                 >
@@ -230,8 +230,8 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
                       className={cn(
                         "size-4 transition-colors duration-200",
                         active
-                          ? "text-lime-400"
-                          : "text-muted-foreground group-hover/item:text-lime-400"
+                          ? "text-[var(--brand)]"
+                          : "text-muted-foreground group-hover/item:text-[var(--brand)]"
                       )}
                     />
                     <span className="font-medium">{item.title}</span>
@@ -250,9 +250,9 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
               <SidebarMenuButton asChild size="lg" className="hover:bg-secondary/70 transition-all duration-200 group/user">
                 <Link href="/profile" className="flex items-center gap-3">
                   <div className="relative">
-                    <Avatar className="size-8 border-2 border-border group-hover/user:border-lime-400/40 transition-colors duration-300">
+                    <Avatar className="size-8 border-2 border-border group-hover/user:border-[color-mix(in_oklch,var(--brand),transparent_60%)] transition-colors duration-300">
                       <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback className="bg-gradient-to-br from-lime-400/20 to-emerald-400/20 text-lime-400 text-xs font-semibold">
+                      <AvatarFallback className="bg-gradient-to-br from-[color-mix(in_oklch,var(--brand),transparent_80%)] to-emerald-400/20 text-[var(--brand)] text-xs font-semibold">
                         {user.name
                           .split(" ")
                           .map((n) => n[0])
@@ -264,7 +264,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
                     <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-400" />
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">
-                    <span className="font-medium text-foreground text-sm group-hover/user:text-lime-400/90 transition-colors">
+                    <span className="font-medium text-foreground text-sm group-hover/user:text-[color-mix(in_oklch,var(--brand),transparent_10%)] transition-colors">
                       {user.name}
                     </span>
                     <span className="text-[11px] text-muted-foreground truncate max-w-[140px]">
