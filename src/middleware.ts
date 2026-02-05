@@ -1,7 +1,20 @@
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default createMiddleware(routing);
+const intlMiddleware = createMiddleware(routing);
+
+export default async function middleware(request: NextRequest) {
+  // First, handle i18n
+  const response = intlMiddleware(request);
+  
+  // Add pathname to headers for server components to access
+  const pathname = request.nextUrl.pathname;
+  response.headers.set('x-pathname', pathname);
+  
+  return response;
+}
 
 export const config = {
   matcher: [

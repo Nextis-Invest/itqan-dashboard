@@ -3,6 +3,8 @@ import { SiteHeader } from "@/components/dashboard/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { getCurrentUser } from "@/lib/auth/session"
 import { redirect } from "next/navigation"
+import { headers } from "next/headers"
+import { prisma } from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
 
@@ -15,6 +17,25 @@ export default async function DashboardLayout({
 
   if (!user) {
     redirect("/login?callbackUrl=/dashboard")
+  }
+
+  // Check if user needs to complete account type selection
+  const headersList = await headers()
+  const pathname = headersList.get("x-pathname") || ""
+  
+  // Skip onboarding check if already on onboarding pages
+  const isOnboardingPage = pathname.includes("/onboarding")
+
+  if (!isOnboardingPage && user.id) {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { freelancerProfile: { select: { id: true } }, clientProfile: { select: { id: true } } },
+    })
+
+    // If user has no profile, redirect to account type selection
+    if (dbUser && !dbUser.freelancerProfile && !dbUser.clientProfile) {
+      redirect("/onboarding/account-type")
+    }
   }
 
   return (
