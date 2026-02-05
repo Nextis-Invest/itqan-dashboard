@@ -70,40 +70,33 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate new verification token
-    const token = randomBytes(32).toString("hex")
+    // Generate 6-digit verification code
+    const code = Math.floor(100000 + Math.random() * 900000).toString()
     const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
     await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        verificationToken: token,
+        verificationToken: code,
         verificationTokenExpiry: expiry,
       },
     })
 
-    // Generate verification URL using the request origin (works in all environments)
-    const origin = request.headers.get("origin") ||
-                   request.headers.get("referer")?.split("/").slice(0, 3).join("/") ||
-                   process.env.NEXTAUTH_URL ||
-                   "https://app.itqan.ma"
-
-    const verificationUrl = `${origin}/api/auth/verify-email?token=${token}`
-    console.log('[Resend Verification] SUCCESS - Token generated')
-    console.log('[Resend Verification] Origin:', origin)
-    console.log('[Resend Verification] Verification URL:', verificationUrl)
+    console.log('[Resend Verification] SUCCESS - Code generated')
+    console.log('[Resend Verification] Verification code:', code)
+    console.log('[Resend Verification] Code expires at:', expiry)
 
     try {
       // Render email templates
       const emailHtml = await render(
         VerificationEmail({
-          verificationUrl,
+          verificationCode: code,
           userName: session.user.name || undefined,
         })
       )
 
       const emailText = verificationEmailText({
-        verificationUrl,
+        verificationCode: code,
         userName: session.user.name || undefined,
       })
 

@@ -1,12 +1,12 @@
 import * as React from "react"
 
 interface VerificationEmailProps {
-  verificationUrl: string
+  verificationCode: string
   userName?: string
 }
 
 export const VerificationEmail = ({
-  verificationUrl,
+  verificationCode,
   userName,
 }: VerificationEmailProps) => (
   <html>
@@ -107,52 +107,59 @@ export const VerificationEmail = ({
             veuillez vérifier votre adresse email.
           </p>
 
-          {/* CTA Button */}
-          <div style={{ textAlign: "center", margin: "32px 0" }}>
-            <a
-              href={verificationUrl}
+          <p
+            style={{
+              margin: "0 0 16px 0",
+              fontSize: "16px",
+              color: "#52525b",
+              lineHeight: "1.6",
+              textAlign: "center",
+            }}
+          >
+            Voici votre code de vérification :
+          </p>
+
+          {/* Verification Code Display */}
+          <div
+            style={{
+              textAlign: "center",
+              margin: "32px 0",
+            }}
+          >
+            <div
               style={{
                 display: "inline-block",
-                padding: "16px 40px",
-                backgroundColor: "#a3e635",
-                color: "#18181b",
-                textDecoration: "none",
-                borderRadius: "10px",
-                fontWeight: "700",
-                fontSize: "16px",
-                boxShadow: "0 4px 12px rgba(163, 230, 53, 0.4)",
-                border: "2px solid #a3e635",
+                backgroundColor: "#f4f4f5",
+                border: "3px solid #a3e635",
+                borderRadius: "12px",
+                padding: "24px 48px",
               }}
             >
-              ✓ Vérifier mon email
-            </a>
+              <div
+                style={{
+                  fontSize: "48px",
+                  fontWeight: "800",
+                  color: "#18181b",
+                  letterSpacing: "8px",
+                  fontFamily: "monospace",
+                }}
+              >
+                {verificationCode}
+              </div>
+            </div>
           </div>
 
-          {/* Alternative link */}
           <p
             style={{
               margin: "24px 0 0 0",
               fontSize: "14px",
               color: "#71717a",
               lineHeight: "1.5",
+              textAlign: "center",
             }}
           >
-            Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre
-            navigateur :
-          </p>
-          <p
-            style={{
-              margin: "8px 0 0 0",
-              fontSize: "13px",
-              color: "#a3e635",
-              wordBreak: "break-all",
-              fontFamily: "monospace",
-              backgroundColor: "#fafafa",
-              padding: "12px",
-              borderRadius: "6px",
-            }}
-          >
-            {verificationUrl}
+            Copiez ce code et collez-le dans la bannière de vérification sur le
+            site.
           </p>
 
           {/* Security notice */}
@@ -203,7 +210,7 @@ export const VerificationEmail = ({
 
 // Plain text version for email clients that don't support HTML
 export const verificationEmailText = ({
-  verificationUrl,
+  verificationCode,
   userName,
 }: VerificationEmailProps) => `
 Vérifiez votre adresse email
@@ -212,10 +219,13 @@ ${userName ? `Bonjour ${userName},` : "Bonjour,"}
 
 Bienvenue sur Itqan ! Pour commencer à utiliser votre compte et accéder à toutes les fonctionnalités de notre plateforme, veuillez vérifier votre adresse email.
 
-Cliquez sur le lien ci-dessous pour vérifier votre email :
-${verificationUrl}
+Votre code de vérification :
 
-⚠️ Note de sécurité : Ce lien expire dans 24 heures. Si vous n'avez pas demandé cette vérification, vous pouvez ignorer cet email en toute sécurité.
+${verificationCode}
+
+Copiez ce code et collez-le dans la bannière de vérification sur https://app.itqan.ma
+
+⚠️ Note de sécurité : Ce code expire dans 24 heures. Si vous n'avez pas demandé cette vérification, vous pouvez ignorer cet email en toute sécurité.
 
 ---
 © ${new Date().getFullYear()} Itqan. Tous droits réservés.

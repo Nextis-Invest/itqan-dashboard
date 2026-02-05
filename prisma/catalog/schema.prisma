@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/client-catalog"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CATALOG_DATABASE_URL")
+}
+
+// ==================== LOCALES ====================
+
+model Locale {
+  id          String   @id // "fr", "ar", "en"
+  name        String   // "Français", "العربية", "English"
+  nativeName  String   @map("native_name")
+  direction   String   @default("ltr") // "ltr" or "rtl"
+  flag        String?  // 🇫🇷 🇲🇦 🇬🇧
+  isDefault   Boolean  @default(false) @map("is_default")
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("locales")
+}
+
+// ==================== CATEGORIES ====================
+// Central catalog - slugs change per locale (Option B)
+
+model Category {
+  id          String   @id @default(cuid())
+  icon        String?  // Lucide icon name or emoji
+  color       String?  // Hex color
+  level       Int      @default(0) // 0 = root, 1 = subcategory
+  sortOrder   Int      @default(0) @map("sort_order")
+  isActive    Boolean  @default(true) @map("is_active")
+
+  // TJM range (for subcategories)
+  avgTjmMin   Int?     @map("avg_tjm_min")
+  avgTjmMax   Int?     @map("avg_tjm_max")
+
+  // SEO keywords (stored as JSON array)
+  keywords    String[] @default([])
+
+  // Hierarchy
+  parentId    String?  @map("parent_id")
+  parent      Category? @relation("CategoryTree", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryTree")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Translations (name + slug per locale)
+  translations CategoryTranslation[]
+
+  @@index([parentId])
+  @@index([level])
+  @@index([isActive])
+  @@map("categories")
+}
+
+model CategoryTranslation {
+  id          String   @id @default(cuid())
+  categoryId  String   @map("category_id")
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  locale      String   // "fr", "ar", "en"
+  name        String   // Localized name
+  slug        String   // Localized slug for URL
+  description String?  @db.Text
+
+  @@unique([categoryId, locale])
+  @@unique([locale, slug]) // Unique slug per locale
+  @@index([locale])
+  @@index([slug])
+  @@map("category_translations")
+}
+
+// ==================== SKILLS / COMPETENCES ====================
+
+model Skill {
+  id          String   @id @default(cuid())
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
+  
+  // Category association (optional)
+  categoryId  String?  @map("category_id")
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations SkillTranslation[]
+
+  @@index([categoryId])
+  @@map("skills")
+}
+
+model SkillTranslation {
+  id       String @id @default(cuid())
+  skillId  String @map("skill_id")
+  skill    Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  
+  locale   String
+  name     String
+  slug     String
+
+  @@unique([skillId, locale])
+  @@unique([locale, slug])
+  @@index([locale])
+  @@map("skill_translations")
+}
+
+// ==================== SLUG REDIRECTS ====================
+// For SEO: old slugs → new slugs (301 redirects)
+
+model SlugRedirect {
+  id          String   @id @default(cuid())
+  oldSlug     String   @map("old_slug")
+  newSlug     String   @map("new_slug")
+  locale      String
+  entityType  String   // "category", "skill", "freelancer", "mission"
+  entityId    String   @map("entity_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([locale, oldSlug, entityType])
+  @@index([locale, oldSlug])
+  @@map("slug_redirects")
+}
