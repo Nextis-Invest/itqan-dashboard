@@ -5,12 +5,46 @@ import { ChevronRight } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { buildSubcategoryUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
 
+const META_TEMPLATES: Record<string, { title: string; description: string }> = {
+  fr: {
+    title: "Freelances Maroc | Toutes les Catégories de Services | Itqan",
+    description: "Explorez toutes les catégories de freelances au Maroc. Design, développement, marketing, rédaction et plus. Trouvez l'expert qu'il vous faut sur Itqan.",
+  },
+  en: {
+    title: "Freelancers Morocco | All Service Categories | Itqan",
+    description: "Browse all freelancer categories in Morocco. Design, development, marketing, writing and more. Find the expert you need on Itqan.",
+  },
+  es: {
+    title: "Freelancers Marruecos | Todas las Categorías | Itqan",
+    description: "Explora todas las categorías de freelancers en Marruecos. Diseño, desarrollo, marketing, redacción y más. Encuentra el experto que necesitas.",
+  },
+  de: {
+    title: "Freelancer Marokko | Alle Service-Kategorien | Itqan",
+    description: "Durchsuchen Sie alle Freelancer-Kategorien in Marokko. Design, Entwicklung, Marketing, Schreiben und mehr. Finden Sie den Experten, den Sie brauchen.",
+  },
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
-  const t = await getTranslations({ locale, namespace: "categories" })
+  const meta = META_TEMPLATES[locale] || META_TEMPLATES.fr
+  
   return {
-    title: t("title"),
-    description: t("description"),
+    title: meta.title,
+    description: meta.description,
+    openGraph: {
+      title: meta.title,
+      description: meta.description,
+      type: "website",
+    },
+    alternates: {
+      canonical: "/categories",
+      languages: {
+        fr: "/categories",
+        en: "/en/categories",
+        es: "/es/categories",
+        de: "/de/categories",
+      },
+    },
   }
 }
 

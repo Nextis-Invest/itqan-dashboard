@@ -6,13 +6,17 @@ import { GigCard } from "@/components/gig-card"
 import { ChevronRight, SlidersHorizontal } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { buildSubcategoryUrl, buildCategoriesUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
+import { generateCategoryMetadata, getCategoryH1 } from "@/lib/seo-metadata"
 
 export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  const cat = await prisma.category.findUnique({ where: { slug }, select: { name: true } })
-  return { title: cat?.name || "Catégorie" }
+  const { locale, slug } = await params
+  const cat = await prisma.category.findUnique({ where: { slug }, select: { name: true, slug: true } })
+  if (!cat) return { title: "Catégorie" }
+  
+  const gigCount = await prisma.gig.count({ where: { category: slug, status: "ACTIVE" } })
+  return generateCategoryMetadata({ name: cat.name, slug: cat.slug }, locale, gigCount)
 }
 
 export default async function CategoryPage({
@@ -107,7 +111,7 @@ export default async function CategoryPage({
         <span className="text-foreground">{category.name}</span>
       </nav>
 
-      <h1 className="text-2xl md:text-3xl font-bold text-foreground">{category.name}</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-foreground">{getCategoryH1(category.name, locale)}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar */}

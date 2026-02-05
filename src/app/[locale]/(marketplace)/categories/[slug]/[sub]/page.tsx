@@ -6,6 +6,7 @@ import { GigCard } from "@/components/gig-card"
 import { ChevronRight } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { parseSubSlug, buildSubcategoryUrl, buildCategoriesUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
+import { generateSubcategoryMetadata, getSubcategoryH1 } from "@/lib/seo-metadata"
 
 export const dynamic = "force-dynamic"
 
@@ -14,15 +15,27 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; slug: string; sub: string }>
 }): Promise<Metadata> {
-  const { slug, sub } = await params
+  const { locale, slug, sub } = await params
   const realSub = parseSubSlug(sub)
+  
   const [parent, child] = await Promise.all([
-    prisma.category.findUnique({ where: { slug }, select: { name: true } }),
-    prisma.category.findUnique({ where: { slug: realSub }, select: { name: true } }),
+    prisma.category.findUnique({ where: { slug }, select: { name: true, slug: true } }),
+    prisma.category.findUnique({ where: { slug: realSub }, select: { name: true, slug: true } }),
   ])
-  return {
-    title: `${child?.name || realSub} — ${parent?.name || slug}`,
+  
+  if (!parent || !child) {
+    return { title: "Catégorie" }
   }
+  
+  const gigCount = await prisma.gig.count({ 
+    where: { category: slug, subcategory: realSub, status: "ACTIVE" } 
+  })
+  
+  return generateSubcategoryMetadata(
+    { name: child.name, slug: child.slug, parentName: parent.name, parentSlug: parent.slug },
+    locale,
+    gigCount
+  )
 }
 
 export default async function SubcategoryPage({
@@ -123,7 +136,7 @@ export default async function SubcategoryPage({
         <span className="text-foreground">{subCat.name}</span>
       </nav>
 
-      <h1 className="text-2xl md:text-3xl font-bold text-foreground">{subCat.name}</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-foreground">{getSubcategoryH1(subCat.name, parentCat.name, locale)}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar: sibling subcategories */}
