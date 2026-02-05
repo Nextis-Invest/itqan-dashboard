@@ -2,21 +2,28 @@
 
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
+import { useTheme } from "next-themes"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { User, Shield, Bell, Palette, Mail, Phone, Lock, Eye, Loader2 } from "lucide-react"
+import { User, Shield, Bell, Palette, Mail, Phone, Lock, Eye, Loader2, Moon, Sun } from "lucide-react"
 
 export default function SettingsPage() {
   const { data: session, status } = useSession()
+  const { theme, setTheme } = useTheme()
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -253,16 +260,37 @@ export default function SettingsPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 space-y-4">
           <div className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/60">
             <div className="flex items-center gap-3">
-              <Eye className="h-4 w-4 text-muted-foreground" />
+              {mounted && theme === "dark" ? (
+                <Moon className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <Sun className="h-4 w-4 text-muted-foreground" />
+              )}
               <div>
                 <p className="text-foreground text-sm font-medium">Thème sombre</p>
-                <p className="text-muted-foreground text-xs mt-0.5">Le thème sombre est activé par défaut</p>
+                <p className="text-muted-foreground text-xs mt-0.5">
+                  {mounted && theme === "dark"
+                    ? "Le thème sombre est activé"
+                    : "Le thème clair est activé"}
+                </p>
               </div>
             </div>
-            <span className="text-xs font-semibold text-lime-400 bg-lime-400/10 px-2.5 py-1 rounded-full">Actif</span>
+            {mounted && (
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  theme === "dark" ? "bg-lime-400" : "bg-secondary"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm ${
+                    theme === "dark" ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            )}
           </div>
         </CardContent>
       </Card>

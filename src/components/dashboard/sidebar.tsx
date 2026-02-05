@@ -145,11 +145,9 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
                     alt="Itqan"
                     width={40}
                     height={40}
-                    className="h-10 w-10 transition-all duration-300 group-hover:brightness-125"
+                    className="h-10 w-10 transition-all duration-300 dark:brightness-100 brightness-0"
                     priority
                   />
-                  {/* Subtle glow behind logo */}
-                  <div className="absolute inset-0 -z-10 blur-xl bg-lime-400/[0.06] rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
               </Link>
             </SidebarMenuButton>
