@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { MarketplaceNavbar } from "@/components/marketplace/navbar"
 import { MarketplaceFooter } from "@/components/marketplace/footer"
+import { MobileBottomNav } from "@/components/marketplace/mobile-bottom-nav"
 
 export default async function MarketplaceLayout({
   children,
@@ -24,8 +25,9 @@ export default async function MarketplaceLayout({
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <MarketplaceNavbar categories={categories} />
-      <main className="flex-1 px-4 md:px-6 py-6">{children}</main>
+      <main className="flex-1 px-4 md:px-6 py-6 pb-20 md:pb-6">{children}</main>
       <MarketplaceFooter />
+      <MobileBottomNav />
     </div>
   )
 }
