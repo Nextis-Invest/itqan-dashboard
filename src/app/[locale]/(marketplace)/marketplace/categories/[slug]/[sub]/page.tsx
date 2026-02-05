@@ -7,6 +7,7 @@ import { ChevronRight } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { parseSubSlug, buildSubcategoryUrl, buildCategoriesUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
 import { generateSubcategoryMetadata, getSubcategoryH1 } from "@/lib/seo-metadata"
+import { MissionForm } from "./mission-form"
 
 export const dynamic = "force-dynamic"
 
@@ -136,7 +137,9 @@ export default async function SubcategoryPage({
         <span className="text-foreground">{subCat.name}</span>
       </nav>
 
-      <h1 className="text-2xl md:text-3xl font-bold text-foreground">{getSubcategoryH1(subCat.name, parentCat.name, locale)}</h1>
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground">{getSubcategoryH1(subCat.name, parentCat.name, locale)}</h1>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar: sibling subcategories */}
@@ -168,70 +171,76 @@ export default async function SubcategoryPage({
         </aside>
 
         {/* Main */}
-        <div className="lg:col-span-3 space-y-6">
-          {/* Sort bar */}
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {total} service{total !== 1 ? "s" : ""} trouvé{total !== 1 ? "s" : ""}
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{t("sort_by")} :</span>
-              <div className="flex gap-1">
-                {sortOptions.map((opt) => (
-                  <Link
-                    key={opt.value}
-                    href={buildPageUrl({ sort: opt.value, page: "1" })}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                      sort === opt.value
-                        ? "bg-lime-400/10 text-lime-400"
-                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                    }`}
-                  >
-                    {opt.label}
-                  </Link>
+        <div className="lg:col-span-3 space-y-8">
+          {/* Mission Form */}
+          <MissionForm
+            category={slug}
+            subcategory={realSub}
+            categoryName={parentCat.name}
+            subcategoryName={subCat.name}
+            locale={locale}
+          />
+
+          {/* Gigs Section - Only show if there are gigs */}
+          {gigs.length > 0 && (
+            <>
+              {/* Sort bar */}
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  {total} service{total !== 1 ? "s" : ""} trouvé{total !== 1 ? "s" : ""}
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">{t("sort_by")} :</span>
+                  <div className="flex gap-1">
+                    {sortOptions.map((opt) => (
+                      <Link
+                        key={opt.value}
+                        href={buildPageUrl({ sort: opt.value, page: "1" })}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                          sort === opt.value
+                            ? "bg-lime-400/10 text-lime-400"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                        }`}
+                      >
+                        {opt.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {gigs.map((gig) => (
+                  <GigCard key={gig.id} gig={gig} />
                 ))}
               </div>
-            </div>
-          </div>
 
-          {/* Grid */}
-          {gigs.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground">
-                {t("no_services_sub")}
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {gigs.map((gig) => (
-                <GigCard key={gig.id} gig={gig} />
-              ))}
-            </div>
-          )}
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2">
-              {page > 1 && (
-                <Link
-                  href={buildPageUrl({ page: String(page - 1) })}
-                  className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
-                >
-                  {t("previous")}
-                </Link>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2">
+                  {page > 1 && (
+                    <Link
+                      href={buildPageUrl({ page: String(page - 1) })}
+                      className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
+                    >
+                      {t("previous")}
+                    </Link>
+                  )}
+                  <span className="px-4 py-2 text-sm text-muted-foreground">
+                    Page {page} / {totalPages}
+                  </span>
+                  {page < totalPages && (
+                    <Link
+                      href={buildPageUrl({ page: String(page + 1) })}
+                      className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
+                    >
+                      {t("next")}
+                    </Link>
+                  )}
+                </div>
               )}
-              <span className="px-4 py-2 text-sm text-muted-foreground">
-                Page {page} / {totalPages}
-              </span>
-              {page < totalPages && (
-                <Link
-                  href={buildPageUrl({ page: String(page + 1) })}
-                  className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
-                >
-                  {t("next")}
-                </Link>
-              )}
-            </div>
+            </>
           )}
         </div>
       </div>

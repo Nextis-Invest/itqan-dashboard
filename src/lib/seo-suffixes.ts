@@ -64,3 +64,23 @@ export function buildCategoryUrl(categorySlug: string): string {
 export function buildCategoriesUrl(): string {
   return `/marketplace/categories`
 }
+
+/**
+ * Build skill URL with SEO suffix
+ * @param skillSlug - Skill slug (without suffix)
+ * @param locale - Current locale (defaults to 'fr')
+ */
+export function buildSkillUrl(
+  skillSlug: string,
+  locale: string = DEFAULT_LOCALE
+): string {
+  const suffix = getSeoSuffix(locale)
+  return `/marketplace/skills/${skillSlug}${suffix}`
+}
+
+/**
+ * Build skills index URL
+ */
+export function buildSkillsUrl(): string {
+  return `/marketplace/skills`
+}

@@ -180,3 +180,133 @@ export function getSubcategoryH1(name: string, parentName: string, locale: strin
   }
   return (h1Templates[locale] || h1Templates.fr)(name, parentName)
 }
+
+// ==================== SKILLS SEO ====================
+
+interface SkillSeoData {
+  name: string
+  slug: string
+  categoryName?: string
+  categorySlug?: string
+}
+
+// Skill-specific SEO templates
+const SKILL_SEO_TEMPLATES: Record<string, {
+  skillTitle: (name: string) => string
+  skillDesc: (name: string, count?: number) => string
+  skillTitleWithCat: (name: string, cat: string) => string
+  skillDescWithCat: (name: string, cat: string, count?: number) => string
+}> = {
+  fr: {
+    skillTitle: (name) => `Freelances ${name} au Maroc | Experts Certifiés | Itqan`,
+    skillDesc: (name, count) => 
+      `Recrutez les meilleurs freelances ${name} au Maroc. ${count ? `+${count} experts disponibles. ` : ""}Profils vérifiés, tarifs compétitifs. Trouvez votre expert ${name} en 24h.`,
+    skillTitleWithCat: (name, cat) => `Freelances ${name} Maroc | ${cat} | Itqan`,
+    skillDescWithCat: (name, cat, count) =>
+      `Experts ${name} freelances au Maroc. ${count ? `${count}+ professionnels ${cat}. ` : ""}Comparez les profils et tarifs. Devis gratuit sur Itqan.`,
+  },
+  en: {
+    skillTitle: (name) => `${name} Freelancers Morocco | Certified Experts | Itqan`,
+    skillDesc: (name, count) =>
+      `Hire the best ${name} freelancers in Morocco. ${count ? `${count}+ experts available. ` : ""}Verified profiles, competitive rates. Find your ${name} expert in 24h.`,
+    skillTitleWithCat: (name, cat) => `${name} Freelancers Morocco | ${cat} | Itqan`,
+    skillDescWithCat: (name, cat, count) =>
+      `Expert ${name} freelancers in Morocco. ${count ? `${count}+ ${cat} professionals. ` : ""}Compare profiles and rates. Free quote on Itqan.`,
+  },
+  es: {
+    skillTitle: (name) => `Freelancers ${name} Marruecos | Expertos Certificados | Itqan`,
+    skillDesc: (name, count) =>
+      `Contrata los mejores freelancers de ${name} en Marruecos. ${count ? `+${count} expertos disponibles. ` : ""}Perfiles verificados, tarifas competitivas.`,
+    skillTitleWithCat: (name, cat) => `Freelancers ${name} Marruecos | ${cat} | Itqan`,
+    skillDescWithCat: (name, cat, count) =>
+      `Expertos ${name} freelancers en Marruecos. ${count ? `${count}+ profesionales de ${cat}. ` : ""}Compara perfiles y tarifas.`,
+  },
+  de: {
+    skillTitle: (name) => `${name} Freelancer Marokko | Zertifizierte Experten | Itqan`,
+    skillDesc: (name, count) =>
+      `Stellen Sie die besten ${name} Freelancer in Marokko ein. ${count ? `${count}+ Experten verfügbar. ` : ""}Verifizierte Profile, wettbewerbsfähige Preise.`,
+    skillTitleWithCat: (name, cat) => `${name} Freelancer Marokko | ${cat} | Itqan`,
+    skillDescWithCat: (name, cat, count) =>
+      `${name} Experten-Freelancer in Marokko. ${count ? `${count}+ ${cat} Profis. ` : ""}Vergleichen Sie Profile und Preise.`,
+  },
+  ar: {
+    skillTitle: (name) => `مستقلون ${name} المغرب | خبراء معتمدون | إتقان`,
+    skillDesc: (name, count) =>
+      `وظّف أفضل المستقلين في ${name} في المغرب. ${count ? `+${count} خبير متاح. ` : ""}ملفات موثقة، أسعار تنافسية.`,
+    skillTitleWithCat: (name, cat) => `مستقلون ${name} المغرب | ${cat} | إتقان`,
+    skillDescWithCat: (name, cat, count) =>
+      `خبراء ${name} مستقلون في المغرب. ${count ? `${count}+ محترف ${cat}. ` : ""}قارن الملفات والأسعار.`,
+  },
+}
+
+const getSkillTemplates = (locale: string) => SKILL_SEO_TEMPLATES[locale] || SKILL_SEO_TEMPLATES.fr
+
+/**
+ * Generate metadata for a skill page
+ */
+export function generateSkillMetadata(
+  skill: SkillSeoData,
+  locale: string,
+  gigCount?: number
+): Metadata {
+  const templates = getSkillTemplates(locale)
+  
+  const SEO_SUFFIXES: Record<string, string> = {
+    fr: "-freelance-maroc",
+    en: "-freelance-morocco",
+    es: "-freelance-marruecos",
+    de: "-freelance-marokko",
+    ar: "-freelance-morocco",
+  }
+  
+  const suffix = SEO_SUFFIXES[locale] || SEO_SUFFIXES.fr
+  const canonicalPath = `/marketplace/skills/${skill.slug}${suffix}`
+
+  const title = skill.categoryName 
+    ? templates.skillTitleWithCat(skill.name, skill.categoryName)
+    : templates.skillTitle(skill.name)
+    
+  const description = skill.categoryName
+    ? templates.skillDescWithCat(skill.name, skill.categoryName, gigCount)
+    : templates.skillDesc(skill.name, gigCount)
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      locale: locale,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+    alternates: {
+      canonical: canonicalPath,
+      languages: Object.fromEntries(
+        Object.keys(SEO_SUFFIXES).map(loc => {
+          const locSuffix = SEO_SUFFIXES[loc] || SEO_SUFFIXES.fr
+          const path = `/marketplace/skills/${skill.slug}${locSuffix}`
+          return [loc, loc === "fr" ? path : `/${loc}${path}`]
+        })
+      ),
+    },
+  }
+}
+
+/**
+ * Get optimized H1 for skill pages
+ */
+export function getSkillH1(name: string, locale: string): string {
+  const h1Templates: Record<string, (name: string) => string> = {
+    fr: (n) => `Freelances ${n} au Maroc`,
+    en: (n) => `${n} Freelancers in Morocco`,
+    es: (n) => `Freelancers de ${n} en Marruecos`,
+    de: (n) => `${n} Freelancer in Marokko`,
+    ar: (n) => `مستقلون ${n} في المغرب`,
+  }
+  return (h1Templates[locale] || h1Templates.fr)(name)
+}
