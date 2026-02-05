@@ -4,8 +4,8 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
+import Image from "next/image"
 import { motion } from "framer-motion"
-import { Logo } from "@/components/ui/logo"
 import {
   LayoutDashboard,
   Settings,
@@ -140,10 +140,13 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
                 className="flex items-center gap-2 group"
               >
                 <div className="relative">
-                  <Logo
-                    width={120}
+                  <Image
+                    src="/icons/Itqan-Logo-icon.svg"
+                    alt="Itqan"
+                    width={40}
                     height={40}
-                    className="h-10 w-auto transition-all duration-300 group-hover:brightness-125"
+                    className="h-10 w-10 transition-all duration-300 group-hover:brightness-125"
+                    priority
                   />
                   {/* Subtle glow behind logo */}
                   <div className="absolute inset-0 -z-10 blur-xl bg-lime-400/[0.06] rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
