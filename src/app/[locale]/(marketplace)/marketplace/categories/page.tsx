@@ -4,6 +4,7 @@ import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { buildSubcategoryUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
+import { MarketplaceSearchBar } from "@/components/marketplace/search-bar"
 
 const META_TEMPLATES: Record<string, { title: string; description: string }> = {
   fr: {
@@ -110,6 +111,9 @@ export default async function CategoriesPage({
           {t("description")}
         </p>
       </div>
+
+      {/* Search Bar */}
+      <MarketplaceSearchBar />
 
       <div className="space-y-12">
         {categories.map((cat) => (

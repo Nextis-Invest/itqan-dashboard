@@ -21,6 +21,7 @@
   },
   "categories": {
     "title": "Catégories",
-    "description": "Explorez nos catégories de services pour trouver le freelancer idéal"
+    "description": "Explorez nos catégories de services pour trouver le freelancer idéal",
+    "searchPlaceholder": "Rechercher un service ou une compétence..."
   }
 }

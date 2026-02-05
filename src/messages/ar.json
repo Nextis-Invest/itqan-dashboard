@@ -20,7 +20,8 @@
     "search_placeholder": "Search for a service..."
   },
   "categories": {
-    "title": "Categories",
-    "description": "Browse our service categories to find the ideal freelancer"
+    "title": "الفئات",
+    "description": "استعرض فئات الخدمات للعثور على المستقل المثالي",
+    "searchPlaceholder": "ابحث عن خدمة أو مهارة..."
   }
 }

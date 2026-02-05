@@ -20,7 +20,8 @@
     "search_placeholder": "Search for a service..."
   },
   "categories": {
-    "title": "Categories",
-    "description": "Browse our service categories to find the ideal freelancer"
+    "title": "Categorías",
+    "description": "Explora nuestras categorías de servicios para encontrar al freelancer ideal",
+    "searchPlaceholder": "Buscar un servicio o habilidad..."
   }
 }
