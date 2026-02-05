@@ -2,6 +2,9 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma"
 import { randomBytes } from "crypto"
+import { resend, FROM_EMAIL } from "@/lib/email/resend"
+import { VerificationEmail, verificationEmailText } from "@/lib/email/templates/verification-email"
+import { render } from "@react-email/render"
 
 export async function POST() {
   try {
@@ -79,23 +82,50 @@ export async function POST() {
       },
     })
 
-    // TODO: Send verification email
-    // For now, we'll just log the verification URL
+    // Generate verification URL
     const verificationUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`
     console.log('[Resend Verification] SUCCESS - Token generated')
     console.log('[Resend Verification] Verification URL:', verificationUrl)
-    console.log('[Resend Verification] TODO: Send email to:', user.email)
 
-    // In production, you would send an email here using a service like:
-    // - Resend
-    // - SendGrid
-    // - AWS SES
-    // Example:
-    // await sendEmail({
-    //   to: user.email,
-    //   subject: "Vérifiez votre adresse email",
-    //   html: `<a href="${verificationUrl}">Cliquez ici pour vérifier votre email</a>`
-    // })
+    try {
+      // Render email templates
+      const emailHtml = await render(
+        VerificationEmail({
+          verificationUrl,
+          userName: session.user.name || undefined,
+        })
+      )
+
+      const emailText = verificationEmailText({
+        verificationUrl,
+        userName: session.user.name || undefined,
+      })
+
+      // Send email using Resend
+      const { data, error } = await resend.emails.send({
+        from: FROM_EMAIL,
+        to: user.email,
+        subject: "Vérifiez votre adresse email - Itqan",
+        html: emailHtml,
+        text: emailText,
+      })
+
+      if (error) {
+        console.error('[Resend Verification] Email send error:', error)
+        return NextResponse.json(
+          { error: "Erreur lors de l'envoi de l'email" },
+          { status: 500 }
+        )
+      }
+
+      console.log('[Resend Verification] Email sent successfully:', data)
+    } catch (emailError) {
+      console.error('[Resend Verification] Email send exception:', emailError)
+      return NextResponse.json(
+        { error: "Erreur lors de l'envoi de l'email" },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
