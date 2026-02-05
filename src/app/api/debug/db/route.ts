@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { getRedisClient } from "@/lib/redis"
 
 export async function GET() {
   const diagnostics: Record<string, any> = {
@@ -11,6 +12,8 @@ export async function GET() {
       hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
       hasNextAuthUrl: !!process.env.NEXTAUTH_URL,
       nextAuthUrl: process.env.NEXTAUTH_URL,
+      hasRedisUrl: !!process.env.REDIS_URL,
+      redisUrlPrefix: process.env.REDIS_URL?.split("://")[0],
     },
     tests: {}
   }
@@ -55,6 +58,66 @@ export async function GET() {
     diagnostics.tests.missionTable = { status: "✅ OK", message: `Mission table exists with ${missionCount} missions` }
   } catch (error) {
     diagnostics.tests.missionTable = {
+      status: "❌ FAILED",
+      error: error instanceof Error ? error.message : String(error)
+    }
+  }
+
+  // Test 5: Redis connection
+  try {
+    const redis = getRedisClient()
+    if (!redis) {
+      diagnostics.tests.redisConnection = {
+        status: "⚠️  SKIPPED",
+        message: "Redis not configured (optional)"
+      }
+    } else {
+      if (redis.status !== "ready") {
+        await redis.connect()
+      }
+      await redis.ping()
+      diagnostics.tests.redisConnection = {
+        status: "✅ OK",
+        message: "Redis connection successful"
+      }
+    }
+  } catch (error) {
+    diagnostics.tests.redisConnection = {
+      status: "❌ FAILED",
+      error: error instanceof Error ? error.message : String(error)
+    }
+  }
+
+  // Test 6: Redis cache read/write
+  try {
+    const redis = getRedisClient()
+    if (redis && redis.status === "ready") {
+      const testKey = "test:diagnostic"
+      const testValue = "test-" + Date.now()
+
+      await redis.setex(testKey, 10, testValue)
+      const retrieved = await redis.get(testKey)
+      await redis.del(testKey)
+
+      if (retrieved === testValue) {
+        diagnostics.tests.redisCache = {
+          status: "✅ OK",
+          message: "Redis cache read/write successful"
+        }
+      } else {
+        diagnostics.tests.redisCache = {
+          status: "❌ FAILED",
+          error: "Retrieved value doesn't match"
+        }
+      }
+    } else {
+      diagnostics.tests.redisCache = {
+        status: "⚠️  SKIPPED",
+        message: "Redis not available"
+      }
+    }
+  } catch (error) {
+    diagnostics.tests.redisCache = {
       status: "❌ FAILED",
       error: error instanceof Error ? error.message : String(error)
     }
