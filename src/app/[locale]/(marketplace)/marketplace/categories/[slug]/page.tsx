@@ -2,13 +2,73 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
-import { GigCard } from "@/components/gig-card"
-import { ChevronRight, SlidersHorizontal } from "lucide-react"
+import { ChevronRight, ArrowRight, Users, Briefcase } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { buildSubcategoryUrl, buildCategoriesUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
+import { buildSubcategoryUrl, buildCategoriesUrl } from "@/lib/seo-suffixes"
 import { generateCategoryMetadata, getCategoryH1 } from "@/lib/seo-metadata"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = "force-dynamic"
+
+// Images par sous-catégorie
+const subcategoryImages: Record<string, string> = {
+  // Design
+  "logo-identite": "/mockups/cat-design.png",
+  "web-design": "/mockups/cat-dev-web.png",
+  "ui-ux-design": "/mockups/cat-design.png",
+  "illustration": "/mockups/cat-design.png",
+  // Dev
+  "developpement-web": "/mockups/cat-dev-web.png",
+  "developpement-mobile": "/mockups/cat-dev-mobile.png",
+  "e-commerce": "/mockups/cat-dev-web.png",
+  "devops-cloud": "/mockups/cat-data-it.png",
+  "ia-machine-learning": "/mockups/cat-data-it.png",
+  // Marketing
+  "seo": "/mockups/cat-marketing.png",
+  "social-media": "/mockups/cat-marketing.png",
+  "email-marketing": "/mockups/cat-marketing.png",
+  "publicite-en-ligne": "/mockups/cat-marketing.png",
+  // Rédaction
+  "redaction-web": "/mockups/cat-traduction.png",
+  "copywriting": "/mockups/cat-traduction.png",
+  "traduction": "/mockups/cat-traduction.png",
+  // Vidéo
+  "montage-video": "/mockups/cat-marketing.png",
+  "motion-design": "/mockups/cat-marketing.png",
+  "animation-2d-3d": "/mockups/cat-marketing.png",
+  // Business
+  "conseil-strategique": "/mockups/cat-finance.png",
+  "comptabilite-finance": "/mockups/cat-finance.png",
+  "juridique": "/mockups/cat-finance.png",
+}
+
+// Icônes par sous-catégorie
+const subcategoryIcons: Record<string, string> = {
+  "logo-identite": "🎨",
+  "web-design": "🖥️",
+  "ui-ux-design": "📱",
+  "illustration": "✏️",
+  "developpement-web": "💻",
+  "developpement-mobile": "📲",
+  "e-commerce": "🛒",
+  "devops-cloud": "☁️",
+  "ia-machine-learning": "🤖",
+  "seo": "🔍",
+  "social-media": "📣",
+  "email-marketing": "📧",
+  "publicite-en-ligne": "🎯",
+  "redaction-web": "📝",
+  "copywriting": "✍️",
+  "traduction": "🌍",
+  "montage-video": "🎬",
+  "motion-design": "🎞️",
+  "animation-2d-3d": "🎭",
+  "conseil-strategique": "💼",
+  "comptabilite-finance": "💰",
+  "juridique": "⚖️",
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params
@@ -21,13 +81,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function CategoryPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>
-  searchParams: Promise<{ page?: string; sort?: string; sub?: string }>
 }) {
   const { locale, slug } = await params
-  const sp = await searchParams
   setRequestLocale(locale)
 
   const t = await getTranslations("common")
@@ -37,71 +94,27 @@ export default async function CategoryPage({
     include: {
       children: {
         orderBy: { order: "asc" },
-        include: { children: { orderBy: { order: "asc" } } },
       },
     },
   })
 
   if (!category) notFound()
 
-  const page = Math.max(1, parseInt(sp.page || "1"))
-  const sort = sp.sort || "popular"
-  const subFilter = sp.sub || null
-  const limit = 12
-
-  const where: any = { status: "ACTIVE" as const, category: slug }
-  if (subFilter) where.subcategory = subFilter
-
-  const orderByMap: Record<string, any> = {
-    popular: { orderCount: "desc" },
-    newest: { createdAt: "desc" },
-    price_asc: { basicPrice: "asc" },
-    price_desc: { basicPrice: "desc" },
-  }
-
-  const [gigs, total] = await Promise.all([
-    prisma.gig.findMany({
-      where,
-      include: {
-        freelancer: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            freelancerProfile: {
-              select: { title: true, avgRating: true, city: true, verified: true },
-            },
-          },
-        },
-      },
-      orderBy: orderByMap[sort] || orderByMap.popular,
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.gig.count({ where }),
-  ])
-
-  const totalPages = Math.ceil(total / limit)
-
-  const sortOptions = [
-    { value: "popular", label: t("popular") },
-    { value: "newest", label: t("newest") },
-    { value: "price_asc", label: t("price_asc") },
-    { value: "price_desc", label: t("price_desc") },
-  ]
-
-  function buildUrl(overrides: Record<string, string | null>) {
-    const p = new URLSearchParams()
-    const current = { page: sp.page || "1", sort: sort, sub: subFilter || "" }
-    const merged = { ...current, ...overrides }
-    Object.entries(merged).forEach(([k, v]) => {
-      if (v) p.set(k, v)
+  // Compter les gigs et freelances par sous-catégorie
+  const subcategoryStats = await Promise.all(
+    category.children.map(async (sub) => {
+      const [gigCount, freelancerCount] = await Promise.all([
+        prisma.gig.count({ where: { subcategory: sub.slug, status: "ACTIVE" } }),
+        prisma.freelancerProfile.count({ where: { category: sub.slug } }),
+      ])
+      return { slug: sub.slug, gigCount, freelancerCount }
     })
-    return `${buildCategoryUrl(slug)}?${p.toString()}`
-  }
+  )
+
+  const statsMap = new Map(subcategoryStats.map(s => [s.slug, s]))
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground">
         <Link href={buildCategoriesUrl()} className="hover:text-lime-400 transition-colors">
@@ -111,107 +124,81 @@ export default async function CategoryPage({
         <span className="text-foreground">{category.name}</span>
       </nav>
 
-      <h1 className="text-2xl md:text-3xl font-bold text-foreground">{getCategoryH1(category.name, locale)}</h1>
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+          {getCategoryH1(category.name, locale)}
+        </h1>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          {t("explore_subcategories") || `Explorez nos ${category.children.length} spécialités en ${category.name}`}
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar */}
-        <aside className="space-y-4">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-            <SlidersHorizontal className="h-4 w-4" />
-            {t("subcategories")}
-          </h3>
-          <div className="space-y-1">
-            <Link
-              href={buildUrl({ sub: null, page: "1" })}
-              className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
-                !subFilter
-                  ? "bg-lime-400/10 text-lime-400 font-medium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
-              }`}
+      {/* Subcategory Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {category.children.map((sub) => {
+          const stats = statsMap.get(sub.slug)
+          const image = subcategoryImages[sub.slug] || "/mockups/cat-design.png"
+          const icon = subcategoryIcons[sub.slug] || "📁"
+          
+          return (
+            <Card 
+              key={sub.id} 
+              className="group overflow-hidden border-border bg-card hover:border-lime-400/50 transition-all duration-300"
             >
-              {t("all")}
-            </Link>
-            {category.children.map((sub) => (
-              <Link
-                key={sub.id}
-                href={buildSubcategoryUrl(slug, sub.slug, locale)}
-                className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
-                  subFilter === sub.slug
-                    ? "bg-lime-400/10 text-lime-400 font-medium"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                }`}
-              >
-                {sub.name}
-              </Link>
-            ))}
-          </div>
-        </aside>
-
-        {/* Main */}
-        <div className="lg:col-span-3 space-y-6">
-          {/* Sort bar */}
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {total} service{total !== 1 ? "s" : ""} trouvé{total !== 1 ? "s" : ""}
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{t("sort_by")} :</span>
-              <div className="flex gap-1">
-                {sortOptions.map((opt) => (
-                  <Link
-                    key={opt.value}
-                    href={buildUrl({ sort: opt.value, page: "1" })}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                      sort === opt.value
-                        ? "bg-lime-400/10 text-lime-400"
-                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                    }`}
-                  >
-                    {opt.label}
-                  </Link>
-                ))}
+              {/* Image */}
+              <div className="relative h-40 overflow-hidden">
+                <img
+                  src={image}
+                  alt={sub.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                  <span className="text-2xl">{icon}</span>
+                  <h3 className="text-lg font-bold text-white">{sub.name}</h3>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Grid */}
-          {gigs.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground">{t("no_services")}</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {gigs.map((gig) => (
-                <GigCard key={gig.id} gig={gig} />
-              ))}
-            </div>
-          )}
+              <CardContent className="p-4 space-y-4">
+                {/* Stats */}
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Users className="h-4 w-4" />
+                    <span>{stats?.freelancerCount || 0} freelances</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Briefcase className="h-4 w-4" />
+                    <span>{stats?.gigCount || 0} services</span>
+                  </div>
+                </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2">
-              {page > 1 && (
-                <Link
-                  href={buildUrl({ page: String(page - 1) })}
-                  className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
-                >
-                  {t("previous")}
+                {/* CTA Button */}
+                <Link href={buildSubcategoryUrl(slug, sub.slug, locale)} className="block">
+                  <Button 
+                    className="w-full bg-lime-400 hover:bg-lime-300 text-neutral-900 font-semibold group/btn"
+                  >
+                    Explorer {sub.name}
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                  </Button>
                 </Link>
-              )}
-              <span className="px-4 py-2 text-sm text-muted-foreground">
-                Page {page} / {totalPages}
-              </span>
-              {page < totalPages && (
-                <Link
-                  href={buildUrl({ page: String(page + 1) })}
-                  className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-lime-400/50 transition-colors"
-                >
-                  {t("next")}
-                </Link>
-              )}
-            </div>
-          )}
-        </div>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </div>
+
+      {/* Bottom CTA */}
+      <div className="text-center pt-8">
+        <p className="text-muted-foreground mb-4">
+          {t("not_finding") || "Vous ne trouvez pas ce que vous cherchez ?"}
+        </p>
+        <Link href="/missions/new">
+          <Button variant="outline" size="lg" className="border-lime-400/50 text-lime-400 hover:bg-lime-400/10">
+            Publier une mission personnalisée
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
       </div>
     </div>
   )
