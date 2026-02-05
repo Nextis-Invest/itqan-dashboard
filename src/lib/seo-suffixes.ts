@@ -48,19 +48,19 @@ export function buildSubcategoryUrl(
   locale: string = DEFAULT_LOCALE
 ): string {
   const suffix = getSeoSuffix(locale)
-  return `/categories/${categorySlug}/${subcategorySlug}${suffix}`
+  return `/marketplace/categories/${categorySlug}/${subcategorySlug}${suffix}`
 }
 
 /**
  * Build category URL
  */
 export function buildCategoryUrl(categorySlug: string): string {
-  return `/categories/${categorySlug}`
+  return `/marketplace/categories/${categorySlug}`
 }
 
 /**
  * Build categories index URL
  */
 export function buildCategoriesUrl(): string {
-  return `/categories`
+  return `/marketplace/categories`
 }

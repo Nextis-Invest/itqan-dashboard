@@ -37,12 +37,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       type: "website",
     },
     alternates: {
-      canonical: "/categories",
+      canonical: "/marketplace/categories",
       languages: {
-        fr: "/categories",
-        en: "/en/categories",
-        es: "/es/categories",
-        de: "/de/categories",
+        fr: "/marketplace/categories",
+        en: "/en/marketplace/categories",
+        es: "/es/marketplace/categories",
+        de: "/de/marketplace/categories",
       },
     },
   }
