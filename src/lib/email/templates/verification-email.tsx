@@ -40,23 +40,22 @@ export const VerificationEmail = ({
           <div
             style={{
               display: "inline-block",
-              padding: "12px 24px",
+              padding: "16px 32px",
               backgroundColor: "#ffffff",
               borderRadius: "12px",
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
             }}
           >
-            <h1
+            <img
+              src="https://app.itqan.ma/icons/itqan-logo.svg"
+              alt="Itqan"
+              width="140"
+              height="48"
               style={{
+                display: "block",
                 margin: 0,
-                fontSize: "28px",
-                fontWeight: "700",
-                color: "#a3e635",
-                letterSpacing: "-0.02em",
               }}
-            >
-              Itqan
-            </h1>
+            />
           </div>
         </div>
 
@@ -102,9 +101,10 @@ export const VerificationEmail = ({
               lineHeight: "1.6",
             }}
           >
-            Bienvenue sur <strong>Itqan</strong> ! Pour commencer à utiliser
-            votre compte et accéder à toutes les fonctionnalités de notre
-            plateforme, veuillez vérifier votre adresse email.
+            Bienvenue sur <strong style={{ color: "#a3e635" }}>Itqan</strong> !
+            Pour commencer à utiliser votre compte et accéder à toutes les
+            fonctionnalités de la plateforme de freelance au Maroc et en France,
+            veuillez vérifier votre adresse email.
           </p>
 
           {/* CTA Button */}
@@ -113,18 +113,18 @@ export const VerificationEmail = ({
               href={verificationUrl}
               style={{
                 display: "inline-block",
-                padding: "14px 32px",
+                padding: "16px 40px",
                 backgroundColor: "#a3e635",
                 color: "#18181b",
                 textDecoration: "none",
-                borderRadius: "8px",
-                fontWeight: "600",
+                borderRadius: "10px",
+                fontWeight: "700",
                 fontSize: "16px",
-                boxShadow: "0 2px 8px rgba(163, 230, 53, 0.3)",
-                transition: "all 0.2s ease",
+                boxShadow: "0 4px 12px rgba(163, 230, 53, 0.4)",
+                border: "2px solid #a3e635",
               }}
             >
-              Vérifier mon email
+              ✓ Vérifier mon email
             </a>
           </div>
 
