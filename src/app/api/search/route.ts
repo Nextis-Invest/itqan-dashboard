@@ -84,51 +84,35 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: "desc" },
     })
 
-    // Search categories from catalog
-    let categories: Array<{ id: string; name: string; slug: string; icon: string | null; parentSlug: string | null }> = []
+    // Search categories from main database (same as marketplace pages use)
+    const categoryResults = await prisma.category.findMany({
+      where: {
+        OR: [
+          { name: { contains: query, mode: "insensitive" } },
+          { slug: { contains: query, mode: "insensitive" } },
+        ],
+      },
+      include: {
+        parent: {
+          select: { slug: true },
+        },
+      },
+      take: 10,
+      orderBy: { level: "asc" },
+    })
+
+    const categories = categoryResults.map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      icon: cat.icon,
+      parentSlug: cat.parent?.slug || null,
+    }))
+
+    // Search skills from catalog (these link to skill pages, not category pages)
     let skills: Array<{ id: string; name: string; slug: string; categorySlug: string | null }> = []
     
     try {
-      // Search categories
-      const catResults = await prismaCatalog.category.findMany({
-        where: {
-          isActive: true,
-          translations: {
-            some: {
-              locale: "fr",
-              OR: [
-                { name: { contains: query, mode: "insensitive" } },
-                { slug: { contains: query, mode: "insensitive" } },
-              ],
-            },
-          },
-        },
-        include: {
-          translations: {
-            where: { locale: "fr" },
-            select: { name: true, slug: true },
-          },
-          parent: {
-            include: {
-              translations: {
-                where: { locale: "fr" },
-                select: { slug: true },
-              },
-            },
-          },
-        },
-        take: 10,
-      })
-
-      categories = catResults.map((cat) => ({
-        id: cat.id,
-        name: cat.translations[0]?.name || "",
-        slug: cat.translations[0]?.slug || "",
-        icon: cat.icon,
-        parentSlug: cat.parent?.translations[0]?.slug || null,
-      }))
-
-      // Search skills/technologies
       const skillResults = await prismaCatalog.skill.findMany({
         where: {
           isActive: true,
@@ -151,36 +135,15 @@ export async function GET(request: NextRequest) {
         take: 15,
       })
 
-      // Get category slugs for skills
-      const categoryIds = skillResults
-        .map((s) => s.categoryId)
-        .filter((id): id is string => id !== null)
-      
-      const skillCategories = categoryIds.length > 0
-        ? await prismaCatalog.category.findMany({
-            where: { id: { in: categoryIds } },
-            include: {
-              translations: {
-                where: { locale: "fr" },
-                select: { slug: true },
-              },
-            },
-          })
-        : []
-      
-      const catSlugMap = new Map(
-        skillCategories.map((c) => [c.id, c.translations[0]?.slug || null])
-      )
-
       skills = skillResults.map((skill) => ({
         id: skill.id,
         name: skill.translations[0]?.name || "",
         slug: skill.translations[0]?.slug || "",
-        categorySlug: skill.categoryId ? catSlugMap.get(skill.categoryId) || null : null,
+        categorySlug: null, // Skills link to /marketplace/skills/[slug], not category pages
       }))
     } catch {
       // Catalog DB might not be available
-      console.warn("Catalog search failed, skipping categories/skills")
+      console.warn("Catalog skill search failed, skipping skills")
     }
 
     // Serialize results

@@ -6,6 +6,7 @@ import { config } from "@/lib/config"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { buildCategoryUrl, buildSubcategoryUrl, buildSkillUrl } from "@/lib/seo-suffixes"
 
 export const dynamic = "force-dynamic"
 
@@ -326,7 +327,7 @@ function GigCard({ gig }: { gig: SearchResult["gigs"][0] }) {
   )
 }
 
-function CategoryPill({ category }: { category: SearchResult["categories"][0] }) {
+function CategoryPill({ category, locale }: { category: SearchResult["categories"][0]; locale: string }) {
   const iconMap: Record<string, string> = {
     code: "💻", palette: "🎨", megaphone: "📣", pen_tool: "✏️",
     bar_chart: "📊", video: "🎬", music: "🎵", globe: "🌐",
@@ -334,17 +335,17 @@ function CategoryPill({ category }: { category: SearchResult["categories"][0] })
     heart: "❤️", shield: "🛡️", cpu: "🔧", trending_up: "📈",
   }
 
+  const href = category.parentSlug
+    ? buildSubcategoryUrl(category.parentSlug, category.slug, locale)
+    : buildCategoryUrl(category.slug)
+
   return (
     <Link
-      href={
-        category.parentSlug
-          ? `/marketplace/categories/${category.parentSlug}/${category.slug}`
-          : `/marketplace/categories/${category.slug}`
-      }
+      href={href}
       className="group flex items-center gap-3 px-4 py-3 rounded-xl bg-neutral-900 border border-white/10 hover:border-lime-400/50 hover:bg-neutral-800 transition-all"
     >
       <span className="text-2xl">
-        {iconMap[category.icon || ""] || "📂"}
+        {iconMap[category.icon || ""] || category.icon || "📂"}
       </span>
       <span className="font-medium text-white group-hover:text-lime-400 transition-colors">
         {category.name}
@@ -354,10 +355,10 @@ function CategoryPill({ category }: { category: SearchResult["categories"][0] })
   )
 }
 
-function SkillChip({ skill }: { skill: SearchResult["skills"][0] }) {
+function SkillChip({ skill, locale }: { skill: SearchResult["skills"][0]; locale: string }) {
   return (
     <Link
-      href={`/marketplace/skills/${skill.slug}`}
+      href={buildSkillUrl(skill.slug, locale)}
       className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-lime-400/10 border border-lime-400/30 text-lime-400 hover:bg-lime-400/20 hover:border-lime-400/50 transition-all"
     >
       <Tag className="h-4 w-4" />
@@ -406,10 +407,13 @@ function InitialState() {
 }
 
 export default async function SearchPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ q?: string; tab?: TabType }>
 }) {
+  const { locale } = await params
   const { q, tab = "all" } = await searchParams
   const query = q?.trim() || ""
   const results = query ? await getSearchResults(query) : null
@@ -465,7 +469,7 @@ export default async function SearchPage({
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {results.skills.map((skill) => (
-                    <SkillChip key={skill.id} skill={skill} />
+                    <SkillChip key={skill.id} skill={skill} locale={locale} />
                   ))}
                 </div>
               </section>
@@ -483,7 +487,7 @@ export default async function SearchPage({
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {results.categories.map((cat) => (
-                    <CategoryPill key={cat.id} category={cat} />
+                    <CategoryPill key={cat.id} category={cat} locale={locale} />
                   ))}
                 </div>
               </section>
