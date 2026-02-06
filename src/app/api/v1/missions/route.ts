@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { rateLimit } from "@/lib/rate-limit"
 
 export async function GET(req: NextRequest) {
+  // Rate limit: 100 requests per minute per IP
+  const rateLimitResult = await rateLimit(req, "api")
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response
+  }
   const { searchParams } = req.nextUrl
   const page = Math.max(1, parseInt(searchParams.get("page") || "1"))
   const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") || "20")))
