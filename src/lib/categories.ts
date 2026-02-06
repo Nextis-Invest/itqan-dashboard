@@ -207,5 +207,132 @@ export async function getAllSubcategories(locale: string = 'fr') {
   )
 }
 
+/**
+ * Resolve a locale-specific slug to its French (base) equivalent
+ * Used for querying the main DB which stores French slugs
+ */
+export async function resolveFrenchSlugs(
+  categorySlug: string,
+  subSlug: string,
+  locale: string
+): Promise<{ frCategorySlug: string; frSubSlug: string } | null> {
+  if (locale === 'fr') {
+    return { frCategorySlug: categorySlug, frSubSlug: subSlug }
+  }
+
+  // Find category by locale slug
+  const catTranslation = await prismaCatalog.categoryTranslation.findUnique({
+    where: { locale_slug: { locale, slug: categorySlug } },
+    include: { category: true },
+  })
+  if (!catTranslation) return null
+
+  // Get French slug for category
+  const frCatTranslation = await prismaCatalog.categoryTranslation.findUnique({
+    where: { categoryId_locale: { categoryId: catTranslation.categoryId, locale: 'fr' } },
+  })
+  if (!frCatTranslation) return null
+
+  // Find subcategory by locale slug
+  const subTranslation = await prismaCatalog.categoryTranslation.findUnique({
+    where: { locale_slug: { locale, slug: subSlug } },
+    include: { category: true },
+  })
+  if (!subTranslation) return null
+
+  // Get French slug for subcategory
+  const frSubTranslation = await prismaCatalog.categoryTranslation.findUnique({
+    where: { categoryId_locale: { categoryId: subTranslation.categoryId, locale: 'fr' } },
+  })
+  if (!frSubTranslation) return null
+
+  return {
+    frCategorySlug: frCatTranslation.slug,
+    frSubSlug: frSubTranslation.slug,
+  }
+}
+
+/**
+ * Get category with siblings for navigation, by locale-specific slug
+ */
+export async function getCategoryWithChildren(
+  categorySlug: string,
+  locale: string
+): Promise<{
+  id: string
+  name: string
+  slug: string
+  frSlug: string
+  children: Array<{ id: string; name: string; slug: string; frSlug: string }>
+} | null> {
+  const translation = await prismaCatalog.categoryTranslation.findUnique({
+    where: { locale_slug: { locale, slug: categorySlug } },
+    include: {
+      category: {
+        include: {
+          translations: { where: { locale: 'fr' } },
+          children: {
+            where: { isActive: true },
+            include: {
+              translations: true,
+            },
+            orderBy: { sortOrder: 'asc' },
+          },
+        },
+      },
+    },
+  })
+
+  if (!translation) return null
+
+  const cat = translation.category
+  const frSlug = cat.translations[0]?.slug || categorySlug
+
+  return {
+    id: cat.id,
+    name: translation.name,
+    slug: categorySlug,
+    frSlug,
+    children: cat.children.map((child) => {
+      const childLocaleTranslation = child.translations.find((t) => t.locale === locale)
+      const childFrTranslation = child.translations.find((t) => t.locale === 'fr')
+      return {
+        id: child.id,
+        name: childLocaleTranslation?.name || childFrTranslation?.name || 'Unknown',
+        slug: childLocaleTranslation?.slug || childFrTranslation?.slug || child.id,
+        frSlug: childFrTranslation?.slug || child.id,
+      }
+    }),
+  }
+}
+
+/**
+ * Get subcategory info by locale-specific slug
+ */
+export async function getSubcategoryInfo(
+  subSlug: string,
+  locale: string
+): Promise<{ id: string; name: string; slug: string; frSlug: string } | null> {
+  const translation = await prismaCatalog.categoryTranslation.findUnique({
+    where: { locale_slug: { locale, slug: subSlug } },
+    include: {
+      category: {
+        include: {
+          translations: { where: { locale: 'fr' } },
+        },
+      },
+    },
+  })
+
+  if (!translation) return null
+
+  return {
+    id: translation.category.id,
+    name: translation.name,
+    slug: subSlug,
+    frSlug: translation.category.translations[0]?.slug || subSlug,
+  }
+}
+
 // Legacy export - empty array, use getCategoriesFromCatalog() instead
 export const categories: Category[] = []

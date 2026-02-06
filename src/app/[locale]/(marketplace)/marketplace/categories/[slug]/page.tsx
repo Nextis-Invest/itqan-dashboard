@@ -7,15 +7,16 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { buildCategoriesUrl } from "@/lib/seo-suffixes"
 import { generateCategoryMetadata, getCategoryH1 } from "@/lib/seo-metadata"
 import { Button } from "@/components/ui/button"
+import { getCategoryWithChildren } from "@/lib/categories"
 
 export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params
-  const cat = await prisma.category.findUnique({ where: { slug }, select: { name: true, slug: true } })
+  const cat = await getCategoryWithChildren(slug, locale)
   if (!cat) return { title: "Catégorie" }
   
-  const gigCount = await prisma.gig.count({ where: { category: slug, status: "ACTIVE" } })
+  const gigCount = await prisma.gig.count({ where: { category: cat.frSlug, status: "ACTIVE" } })
   return generateCategoryMetadata({ name: cat.name, slug: cat.slug }, locale, gigCount)
 }
 
@@ -29,14 +30,7 @@ export default async function CategoryPage({
 
   const t = await getTranslations("common")
 
-  const category = await prisma.category.findUnique({
-    where: { slug },
-    include: {
-      children: {
-        orderBy: { order: "asc" },
-      },
-    },
-  })
+  const category = await getCategoryWithChildren(slug, locale)
 
   if (!category) notFound()
 

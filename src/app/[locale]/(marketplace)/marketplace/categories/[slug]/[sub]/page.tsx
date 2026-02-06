@@ -8,6 +8,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { parseSubSlug, buildSubcategoryUrl, buildCategoriesUrl, buildCategoryUrl } from "@/lib/seo-suffixes"
 import { generateSubcategoryMetadata, getSubcategoryH1 } from "@/lib/seo-metadata"
 import { MissionForm } from "./mission-form"
+import { getCategoryWithChildren, getSubcategoryInfo, resolveFrenchSlugs } from "@/lib/categories"
 
 export const dynamic = "force-dynamic"
 
@@ -19,21 +20,22 @@ export async function generateMetadata({
   const { locale, slug, sub } = await params
   const realSub = parseSubSlug(sub)
   
-  const [parent, child] = await Promise.all([
-    prisma.category.findUnique({ where: { slug }, select: { name: true, slug: true } }),
-    prisma.category.findUnique({ where: { slug: realSub }, select: { name: true, slug: true } }),
+  const [parentCat, subCat, frSlugs] = await Promise.all([
+    getCategoryWithChildren(slug, locale),
+    getSubcategoryInfo(realSub, locale),
+    resolveFrenchSlugs(slug, realSub, locale),
   ])
   
-  if (!parent || !child) {
+  if (!parentCat || !subCat || !frSlugs) {
     return { title: "Catégorie" }
   }
   
   const gigCount = await prisma.gig.count({ 
-    where: { category: slug, subcategory: realSub, status: "ACTIVE" } 
+    where: { category: frSlugs.frCategorySlug, subcategory: frSlugs.frSubSlug, status: "ACTIVE" } 
   })
   
   return generateSubcategoryMetadata(
-    { name: child.name, slug: child.slug, parentName: parent.name, parentSlug: parent.slug },
+    { name: subCat.name, slug: realSub, parentName: parentCat.name, parentSlug: slug },
     locale,
     gigCount
   )
@@ -53,23 +55,20 @@ export default async function SubcategoryPage({
 
   const t = await getTranslations("common")
 
-  const [parentCat, subCat] = await Promise.all([
-    prisma.category.findUnique({
-      where: { slug },
-      include: {
-        children: { orderBy: { order: "asc" } },
-      },
-    }),
-    prisma.category.findUnique({ where: { slug: realSub } }),
+  const [parentCat, subCat, frSlugs] = await Promise.all([
+    getCategoryWithChildren(slug, locale),
+    getSubcategoryInfo(realSub, locale),
+    resolveFrenchSlugs(slug, realSub, locale),
   ])
 
-  if (!parentCat || !subCat) notFound()
+  if (!parentCat || !subCat || !frSlugs) notFound()
 
   const page = Math.max(1, parseInt(sp.page || "1"))
   const sort = sp.sort || "popular"
   const limit = 12
 
-  const where = { status: "ACTIVE" as const, category: slug, subcategory: realSub }
+  // Use French slugs for querying gigs (main DB uses French slugs)
+  const where = { status: "ACTIVE" as const, category: frSlugs.frCategorySlug, subcategory: frSlugs.frSubSlug }
 
   const orderByMap: Record<string, any> = {
     popular: { orderCount: "desc" },
@@ -159,7 +158,7 @@ export default async function SubcategoryPage({
                 key={sibling.id}
                 href={buildSubcategoryUrl(slug, sibling.slug, locale)}
                 className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
-                  sibling.slug === realSub
+                  sibling.frSlug === subCat.frSlug
                     ? "bg-lime-400/10 text-lime-400 font-medium"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent"
                 }`}
@@ -174,8 +173,8 @@ export default async function SubcategoryPage({
         <div className="lg:col-span-3 space-y-8">
           {/* Mission Form */}
           <MissionForm
-            category={slug}
-            subcategory={realSub}
+            category={frSlugs.frCategorySlug}
+            subcategory={frSlugs.frSubSlug}
             categoryName={parentCat.name}
             subcategoryName={subCat.name}
             locale={locale}
