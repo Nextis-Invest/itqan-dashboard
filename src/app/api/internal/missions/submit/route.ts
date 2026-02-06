@@ -4,7 +4,7 @@ import { sendEmail } from "@/lib/email"
 import crypto from "crypto"
 
 // Internal API key validation
-const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY
+const INTERNAL_API_KEY = process.env.INTERNAL_API_SECRET
 
 interface SubmitMissionRequest {
   email: string
