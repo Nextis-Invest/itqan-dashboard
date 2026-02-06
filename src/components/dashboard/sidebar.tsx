@@ -27,6 +27,7 @@ import {
   FileCheck,
   Bell,
   Heart,
+  Key,
 } from "lucide-react"
 
 import {
@@ -69,6 +70,7 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
         { title: "Support", url: "/admin/support", icon: Headphones },
       ],
       system: [
+        { title: "Clés API", url: "/settings/api-keys", icon: Key },
         { title: "Paramètres", url: "/settings", icon: Settings },
       ],
     }

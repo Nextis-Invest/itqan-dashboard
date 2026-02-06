@@ -744,3 +744,22 @@ model InvoiceItem {
   
   createdAt   DateTime @default(now())
 }
+
+// ========== API Keys Management ==========
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  provider    String    // "gemini", "openai", etc.
+  name        String    // "Gemini Key 1", "Backup Key"
+  key         String    @db.Text
+  isActive    Boolean   @default(true)
+  usageCount  Int       @default(0)
+  lastUsedAt  DateTime?
+  errorCount  Int       @default(0)
+  lastError   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([provider, isActive])
+  @@map("api_keys")
+}
