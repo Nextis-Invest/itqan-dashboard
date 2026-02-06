@@ -20,6 +20,14 @@ export async function GET(request: NextRequest) {
   }
 
   const searchTerms = query.toLowerCase().split(" ").filter(Boolean)
+  
+  // For skills matching, we need to check various capitalizations
+  const skillVariants = searchTerms.flatMap(term => [
+    term,
+    term.charAt(0).toUpperCase() + term.slice(1), // React
+    term.toUpperCase(), // REACT
+    term.toLowerCase(), // react
+  ])
 
   try {
     // Search freelancers
@@ -30,7 +38,7 @@ export async function GET(request: NextRequest) {
           { name: { contains: query, mode: "insensitive" } },
           { freelancerProfile: { title: { contains: query, mode: "insensitive" } } },
           { freelancerProfile: { bio: { contains: query, mode: "insensitive" } } },
-          { freelancerProfile: { skills: { hasSome: searchTerms } } },
+          { freelancerProfile: { skills: { hasSome: skillVariants } } },
         ],
       },
       include: {
@@ -61,7 +69,7 @@ export async function GET(request: NextRequest) {
         OR: [
           { title: { contains: query, mode: "insensitive" } },
           { description: { contains: query, mode: "insensitive" } },
-          { skills: { hasSome: searchTerms } },
+          { skills: { hasSome: skillVariants } },
           { category: { contains: query, mode: "insensitive" } },
         ],
       },
