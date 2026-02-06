@@ -37,6 +37,7 @@
     "framer-motion": "^12.30.0",
     "input-otp": "^1.4.2",
     "ioredis": "^5.9.2",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.563.0",
     "next": "16.1.6",
     "next-auth": "^5.0.0-beta.30",
@@ -57,6 +58,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.2.0",
     "@tailwindcss/postcss": "^4",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

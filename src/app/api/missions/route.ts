@@ -21,6 +21,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Le titre est requis" }, { status: 400 })
     }
 
+    // Allow OPEN status for OAuth-created missions, default to PENDING_REVIEW
+    const validStatuses = ["OPEN", "PENDING_REVIEW"]
+    const missionStatus = validStatuses.includes(body.status) ? body.status : "PENDING_REVIEW"
+
     const mission = await prisma.mission.create({
       data: {
         title,
@@ -38,7 +42,7 @@ export async function POST(req: NextRequest) {
         remote: remote !== undefined ? remote : true,
         location: location || null,
         skills: Array.isArray(skills) ? skills : [],
-        status: "PENDING_REVIEW",
+        status: missionStatus,
         clientId: session.user.id!,
       },
     })
