@@ -14,14 +14,17 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
+  const headersList = await headers()
   const user = await getCurrentUser()
 
   if (!user) {
-    redirect("/login?callbackUrl=/dashboard")
+    // Preserve the current URL (including query params) as callback
+    const pathname = headersList.get("x-pathname") || "/dashboard"
+    const url = headersList.get("x-url") || pathname
+    redirect(`/login?callbackUrl=${encodeURIComponent(url)}`)
   }
 
   // Check if user needs to complete account type selection
-  const headersList = await headers()
   const pathname = headersList.get("x-pathname") || ""
 
   // Skip onboarding check if already on onboarding pages

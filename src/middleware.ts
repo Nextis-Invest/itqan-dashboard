@@ -9,9 +9,11 @@ export default async function middleware(request: NextRequest) {
   // First, handle i18n
   const response = intlMiddleware(request);
   
-  // Add pathname to headers for server components to access
+  // Add pathname and full URL to headers for server components to access
   const pathname = request.nextUrl.pathname;
+  const search = request.nextUrl.search;
   response.headers.set('x-pathname', pathname);
+  response.headers.set('x-url', pathname + search);
   
   return response;
 }
