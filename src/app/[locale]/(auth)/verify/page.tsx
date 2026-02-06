@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { cookies } from "next/headers"
-import { signIn } from "@/lib/auth/config"
+import { VerifyClient } from "./verify-client"
 
 interface VerifyPageProps {
   searchParams: Promise<{
@@ -46,29 +46,15 @@ export default async function VerifyPage({ searchParams }: VerifyPageProps) {
     },
   })
 
-  // Sign in the user using credentials provider
-  try {
-    await signIn("credentials", {
-      email: user.email,
-      magicLinkVerified: "true",
-      redirect: false,
-    })
-  } catch (error) {
-    console.error("Sign in error:", error)
-    // Continue anyway - we'll redirect to login if needed
-  }
-
-  // Determine where to redirect
+  // Determine redirect path
   const hasProfile = user.freelancerProfile || user.clientProfile
+  let redirectPath: string
 
   if (hasProfile && missionId) {
-    // User already onboarded, show their mission
-    redirect(`/missions/${missionId}`)
+    redirectPath = `/missions/${missionId}`
   } else if (hasProfile) {
-    // User onboarded but no mission specified
-    redirect("/dashboard")
+    redirectPath = "/dashboard"
   } else {
-    // User needs to complete onboarding
     // Store mission ID in cookie for post-onboarding redirect
     if (missionId) {
       const cookieStore = await cookies()
@@ -79,6 +65,14 @@ export default async function VerifyPage({ searchParams }: VerifyPageProps) {
         maxAge: 60 * 60, // 1 hour
       })
     }
-    redirect("/onboarding/account-type")
+    redirectPath = "/onboarding/account-type"
   }
+
+  // Pass data to client component which will handle sign-in
+  return (
+    <VerifyClient 
+      email={user.email} 
+      redirectPath={redirectPath}
+    />
+  )
 }
