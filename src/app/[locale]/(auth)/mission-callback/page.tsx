@@ -79,7 +79,7 @@ function MissionCallbackContent() {
         
         // Redirect to mission page after a brief delay
         setTimeout(() => {
-          router.push(`/dashboard/missions/${mission.id}`)
+          router.push(`/missions/${mission.id}`)
         }, 1500)
         
       } catch (error) {
