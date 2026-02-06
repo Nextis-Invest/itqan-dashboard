@@ -140,52 +140,17 @@ export const authOptions: NextAuthConfig = {
       return session;
     },
     async signIn({ user, account, profile }) {
-      // For OAuth sign-ins, handle account linking and emailVerified
+      // For OAuth sign-ins, just ensure emailVerified is set
+      // allowDangerousEmailAccountLinking handles account linking
       if (account?.provider === "google" || account?.provider === "linkedin") {
         const email = user.email || profile?.email;
         
         if (email) {
-          // Check if user exists with this email
-          const existingUser = await prisma.user.findUnique({
+          // Mark email as verified for OAuth users
+          await prisma.user.updateMany({
             where: { email },
-            include: { accounts: true },
+            data: { emailVerified: new Date() },
           });
-
-          if (existingUser) {
-            // Check if this OAuth account is already linked
-            const linkedAccount = existingUser.accounts.find(
-              (acc) => acc.provider === account.provider && acc.providerAccountId === account.providerAccountId
-            );
-
-            if (!linkedAccount) {
-              // Link the OAuth account to the existing user
-              await prisma.account.create({
-                data: {
-                  userId: existingUser.id,
-                  type: account.type,
-                  provider: account.provider,
-                  providerAccountId: account.providerAccountId,
-                  access_token: account.access_token,
-                  refresh_token: account.refresh_token,
-                  expires_at: account.expires_at,
-                  token_type: account.token_type,
-                  scope: account.scope,
-                  id_token: account.id_token,
-                },
-              });
-            }
-
-            // Ensure emailVerified is set
-            if (!existingUser.emailVerified) {
-              await prisma.user.update({
-                where: { id: existingUser.id },
-                data: { emailVerified: new Date() },
-              });
-            }
-
-            // Update user object for JWT callback
-            user.id = existingUser.id;
-          }
         }
       }
       return true;
