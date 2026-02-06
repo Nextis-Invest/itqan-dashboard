@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, Suspense, useRef } from "react"
+import { useState, Suspense, useRef, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import { Button } from "@/components/ui/button"
@@ -129,9 +129,21 @@ function GradientSpinner({ className = "h-5 w-5" }: { className?: string }) {
   )
 }
 
+// Map NextAuth error codes to user-friendly messages
+const ERROR_MESSAGES: Record<string, string> = {
+  OAuthAccountNotLinked: "Cet email est déjà associé à un autre compte. Connectez-vous avec votre méthode habituelle.",
+  OAuthSignin: "Erreur de connexion OAuth. Veuillez réessayer.",
+  OAuthCallback: "Erreur lors de la connexion. Veuillez réessayer.",
+  OAuthCreateAccount: "Impossible de créer le compte. Veuillez réessayer.",
+  EmailCreateAccount: "Impossible de créer le compte avec cet email.",
+  Callback: "Erreur lors de la connexion.",
+  Default: "Une erreur est survenue. Veuillez réessayer.",
+}
+
 function LoginContent() {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
+  const urlError = searchParams.get("error")
 
   const [mode, setMode] = useState<Mode>("choice")
   const [role, setRole] = useState<Role>("CLIENT")
@@ -141,6 +153,13 @@ function LoginContent() {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<Step>("email")
+
+  // Handle URL error params from NextAuth
+  useEffect(() => {
+    if (urlError) {
+      setError(ERROR_MESSAGES[urlError] || ERROR_MESSAGES.Default)
+    }
+  }, [urlError])
 
   const inputRefs = [
     useRef<HTMLInputElement>(null),

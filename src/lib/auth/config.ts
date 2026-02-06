@@ -14,6 +14,7 @@ const cookieDomain = isProduction ? ".itqan.ma" : undefined
 export const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma) as Adapter,
   session: { strategy: "jwt" },
+  trustHost: true,
   cookies: {
     sessionToken: {
       name: isProduction ? "__Secure-authjs.session-token" : "authjs.session-token",
