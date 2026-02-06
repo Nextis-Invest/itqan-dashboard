@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth/config"
 import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 
 export async function createFreelancerProfile(formData: FormData) {
   const session = await auth()
@@ -72,6 +73,16 @@ export async function createClientProfile(formData: FormData) {
       bankRib: (formData.get("bankRib") as string) || null,
     },
   })
+
+  // Check for pending mission from itqan.ma flow
+  const cookieStore = await cookies()
+  const pendingMissionId = cookieStore.get("pending_mission_id")?.value
+  
+  if (pendingMissionId) {
+    // Clear the cookie
+    cookieStore.delete("pending_mission_id")
+    redirect(`/missions/${pendingMissionId}`)
+  }
 
   redirect("/dashboard")
 }
