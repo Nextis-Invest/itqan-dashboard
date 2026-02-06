@@ -1,26 +1,29 @@
-import { prisma } from "@/lib/prisma"
 import { MarketplaceNavbar } from "@/components/marketplace/navbar"
 import { MarketplaceFooter } from "@/components/marketplace/footer"
 import { MobileBottomNav } from "@/components/marketplace/mobile-bottom-nav"
+import { getCategoriesFromCatalog } from "@/lib/categories"
 
 export default async function MarketplaceLayout({
   children,
+  params,
 }: {
   children: React.ReactNode
+  params: Promise<{ locale: string }>
 }) {
-  const categories = await prisma.category.findMany({
-    where: { level: 0 },
-    orderBy: { order: "asc" },
-    select: { 
-      slug: true, 
-      name: true, 
-      icon: true,
-      children: {
-        orderBy: { order: "asc" },
-        select: { slug: true, name: true }
-      }
-    },
-  })
+  const { locale } = await params
+  
+  const catalogCategories = await getCategoriesFromCatalog(locale)
+  
+  // Transform to navbar format
+  const categories = catalogCategories.map(cat => ({
+    slug: cat.slug,
+    name: cat.name,
+    icon: cat.icon,
+    children: cat.subcategories.map(sub => ({
+      slug: sub.slug,
+      name: sub.name,
+    })),
+  }))
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

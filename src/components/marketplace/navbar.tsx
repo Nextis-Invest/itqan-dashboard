@@ -40,12 +40,6 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
     return match ? match[1] : null
   }, [pathname])
 
-  // Get current category with subcategories
-  const currentCategory = useMemo(() => {
-    if (!currentCategorySlug) return null
-    return categories.find(cat => cat.slug === currentCategorySlug) || null
-  }, [currentCategorySlug, categories])
-
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
@@ -66,7 +60,7 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
     }
   }
 
-  // Build subcategory URL with SEO suffix
+  // Build subcategory URL with SEO suffix (for mobile menu)
   const buildSubcategoryUrl = (categorySlug: string, subcategorySlug: string) => {
     const suffix = getSeoSuffix(locale)
     return `/marketplace/categories/${categorySlug}/${subcategorySlug}${suffix}`
@@ -171,37 +165,6 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
           </div>
         </div>
 
-        {/* Subcategories bar — shown when on a category page */}
-        {currentCategory && currentCategory.children && currentCategory.children.length > 0 && (
-          <div className="hidden md:block border-t border-border/30 bg-card/50">
-            <div className={`relative ${scrolled ? "px-4 md:px-6" : "max-w-5xl mx-auto px-4"}`}>
-              {/* Gradient fade left */}
-              <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-card/50 to-transparent z-10 pointer-events-none" />
-              {/* Gradient fade right */}
-              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card/50 to-transparent z-10 pointer-events-none" />
-
-              <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2">
-                {currentCategory.children.map((sub) => {
-                  const subUrl = buildSubcategoryUrl(currentCategory.slug, sub.slug)
-                  const isSubActive = pathname?.includes(`/${sub.slug}`)
-                  return (
-                    <Link
-                      key={sub.slug}
-                      href={subUrl}
-                      className={`whitespace-nowrap px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
-                        isSubActive
-                          ? "bg-lime-400/20 text-lime-400"
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                      }`}
-                    >
-                      {sub.name}
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* Mobile menu overlay */}
@@ -287,7 +250,7 @@ export function MarketplaceNavbar({ categories }: MarketplaceNavbarProps) {
       </AnimatePresence>
 
       {/* Spacer to push content below the navbar */}
-      <div className={`${currentCategory?.children?.length ? "h-[148px] md:h-[140px]" : "h-[120px] md:h-[108px]"}`} />
+      <div className="h-[120px] md:h-[108px]" />
     </>
   )
 }
