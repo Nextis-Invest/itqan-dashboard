@@ -71,6 +71,9 @@ export default async function DashboardPage() {
     (user.role === "CLIENT" && !user.clientProfile)
 
   if (needsOnboarding) redirect("/onboarding")
+  
+  // Admins have their own dashboard
+  if (user.role === "ADMIN") redirect("/admin")
 
   // Fetch stats based on role
   let stats: { title: string; value: string; description: string; icon: any }[]
