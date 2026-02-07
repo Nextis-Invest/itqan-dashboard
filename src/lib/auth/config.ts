@@ -9,7 +9,7 @@ import LinkedInProvider from "next-auth/providers/linkedin"
 
 // Use parent domain for cookies in production to enable SSO across subdomains
 const isProduction = process.env.NODE_ENV === "production"
-const cookieDomain = isProduction ? ".itqan.ma" : undefined
+const cookieDomain = process.env.AUTH_COOKIE_DOMAIN || undefined
 
 export const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma) as Adapter,

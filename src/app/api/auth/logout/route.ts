@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
 
 const isProduction = process.env.NODE_ENV === "production"
-const cookieDomain = isProduction ? ".itqan.ma" : undefined
+const cookieDomain = process.env.AUTH_COOKIE_DOMAIN || undefined
 
 export async function POST() {
   const cookieStore = await cookies()
