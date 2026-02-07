@@ -1,4 +1,3 @@
-import { Ratelimit } from "@upstash/ratelimit"
 import { getRedisClient } from "./redis"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -18,19 +17,55 @@ export const RATE_LIMITS = {
   submit: { requests: 10, window: 60 },     // 10 requests per minute (form submissions)
 } as const
 
-// Create rate limiter with Redis or fallback to in-memory
-function createRateLimiter(config: RateLimitConfig) {
+// Redis-based rate limiting using ioredis
+async function checkRedisRateLimit(
+  identifier: string,
+  config: RateLimitConfig
+): Promise<{ success: boolean; remaining: number; reset: number } | null> {
   const redis = getRedisClient()
-  
-  if (redis) {
-    return new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(config.requests, `${config.window} s`),
-      analytics: false,
-    })
+  if (!redis) return null
+
+  try {
+    const key = `ratelimit:${identifier}`
+    const now = Date.now()
+    const windowMs = config.window * 1000
+    const windowStart = now - windowMs
+
+    // Use Redis pipeline for atomic operations
+    const pipeline = redis.pipeline()
+    
+    // Remove old entries outside the window
+    pipeline.zremrangebyscore(key, 0, windowStart)
+    
+    // Count current requests in window
+    pipeline.zcard(key)
+    
+    // Add current request
+    pipeline.zadd(key, now, `${now}:${Math.random()}`)
+    
+    // Set expiry on the key
+    pipeline.expire(key, config.window)
+
+    const results = await pipeline.exec()
+    
+    if (!results) return null
+
+    // Get the count (second command result)
+    const countResult = results[1]
+    const count = (countResult && countResult[1] as number) || 0
+
+    const remaining = Math.max(0, config.requests - count - 1)
+    const reset = now + windowMs
+
+    return {
+      success: count < config.requests,
+      remaining,
+      reset,
+    }
+  } catch (error) {
+    console.error("Redis rate limit error:", error)
+    return null
   }
-  
-  return null
 }
 
 // In-memory rate limiting fallback
@@ -73,17 +108,12 @@ export async function rateLimit(
   const config = RATE_LIMITS[configKey]
   const identifier = `${configKey}:${getClientIdentifier(request)}`
   
-  const limiter = createRateLimiter(config)
-  
+  // Try Redis first, fall back to in-memory
   let result: { success: boolean; remaining: number; reset: number }
   
-  if (limiter) {
-    const upstashResult = await limiter.limit(identifier)
-    result = {
-      success: upstashResult.success,
-      remaining: upstashResult.remaining,
-      reset: upstashResult.reset,
-    }
+  const redisResult = await checkRedisRateLimit(identifier, config)
+  if (redisResult) {
+    result = redisResult
   } else {
     result = checkInMemoryRateLimit(identifier, config)
   }
