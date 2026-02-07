@@ -4,6 +4,18 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
+
+// Custom logout that properly clears cookies with domain
+async function handleLogout() {
+  try {
+    // First, call our custom logout route to clear cookies properly
+    await fetch("/api/auth/logout", { method: "POST" })
+  } catch (e) {
+    console.error("Logout API error:", e)
+  }
+  // Then call NextAuth signOut to clean up client state
+  signOut({ callbackUrl: "/login" })
+}
 import Image from "next/image"
 import { motion } from "framer-motion"
 import {
@@ -283,7 +295,7 @@ export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
               >
                 <button
                   className="w-full"
-                  onClick={() => signOut({ callbackUrl: "/login" })}
+                  onClick={handleLogout}
                 >
                   <LogOut className="size-4" />
                   <span className="font-medium">Déconnexion</span>
