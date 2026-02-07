@@ -2,7 +2,7 @@
 
 import { useState, Suspense, useRef, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-import { signIn } from "next-auth/react"
+import { signIn, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/ui/logo"
 import { Input } from "@/components/ui/input"
@@ -259,6 +259,10 @@ function LoginContent() {
         setCode(["", "", "", ""])
         inputRefs[0].current?.focus()
       } else {
+        // Clear any existing session before signing in with new account
+        // This prevents the "logged in as wrong account" bug
+        await signOut({ redirect: false })
+        
         const result = await signIn("credentials", {
           email: data.email,
           magicLinkVerified: "true",
