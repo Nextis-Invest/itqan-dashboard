@@ -140,17 +140,61 @@ export const authOptions: NextAuthConfig = {
       return session;
     },
     async signIn({ user, account, profile }) {
-      // For OAuth sign-ins, just ensure emailVerified is set
-      // allowDangerousEmailAccountLinking handles account linking
+      // For OAuth sign-ins, handle account linking manually
+      // This fixes OAuthAccountNotLinked errors when user exists from magic link
       if (account?.provider === "google" || account?.provider === "linkedin") {
-        const email = user.email || profile?.email;
+        const email = (user.email || profile?.email)?.toLowerCase();
         
         if (email) {
-          // Mark email as verified for OAuth users
-          await prisma.user.updateMany({
+          // Find existing user by email
+          const existingUser = await prisma.user.findUnique({
             where: { email },
-            data: { emailVerified: new Date() },
+            include: { accounts: true },
           });
+
+          if (existingUser) {
+            // Check if this OAuth provider is already linked
+            const existingAccount = existingUser.accounts.find(
+              (acc) => acc.provider === account.provider
+            );
+
+            if (!existingAccount) {
+              // Link the OAuth account to existing user
+              await prisma.account.create({
+                data: {
+                  userId: existingUser.id,
+                  type: account.type,
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                  access_token: account.access_token,
+                  expires_at: account.expires_at,
+                  token_type: account.token_type,
+                  scope: account.scope,
+                  id_token: account.id_token,
+                  refresh_token: account.refresh_token,
+                },
+              });
+            }
+
+            // Update user info from OAuth profile
+            await prisma.user.update({
+              where: { id: existingUser.id },
+              data: {
+                emailVerified: existingUser.emailVerified || new Date(),
+                name: existingUser.name || user.name,
+                image: existingUser.image || user.image,
+              },
+            });
+
+            // Override user.id so JWT uses the existing user
+            user.id = existingUser.id;
+          } else {
+            // New user - mark email as verified
+            await prisma.user.updateMany({
+              where: { email },
+              data: { emailVerified: new Date() },
+            });
+          }
         }
       }
       return true;
