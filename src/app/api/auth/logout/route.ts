@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
 
 const isProduction = process.env.NODE_ENV === "production"
 
@@ -15,41 +14,65 @@ function getCookieDomain(): string | undefined {
   } catch {}
   return undefined
 }
-const cookieDomain = getCookieDomain()
 
 export async function POST() {
-  const cookieStore = await cookies()
+  const cookieDomain = getCookieDomain()
   
   // Cookie names used by NextAuth
-  const cookieNames = [
-    isProduction ? "__Secure-authjs.session-token" : "authjs.session-token",
-    isProduction ? "__Secure-authjs.callback-url" : "authjs.callback-url",
-    isProduction ? "__Host-authjs.csrf-token" : "authjs.csrf-token",
+  const cookieConfigs = [
+    { 
+      name: isProduction ? "__Secure-authjs.session-token" : "authjs.session-token",
+      hasDomain: true 
+    },
+    { 
+      name: isProduction ? "__Secure-authjs.callback-url" : "authjs.callback-url",
+      hasDomain: true 
+    },
+    { 
+      name: isProduction ? "__Host-authjs.csrf-token" : "authjs.csrf-token",
+      hasDomain: false // __Host- cookies cannot have domain
+    },
   ]
 
-  // Delete all auth cookies with proper domain
-  for (const name of cookieNames) {
-    // Delete without domain (for __Host- cookies)
-    cookieStore.delete(name)
+  // Build Set-Cookie headers to properly clear cookies
+  const cookieHeaders: string[] = []
+  
+  for (const { name, hasDomain } of cookieConfigs) {
+    // Clear cookie without domain (local)
+    const baseAttrs = [
+      `${name}=`,
+      "Path=/",
+      "Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+      "HttpOnly",
+      "SameSite=Lax",
+    ]
+    if (isProduction) baseAttrs.push("Secure")
+    cookieHeaders.push(baseAttrs.join("; "))
     
-    // Also try to delete with domain set
-    if (cookieDomain && !name.startsWith("__Host-")) {
-      cookieStore.set(name, "", {
-        expires: new Date(0),
-        path: "/",
-        domain: cookieDomain,
-        secure: isProduction,
-        httpOnly: true,
-        sameSite: "lax",
-      })
+    // Also clear with domain for SSO cookies
+    if (hasDomain && cookieDomain) {
+      const domainAttrs = [
+        `${name}=`,
+        "Path=/",
+        "Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+        `Domain=${cookieDomain}`,
+        "HttpOnly",
+        "SameSite=Lax",
+      ]
+      if (isProduction) domainAttrs.push("Secure")
+      cookieHeaders.push(domainAttrs.join("; "))
     }
   }
 
-  return NextResponse.json({ success: true })
+  // Return response with all Set-Cookie headers
+  const response = NextResponse.json({ success: true })
+  cookieHeaders.forEach(cookie => {
+    response.headers.append("Set-Cookie", cookie)
+  })
+  
+  return response
 }
 
 export async function GET() {
-  // Also support GET for easy redirects
-  const response = await POST()
-  return response
+  return POST()
 }

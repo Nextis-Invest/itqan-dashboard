@@ -3,19 +3,6 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { signOut } from "next-auth/react"
-
-// Custom logout that properly clears cookies with domain
-async function handleLogout() {
-  try {
-    // First, call our custom logout route to clear cookies properly
-    await fetch("/api/auth/logout", { method: "POST" })
-  } catch (e) {
-    console.error("Logout API error:", e)
-  }
-  // Then call NextAuth signOut to clean up client state
-  signOut({ callbackUrl: "/login" })
-}
 import Image from "next/image"
 import { motion } from "framer-motion"
 import {
@@ -136,6 +123,19 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
 export function DashboardSidebar({ user, ...props }: DashboardSidebarProps) {
   const pathname = usePathname()
   const { main: navigationItems, system: settingsItems } = getNavigation(user?.role)
+  
+  // Extract locale from pathname (e.g., /fr/dashboard -> fr)
+  const locale = pathname.split("/")[1] || "fr"
+  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/$/, "")
+  
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" })
+    } catch (e) {
+      console.error("Logout API error:", e)
+    }
+    window.location.href = `${baseUrl}/${locale}/login`
+  }
 
   const isActive = (url: string) => {
     if (url === "/dashboard" || url === "/admin") return pathname === url
