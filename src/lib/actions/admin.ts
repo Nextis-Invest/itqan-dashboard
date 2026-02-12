@@ -207,7 +207,7 @@ export async function deleteUser(userId: string) {
     await tx.ticketReply.deleteMany({ where: { userId } })
     await tx.supportTicket.deleteMany({ where: { userId } })
     await tx.creditTransaction.deleteMany({ where: { userId } })
-    await tx.chatMessage.deleteMany({ where: { userId } })
+    await tx.chatMessage.deleteMany({ where: { senderId: userId } })
     await tx.conversationParticipant.deleteMany({ where: { userId } })
     await tx.gig.deleteMany({ where: { userId } })
     await tx.invitation.deleteMany({ where: { OR: [{ senderId: userId }, { receiverId: userId }] } })

@@ -17,7 +17,9 @@
     "no_services_sub": "No services in this subcategory yet.",
     "login": "Login",
     "signup": "Sign up",
-    "search_placeholder": "Search for a service..."
+    "search_placeholder": "Search for a service...",
+    "explore_subcategories": "Explora nuestras especialidades en esta categoría",
+    "not_finding": "¿No encuentras lo que buscas?"
   },
   "categories": {
     "title": "Categorías",

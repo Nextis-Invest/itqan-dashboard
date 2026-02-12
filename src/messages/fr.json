@@ -19,7 +19,9 @@
     "no_services_sub": "Aucun service dans cette sous-catégorie pour le moment.",
     "login": "Se connecter",
     "signup": "S'inscrire",
-    "search_placeholder": "Rechercher un service..."
+    "search_placeholder": "Rechercher un service...",
+    "explore_subcategories": "Explorez nos spécialités dans cette catégorie",
+    "not_finding": "Vous ne trouvez pas ce que vous cherchez ?"
   },
   "categories": {
     "title": "Catégories",

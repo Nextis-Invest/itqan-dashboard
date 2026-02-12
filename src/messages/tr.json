@@ -17,7 +17,9 @@
     "no_services_sub": "No services in this subcategory yet.",
     "login": "Login",
     "signup": "Sign up",
-    "search_placeholder": "Search for a service..."
+    "search_placeholder": "Search for a service...",
+    "explore_subcategories": "Bu kategorideki uzmanlık alanlarımızı keşfedin",
+    "not_finding": "Aradığınızı bulamadınız mı?"
   },
   "categories": {
     "title": "Categories",
