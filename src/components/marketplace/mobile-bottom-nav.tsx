@@ -143,11 +143,11 @@ export function MobileBottomNav() {
             {/* Footer CTA */}
             <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 p-4 bg-black/95 pb-[calc(1rem+env(safe-area-inset-bottom))]">
               <Link
-                href="/register?role=freelancer"
+                href="/missions/new"
                 onClick={() => setSheetOpen(false)}
                 className="flex items-center justify-center w-full bg-lime-400 text-black font-medium rounded-full px-6 py-3 hover:bg-lime-300 transition-all"
               >
-                Devenir freelance
+                Soumettre une demande
               </Link>
             </div>
           </SheetContent>

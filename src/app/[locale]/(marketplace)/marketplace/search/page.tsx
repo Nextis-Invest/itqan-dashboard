@@ -185,7 +185,7 @@ function FreelancerCard({ freelancer }: { freelancer: SearchResult["freelancers"
             )}
           </div>
           <p className="text-sm text-neutral-400 truncate">
-            {freelancer.title || "Freelance"}
+            {freelancer.title || "Expert"}
           </p>
         </div>
 
@@ -400,7 +400,7 @@ function InitialState() {
         Que recherchez-vous ?
       </h2>
       <p className="text-neutral-400 text-center max-w-md">
-        Entrez un terme de recherche pour trouver des freelances, services, ou compétences.
+        Entrez un terme de recherche pour trouver des experts, services, ou compétences.
       </p>
     </div>
   )

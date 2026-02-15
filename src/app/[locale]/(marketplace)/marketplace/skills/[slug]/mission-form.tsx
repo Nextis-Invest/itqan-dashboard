@@ -158,7 +158,7 @@ export function SkillMissionForm({
               <div className="p-1.5 rounded-lg bg-lime-400/10">
                 <Briefcase className="h-5 w-5 text-lime-400" />
               </div>
-              Trouver un freelance {skillName}
+              Trouver un expert {skillName}
             </CardTitle>
             <CardDescription className="text-muted-foreground text-sm mt-1">
               Décrivez votre projet et recevez des propositions d&apos;experts
@@ -385,7 +385,7 @@ export function SkillMissionForm({
               ) : (
                 <>
                   <Save className="mr-2 h-5 w-5" />
-                  Trouver un freelance {skillName}
+                  Trouver un expert {skillName}
                 </>
               )}
             </Button>

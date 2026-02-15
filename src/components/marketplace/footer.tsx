@@ -25,17 +25,16 @@ export function MarketplaceFooter() {
     {
       label: "Pour les entreprises",
       links: [
-        { title: "Recruter", href: "/login" },
+        { title: "Nos services", href: "/recruter" },
         { title: "Comment ça marche", href: "#" },
         { title: "Nearshore Maroc", href: "#" },
-        { title: "Tarifs freelance", href: "#" },
         { title: "Externalisation", href: "#" },
       ],
     },
     {
-      label: "Missions",
+      label: "Services",
       links: [
-        { title: "Toutes les missions", href: "/marketplace/categories" },
+        { title: "Tous les services", href: "/marketplace/categories" },
         { title: "Développement Web", href: "/marketplace/categories/programming-tech" },
         { title: "Design & Créatif", href: "/marketplace/categories/graphics-design" },
         { title: "Marketing Digital", href: "/marketplace/categories/online-marketing" },
@@ -43,18 +42,12 @@ export function MarketplaceFooter() {
       ],
     },
     {
-      label: "Guide",
+      label: "Ressources",
       links: [
-        { title: "Devenir freelance", href: "#" },
-        { title: "Statut auto-entrepreneur", href: "#" },
-        { title: "TJM freelance Maroc", href: "#" },
-        { title: "Télétravail freelance", href: "#" },
-        { title: "Contrat freelance", href: "#" },
+        { title: "Pourquoi le SEO ?", href: "#" },
+        { title: "Référencement IA", href: "#" },
+        { title: "FAQ", href: "#" },
       ],
-    },
-    {
-      label: "Villes",
-      links: [{ title: "Maroc", href: "/marketplace/categories" }],
     },
   ]
 
@@ -67,7 +60,7 @@ export function MarketplaceFooter() {
             asChild
             className="rounded-full bg-lime-400 px-6 py-2 text-sm font-medium text-black shadow-[0_0_20px_rgba(163,230,53,0.35)] hover:bg-lime-300 hover:scale-[1.02] transition-all"
           >
-            <Link href="/login">Publier une mission</Link>
+            <Link href="/missions/new">Soumettre une demande</Link>
           </Button>
         </div>
       </div>
@@ -79,13 +72,13 @@ export function MarketplaceFooter() {
             {/* Left copy */}
             <div>
               <p className="mb-2 text-[11px] tracking-widest text-lime-400">
-                SIMPLIFIEZ VOTRE RECRUTEMENT
+                VOTRE AGENCE DIGITALE
               </p>
               <h3 className="text-2xl font-bold leading-tight text-white sm:text-3xl">
-                Trouvez les meilleurs freelances au Maroc
+                Confiez-nous vos projets digitaux
               </h3>
               <p className="mt-2 max-w-prose text-sm text-neutral-400">
-                Accédez à un réseau de talents qualifiés pour vos projets digitaux.
+                Développement, design, SEO, marketing — une agence complète au Maroc.
               </p>
             </div>
 
@@ -95,7 +88,7 @@ export function MarketplaceFooter() {
                 <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black">
                   <Image
                     src="https://d8j0ntlcm91z4.cloudfront.net/user_37DhuNyRmxE2Dt9Cj4761sckNmX/hf_20260205_020108_f230042f-a6f4-4401-a86a-109563090f8d.png"
-                    alt="Freelance marocain"
+                    alt="Itqan agence web Maroc"
                     fill
                     className="object-cover"
                   />
@@ -104,10 +97,10 @@ export function MarketplaceFooter() {
                   {/* Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
                     <div className="space-y-2">
-                      <div className="text-3xl font-extrabold text-lime-400">2 500+</div>
-                      <p className="text-sm text-white/90">Freelances disponibles</p>
+                      <div className="text-3xl font-extrabold text-lime-400">98%</div>
+                      <p className="text-sm text-white/90">Clients satisfaits</p>
                       <div className="mt-2 inline-flex items-center rounded-full bg-lime-400 px-3 py-1 text-[10px] uppercase tracking-wider text-black font-medium">
-                        Matching en 24h
+                        Réponse en 24h
                       </div>
                     </div>
                   </div>
@@ -129,14 +122,14 @@ export function MarketplaceFooter() {
                 className="h-10 w-auto"
               />
               <p className="text-muted-foreground text-sm max-w-xs">
-                La marketplace de freelances au Maroc et en France. Trouvez les meilleurs talents pour vos projets digitaux.
+                Votre agence web et marketing digital au Maroc.
               </p>
               <p className="text-muted-foreground/60 text-xs">
                 © {new Date().getFullYear()} Itqan. Tous droits réservés.
               </p>
             </AnimatedContainer>
 
-            <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-2 xl:mt-0">
+            <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-3 xl:col-span-2 xl:mt-0">
               {footerLinks.map((section, index) => (
                 <AnimatedContainer key={section.label} delay={0.1 + index * 0.1}>
                   <div className="mb-10 md:mb-0">

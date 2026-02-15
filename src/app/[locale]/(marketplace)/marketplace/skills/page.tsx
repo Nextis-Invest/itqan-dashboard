@@ -15,18 +15,18 @@ export async function generateMetadata({
   const { locale } = await params
 
   const titles: Record<string, string> = {
-    fr: "Toutes les Compétences Freelance au Maroc | Itqan",
-    en: "All Freelance Skills in Morocco | Itqan",
-    es: "Todas las Habilidades Freelance en Marruecos | Itqan",
-    de: "Alle Freelancer-Fähigkeiten in Marokko | Itqan",
+    fr: "Toutes les Compétences | Itqan",
+    en: "All Skills | Itqan",
+    es: "Todas las Habilidades | Itqan",
+    de: "Alle Fähigkeiten | Itqan",
     ar: "جميع مهارات المستقلين في المغرب | إتقان",
   }
 
   const descriptions: Record<string, string> = {
-    fr: "Explorez plus de 600 compétences freelance au Maroc. Trouvez des experts en développement, design, marketing, rédaction et plus. Recrutez le bon talent sur Itqan.",
-    en: "Explore 600+ freelance skills in Morocco. Find experts in development, design, marketing, writing and more. Hire the right talent on Itqan.",
-    es: "Explora más de 600 habilidades freelance en Marruecos. Encuentra expertos en desarrollo, diseño, marketing, redacción y más.",
-    de: "Entdecken Sie 600+ Freelancer-Fähigkeiten in Marokko. Finden Sie Experten in Entwicklung, Design, Marketing, Schreiben und mehr.",
+    fr: "Explorez plus de 600 compétences au Maroc. Trouvez des experts en développement, design, marketing, rédaction et plus sur Itqan.",
+    en: "Explore 600+ skills in Morocco. Find experts in development, design, marketing, writing and more on Itqan.",
+    es: "Explora más de 600 habilidades en Marruecos. Encuentra expertos en desarrollo, diseño, marketing, redacción y más en Itqan.",
+    de: "Entdecken Sie 600+ Fähigkeiten in Marokko. Finden Sie Experten in Entwicklung, Design, Marketing und mehr.",
     ar: "اكتشف أكثر من 600 مهارة للمستقلين في المغرب. ابحث عن خبراء في التطوير والتصميم والتسويق والكتابة والمزيد.",
   }
 

@@ -145,7 +145,7 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {profile?.title || "Freelancer"}
+                  {profile?.title || "Expert"}
                 </p>
               </div>
             </div>
