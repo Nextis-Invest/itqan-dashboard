@@ -225,7 +225,7 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="pt-6 space-y-4">
           {[
-            { label: "Nouvelles propositions", desc: "Recevez une notification quand un freelance postule", defaultOn: true },
+            { label: "Nouvelles propositions", desc: "Recevez une notification quand un expert postule", defaultOn: true },
             { label: "Messages", desc: "Notifications pour les nouveaux messages", defaultOn: true },
             { label: "Mises à jour de contrat", desc: "Jalons soumis, approuvés, etc.", defaultOn: true },
             { label: "Emails marketing", desc: "Offres et actualités de la plateforme", defaultOn: false },

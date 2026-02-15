@@ -123,7 +123,7 @@ export function MessagesClient({
                 <MessageSquare className="h-8 w-8 text-muted-foreground" />
               </div>
               <p className="text-sm font-medium text-muted-foreground">Aucune conversation</p>
-              <p className="text-xs text-muted-foreground mt-1">Les messages de vos missions apparaîtront ici</p>
+              <p className="text-xs text-muted-foreground mt-1">Les messages de vos projets apparaîtront ici</p>
             </div>
           ) : (
             conversations.map((conv) => {

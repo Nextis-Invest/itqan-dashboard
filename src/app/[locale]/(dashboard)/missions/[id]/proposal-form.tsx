@@ -27,7 +27,7 @@ export function ProposalForm({ missionId }: { missionId: string }) {
           { label: "Prix proposé", value: success.price, isBold: true },
           { label: "Durée estimée", value: success.estimatedDays },
         ]}
-        buttonText="Voir la mission"
+        buttonText="Voir la demande"
         onAction={() => {
           router.refresh()
           setSuccess(null)
@@ -39,7 +39,7 @@ export function ProposalForm({ missionId }: { missionId: string }) {
   return (
     <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-foreground text-base">Postuler à cette mission</CardTitle>
+        <CardTitle className="text-foreground text-base">Postuler à cette demande</CardTitle>
       </CardHeader>
       <CardContent>
         <form
@@ -76,7 +76,7 @@ export function ProposalForm({ missionId }: { missionId: string }) {
             <Textarea
               name="message"
               rows={4}
-              placeholder="Expliquez pourquoi vous êtes le bon freelance pour cette mission..."
+              placeholder="Expliquez pourquoi vous êtes l'expert idéal pour ce projet..."
             />
           </div>
 

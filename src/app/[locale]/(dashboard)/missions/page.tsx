@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Plus, Briefcase, LayoutGrid, LayoutList, Users, Calendar, DollarSign, FileText } from "lucide-react"
 
-export const metadata: Metadata = { title: "Mes missions" }
+export const metadata: Metadata = { title: "Mes demandes" }
 export const dynamic = "force-dynamic"
 
 const statusLabels: Record<string, { label: string; color: string; dot: string }> = {
@@ -90,12 +90,12 @@ export default async function MissionsPage({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground tracking-tight">
-            Mes Missions
+            Mes Demandes
           </h2>
           <p className="text-muted-foreground mt-1">
             {isClient
-              ? "Gérez vos missions et projets"
-              : "Missions auxquelles vous participez"}
+              ? "Gérez vos demandes et projets"
+              : "Demandes auxquelles vous participez"}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -112,7 +112,7 @@ export default async function MissionsPage({
             <Link href="/missions/new">
               <Button className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold shadow-lg shadow-lime-400/10">
                 <Plus className="mr-2 h-4 w-4" />
-                Nouvelle mission
+                Nouvelle demande
               </Button>
             </Link>
           )}
@@ -139,35 +139,35 @@ export default async function MissionsPage({
         })}
       </div>
 
-      {/* Mission Count */}
+      {/* Request Count */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Briefcase className="h-4 w-4 text-lime-400" />
-        <span>{missions.length} mission(s)</span>
+        <span>{missions.length} demande(s)</span>
       </div>
 
-      {/* Mission Cards */}
+      {/* Request Cards */}
       {missions.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 px-4 rounded-2xl border border-dashed border-border/50 bg-muted/30">
           <div className="w-16 h-16 rounded-2xl bg-secondary/50 flex items-center justify-center mb-4">
             <Briefcase className="h-8 w-8 text-muted-foreground/60" />
           </div>
-          <p className="text-muted-foreground text-base font-medium">Aucune mission</p>
+          <p className="text-muted-foreground text-base font-medium">Aucune demande</p>
           <p className="text-muted-foreground text-sm mt-1 text-center max-w-sm">
             {isClient
-              ? "Commencez par créer votre première mission pour trouver le freelance idéal."
-              : "Explorez les missions disponibles pour trouver votre prochain projet."}
+              ? "Commencez par créer votre première demande pour trouver l'expert idéal."
+              : "Explorez les demandes disponibles pour trouver votre prochain projet."}
           </p>
           {isClient ? (
             <Link href="/missions/new" className="mt-6">
               <Button className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold shadow-lg shadow-lime-400/10">
                 <Plus className="mr-2 h-4 w-4" />
-                Créer une mission
+                Créer une demande
               </Button>
             </Link>
           ) : (
             <Link href="/missions/explore" className="mt-6">
               <Button className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold shadow-lg shadow-lime-400/10">
-                Explorer les missions
+                Explorer les demandes
               </Button>
             </Link>
           )}

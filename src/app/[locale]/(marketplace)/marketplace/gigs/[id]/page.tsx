@@ -138,7 +138,7 @@ export default async function GigDetailPage({ params }: { params: Promise<{ id: 
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-foreground font-medium">
-                    {gig.freelancer.name || "Freelancer"}
+                    {gig.freelancer.name || "Expert"}
                   </span>
                   {profile?.verified && (
                     <CheckCircle2 className="h-4 w-4 text-lime-400" />

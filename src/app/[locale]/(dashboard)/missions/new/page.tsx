@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,6 +29,8 @@ interface SubmittedMission {
 
 export default function NewMissionPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const initialTitle = searchParams.get("title") || ""
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
@@ -127,14 +129,14 @@ export default function NewMissionPage() {
           </Button>
         </Link>
         <div>
-          <h2 className="text-2xl font-bold text-foreground tracking-tight">Nouvelle mission</h2>
-          <p className="text-muted-foreground mt-1">Publiez un projet pour trouver le freelance idéal</p>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">Nouvelle demande</h2>
+          <p className="text-muted-foreground mt-1">Décrivez votre projet pour recevoir une proposition adaptée</p>
         </div>
       </div>
 
       <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-foreground">Détails de la mission</CardTitle>
+          <CardTitle className="text-foreground">Détails de la demande</CardTitle>
           <CardDescription className="text-muted-foreground">Remplissez les informations ci-dessous</CardDescription>
         </CardHeader>
         <CardContent>
@@ -145,12 +147,12 @@ export default function NewMissionPage() {
 
             <div className="space-y-2">
               <Label className="text-foreground/80">Titre *</Label>
-              <Input name="title" required placeholder="Ex: Développement d'une application mobile" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
+              <Input name="title" required defaultValue={initialTitle} placeholder="Ex: Développement d'une application mobile" className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-lime-400/50" />
             </div>
 
             <div className="space-y-2">
               <Label className="text-foreground/80">Description</Label>
-              <Textarea name="description" rows={6} placeholder="Décrivez votre mission en détail : objectifs, livrables attendus, contexte..." />
+              <Textarea name="description" rows={6} placeholder="Décrivez votre projet en détail : objectifs, livrables attendus, contexte..." />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -295,7 +297,7 @@ export default function NewMissionPage() {
 
             <div className="flex gap-3 pt-4">
               <Button type="submit" className="bg-lime-400 text-neutral-900 hover:bg-lime-300 font-semibold" disabled={isLoading}>
-                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Création...</> : <><Save className="mr-2 h-4 w-4" />Publier la mission</>}
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Création...</> : <><Save className="mr-2 h-4 w-4" />Soumettre la demande</>}
               </Button>
               <Link href="/missions">
                 <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-accent">Annuler</Button>

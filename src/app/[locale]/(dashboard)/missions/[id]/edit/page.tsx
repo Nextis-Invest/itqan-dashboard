@@ -261,7 +261,7 @@ export default function EditMissionPage() {
 
       <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-foreground">Détails de la mission</CardTitle>
+          <CardTitle className="text-foreground">Détails de la demande</CardTitle>
           <CardDescription className="text-muted-foreground">
             Modifiez les informations ci-dessous
           </CardDescription>

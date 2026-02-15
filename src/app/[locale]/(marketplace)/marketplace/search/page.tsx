@@ -20,7 +20,7 @@ export async function generateMetadata({
     title: q ? `Recherche: ${q}` : "Recherche",
     description: q
       ? `Résultats de recherche pour "${q}" sur Itqan`
-      : "Recherchez des freelances et services sur Itqan",
+      : "Recherchez des experts et services sur Itqan",
   }
 }
 
@@ -99,7 +99,7 @@ function ResultTabs({
 }) {
   const tabs = [
     { id: "all" as const, label: "Tout", count: results.total, icon: Search },
-    { id: "freelancers" as const, label: "Freelances", count: results.freelancers.length, icon: Users },
+    { id: "freelancers" as const, label: "Experts", count: results.freelancers.length, icon: Users },
     { id: "gigs" as const, label: "Services", count: results.gigs.length, icon: Package },
     { id: "categories" as const, label: "Catégories", count: results.categories.length, icon: FolderOpen },
     { id: "skills" as const, label: "Compétences", count: results.skills.length, icon: Tag },
@@ -498,7 +498,7 @@ export default async function SearchPage({
               <section>
                 <div className="flex items-center gap-2 mb-5">
                   <Users className="h-5 w-5 text-lime-400" />
-                  <h2 className="text-lg font-semibold text-white">Freelances</h2>
+                  <h2 className="text-lg font-semibold text-white">Experts</h2>
                   <Badge variant="secondary" className="bg-white/10 text-neutral-300 ml-2">
                     {results.freelancers.length}
                   </Badge>

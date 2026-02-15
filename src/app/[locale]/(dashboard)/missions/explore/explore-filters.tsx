@@ -66,7 +66,7 @@ export function ExploreFilters({
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-          placeholder="Rechercher une mission par titre, compétence, description..."
+          placeholder="Rechercher une demande par titre, compétence, description..."
           className="pl-12 pr-4 py-6 bg-card border-border text-foreground text-base placeholder:text-muted-foreground focus:border-lime-400/50 focus:ring-lime-400/20 rounded-xl"
         />
       </div>

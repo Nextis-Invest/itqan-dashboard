@@ -63,7 +63,7 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
       main: [
         { title: "Tableau de bord", url: "/admin", icon: LayoutDashboard },
         { title: "Utilisateurs", url: "/admin/users", icon: Users },
-        { title: "Missions", url: "/admin/missions", icon: Briefcase },
+        { title: "Demandes", url: "/admin/missions", icon: Briefcase },
         { title: "Factures", url: "/admin/invoices", icon: FileText },
         { title: "Litiges", url: "/admin/disputes", icon: AlertTriangle },
         { title: "Support", url: "/admin/support", icon: Headphones },
@@ -79,9 +79,9 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
     return {
       main: [
         { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
-        { title: "Missions", url: "/missions", icon: Briefcase },
-        { title: "Explorer les missions", url: "/missions/explore", icon: Search },
-        { title: "Mes Gigs", url: "/gigs", icon: Package },
+        { title: "Demandes", url: "/missions", icon: Briefcase },
+        { title: "Explorer", url: "/missions/explore", icon: Search },
+        { title: "Mes Services", url: "/gigs", icon: Package },
         { title: "Mes propositions", url: "/proposals", icon: FileText },
         { title: "Contrats", url: "/contracts", icon: FileCheck },
         { title: "Litiges", url: "/disputes", icon: ShieldCheck },
@@ -91,7 +91,7 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
         { title: "Mon Profil", url: "/profile", icon: User },
       ],
       system: [
-        { title: "TJM & Dispo", url: "/freelancer/tjm", icon: DollarSign },
+        { title: "Tarifs & Dispo", url: "/freelancer/tjm", icon: DollarSign },
         { title: "Support", url: "/support", icon: Headphones },
         { title: "Paramètres", url: "/settings", icon: Settings },
       ],
@@ -101,8 +101,8 @@ function getNavigation(role?: string): { main: NavItem[]; system: NavItem[] } {
   return {
     main: [
       { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
-      { title: "Mes Missions", url: "/missions", icon: Briefcase },
-      { title: "Publier", url: "/missions/new", icon: PlusCircle },
+      { title: "Mes Demandes", url: "/missions", icon: Briefcase },
+      { title: "Nouvelle demande", url: "/missions/new", icon: PlusCircle },
       { title: "Contrats", url: "/contracts", icon: FileCheck },
       { title: "Messages", url: "/messages", icon: MessageSquare },
       { title: "Notifications", url: "/notifications", icon: Bell },

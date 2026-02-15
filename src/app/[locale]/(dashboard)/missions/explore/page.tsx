@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar, DollarSign, FileText, Users, MapPin, Clock, Compass } from "lucide-react"
 import { ExploreFilters } from "./explore-filters"
 
-export const metadata: Metadata = { title: "Explorer les missions" }
+export const metadata: Metadata = { title: "Explorer les demandes" }
 export const dynamic = "force-dynamic"
 
 const ITEMS_PER_PAGE = 20
@@ -96,7 +96,7 @@ export default async function ExploreMissionsPage({
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-muted-foreground text-sm">
-          <span className="text-foreground font-semibold">{total}</span> mission(s) trouvée(s)
+          <span className="text-foreground font-semibold">{total}</span> demande(s) trouvée(s)
         </p>
         {totalPages > 1 && (
           <p className="text-muted-foreground text-sm">
@@ -111,7 +111,7 @@ export default async function ExploreMissionsPage({
           <div className="w-16 h-16 rounded-2xl bg-secondary/50 flex items-center justify-center mb-4">
             <Compass className="h-8 w-8 text-muted-foreground/60" />
           </div>
-          <p className="text-muted-foreground text-base font-medium">Aucune mission disponible</p>
+          <p className="text-muted-foreground text-base font-medium">Aucune demande disponible</p>
           <p className="text-muted-foreground text-sm mt-1">Essayez de modifier vos critères de recherche.</p>
         </div>
       ) : (

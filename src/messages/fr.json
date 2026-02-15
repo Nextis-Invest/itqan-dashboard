@@ -1,11 +1,11 @@
 {
   "common": {
-    "categories": "Catégories",
-    "subcategories": "Sous-catégories",
-    "all": "Toutes",
-    "back_to_all": "← Toutes",
+    "categories": "Services",
+    "subcategories": "Spécialités",
+    "all": "Tous",
+    "back_to_all": "← Tous",
     "related_skills": "Compétences similaires",
-    "back_to_category": "Retour à la catégorie",
+    "back_to_category": "Retour au service",
     "services_found": "{count, plural, =0 {Aucun service trouvé} =1 {1 service trouvé} other {# services trouvés}}",
     "sort_by": "Trier par",
     "popular": "Populaire",
@@ -16,16 +16,24 @@
     "next": "Suivant",
     "page_of": "Page {page} sur {total}",
     "no_services": "Aucun service dans cette catégorie pour le moment.",
-    "no_services_sub": "Aucun service dans cette sous-catégorie pour le moment.",
+    "no_services_sub": "Aucune spécialité dans ce service pour le moment.",
     "login": "Se connecter",
     "signup": "S'inscrire",
     "search_placeholder": "Rechercher un service...",
-    "explore_subcategories": "Explorez nos spécialités dans cette catégorie",
+    "explore_subcategories": "Explorez nos spécialités",
     "not_finding": "Vous ne trouvez pas ce que vous cherchez ?"
   },
   "categories": {
-    "title": "Catégories",
-    "description": "Explorez nos catégories de services pour trouver le freelancer idéal",
+    "title": "Services",
+    "description": "Explorez nos services pour trouver l'expert idéal",
     "searchPlaceholder": "Rechercher un service ou une compétence..."
+  },
+  "dashboard": {
+    "missions": "Demandes",
+    "new_mission": "Nouvelle demande",
+    "my_missions": "Mes demandes",
+    "explore_missions": "Explorer",
+    "gigs": "Services",
+    "my_gigs": "Mes services"
   }
 }
