@@ -25,8 +25,6 @@ const PAGE_TITLES: Record<string, string> = {
   "/favorites": "Favoris",
   "/proposals": "Propositions",
   "/profile": "Mon profil",
-  "/gigs": "Mes services",
-  "/gigs/new": "Nouveau service",
   "/search": "Recherche",
   "/credits": "Crédits",
   "/orders": "Historique",
@@ -44,7 +42,6 @@ const PAGE_TITLES: Record<string, string> = {
 const PAGE_PARENTS: Record<string, { title: string; url: string }> = {
   "/missions/new": { title: "Missions", url: "/missions" },
   "/missions/explore": { title: "Missions", url: "/missions" },
-  "/gigs/new": { title: "Mes services", url: "/gigs" },
   "/disputes/new": { title: "Litiges", url: "/disputes" },
   "/support/new": { title: "Support", url: "/support" },
   "/admin/users": { title: "Administration", url: "/admin" },
@@ -77,7 +74,6 @@ export function SiteHeader() {
       return "Détails mission"
     }
     if (pathname.startsWith("/contracts/")) return "Détails contrat"
-    if (pathname.startsWith("/gigs/")) return "Détails service"
     if (pathname.startsWith("/profile/")) return "Profil"
     if (pathname.startsWith("/support/") && !pathname.startsWith("/support/new")) return "Ticket support"
     if (pathname.startsWith("/disputes/")) return "Détail du litige"

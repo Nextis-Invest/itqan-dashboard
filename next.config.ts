@@ -37,6 +37,68 @@ const nextConfig: NextConfig = {
         destination: "/:locale/freelances",
         permanent: true,
       },
+      // Gigs supprimés → dashboard
+      {
+        source: "/gigs",
+        destination: "/dashboard",
+        permanent: true,
+      },
+      {
+        source: "/:locale/gigs",
+        destination: "/:locale/dashboard",
+        permanent: true,
+      },
+      {
+        source: "/gigs/new",
+        destination: "/missions/new",
+        permanent: true,
+      },
+      {
+        source: "/:locale/gigs/new",
+        destination: "/:locale/missions/new",
+        permanent: true,
+      },
+      {
+        source: "/gigs/:id",
+        destination: "/dashboard",
+        permanent: true,
+      },
+      {
+        source: "/:locale/gigs/:id",
+        destination: "/:locale/dashboard",
+        permanent: true,
+      },
+      {
+        source: "/gigs/:id/edit",
+        destination: "/dashboard",
+        permanent: true,
+      },
+      {
+        source: "/:locale/gigs/:id/edit",
+        destination: "/:locale/dashboard",
+        permanent: true,
+      },
+      // Old marketplace routes
+      {
+        source: "/marketplace",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/:locale/marketplace",
+        destination: "/:locale",
+        permanent: true,
+      },
+      {
+        source: "/marketplace/:path*",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/:locale/marketplace/:path*",
+        destination: "/:locale",
+        permanent: true,
+      },
     ];
   },
 };

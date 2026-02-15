@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Mail, Loader2, ArrowLeft, Briefcase, User, Building2 } from "lucide-react"
+import { Mail, Loader2, ArrowLeft, User } from "lucide-react"
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -59,7 +59,7 @@ function LoginSkeleton() {
 }
 
 type Mode = "choice" | "login" | "signup"
-type Role = "CLIENT" | "FREELANCER"
+type Role = "CLIENT"
 type Step = "email" | "code"
 
 function OAuthButtons({ callbackUrl }: { callbackUrl: string }) {
@@ -380,7 +380,7 @@ function LoginContent() {
       <div className="w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex flex-col items-center gap-3 mb-6">
           <Logo width={200} height={64} className="h-16 w-auto" />
-          <p className="text-muted-foreground text-sm">La plateforme freelance au Maroc</p>
+          <p className="text-muted-foreground text-sm">Itqan — Votre agence digitale</p>
         </div>
 
         {/* Glass card wrapper */}
@@ -445,52 +445,15 @@ function LoginContent() {
                 </div>
               )}
 
-              {/* Role selection */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-foreground">Je suis</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setRole("CLIENT")}
-                    className={`relative flex flex-col items-center gap-2 rounded-xl p-4 border transition-all duration-300 ${
-                      role === "CLIENT"
-                        ? "border-lime-400/50 bg-lime-400/10 text-lime-400 shadow-[0_0_25px_rgba(163,230,53,0.1)]"
-                        : "border-border/50 bg-muted/50 text-muted-foreground hover:border-border"
-                    }`}
-                  >
-                    <div className={`p-2 rounded-lg transition-all duration-300 ${role === "CLIENT" ? "bg-lime-400/15 shadow-[0_0_15px_rgba(163,230,53,0.15)]" : "bg-muted/30"}`}>
-                      <Building2 className="h-6 w-6" />
-                    </div>
-                    <span className="text-sm font-medium">Donneur d&apos;ordre</span>
-                    <span className="text-[10px] text-muted-foreground">Je cherche des freelances</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRole("FREELANCER")}
-                    className={`relative flex flex-col items-center gap-2 rounded-xl p-4 border transition-all duration-300 ${
-                      role === "FREELANCER"
-                        ? "border-lime-400/50 bg-lime-400/10 text-lime-400 shadow-[0_0_25px_rgba(163,230,53,0.1)]"
-                        : "border-border/50 bg-muted/50 text-muted-foreground hover:border-border"
-                    }`}
-                  >
-                    <div className={`p-2 rounded-lg transition-all duration-300 ${role === "FREELANCER" ? "bg-lime-400/15 shadow-[0_0_15px_rgba(163,230,53,0.15)]" : "bg-muted/30"}`}>
-                      <Briefcase className="h-6 w-6" />
-                    </div>
-                    <span className="text-sm font-medium">Freelance</span>
-                    <span className="text-[10px] text-muted-foreground">Je cherche des missions</span>
-                  </button>
-                </div>
-              </div>
-
               {/* Name */}
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-medium text-foreground">
-                  {role === "CLIENT" ? "Nom de l'entreprise" : "Nom complet"}
+                  Nom de l&apos;entreprise
                 </Label>
                 <Input
                   id="name"
                   type="text"
-                  placeholder={role === "CLIENT" ? "Votre entreprise" : "Prénom Nom"}
+                  placeholder="Votre entreprise"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required

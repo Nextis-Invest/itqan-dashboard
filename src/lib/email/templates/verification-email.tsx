@@ -103,8 +103,8 @@ export const VerificationEmail = ({
           >
             Bienvenue sur <strong style={{ color: "#a3e635" }}>Itqan</strong> !
             Pour commencer à utiliser votre compte et accéder à toutes les
-            fonctionnalités de la plateforme de freelance au Maroc et en France,
-            veuillez vérifier votre adresse email.
+            fonctionnalités de notre plateforme, veuillez vérifier votre adresse
+            email.
           </p>
 
           <p
@@ -200,7 +200,7 @@ export const VerificationEmail = ({
             © {new Date().getFullYear()} Itqan. Tous droits réservés.
           </p>
           <p style={{ margin: 0 }}>
-            La marketplace de freelances au Maroc et en France
+            Itqan — Agence digitale au Maroc
           </p>
         </div>
       </div>
@@ -229,5 +229,5 @@ Copiez ce code et collez-le dans la bannière de vérification sur https://app.i
 
 ---
 © ${new Date().getFullYear()} Itqan. Tous droits réservés.
-La marketplace de freelances au Maroc et en France
+Itqan — Agence digitale au Maroc
 `
